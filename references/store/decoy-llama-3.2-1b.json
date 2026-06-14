@@ -36,5 +36,10 @@
   "null_exact": 1.0,
   "null_sim": 1.0,
   "errors": 0,
-  "merkle_root": "sha256:4339a30524b743040de27ec1253e8ab2e60c9eed26e79c4d8f8ad9618474068e"
+  "merkle_root": "sha256:4339a30524b743040de27ec1253e8ab2e60c9eed26e79c4d8f8ad9618474068e",
+  "source": {
+    "adapter": "ollama",
+    "model": "llama3.2:1b-instruct-q8_0",
+    "digest": "baf6a787fdffd633537aa2eb51cfd54cb93ff08e28040095462bb63daf552878"
+  }
 }

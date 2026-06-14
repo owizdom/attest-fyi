@@ -28,12 +28,27 @@ def cmd_build_ref(a):
     client = make_client(spec)
     probes = generate(a.seed)
     decoding = {"temperature": 0.0, "max_tokens": a.max_tokens, "seed": 42}
-    ref = build_reference(client, probes, decoding, a.model, a.seed)
+    ref = build_reference(client, probes, decoding, a.model, a.seed, source=spec)
     print("reference: %s" % a.model)
-    print("  probes=%d  null_exact=%.2f  null_sim=%.2f  errors=%d"
-          % (len(probes), ref["null_exact"], ref["null_sim"], ref["errors"]))
+    print("  probes=%d  null_exact=%.2f  null_sim=%.2f  errors=%d  digest=%s"
+          % (len(probes), ref["null_exact"], ref["null_sim"], ref["errors"],
+             (ref.get("source", {}).get("digest") or "?")[:16]))
     if ref["errors"]:
         print("  !! errors present; reference not trustworthy", file=sys.stderr)
+
+
+def cmd_verify_ref(a):
+    from references.registry import verify_reference
+    r = verify_reference(a.model_id, a.seed)
+    if r.get("error"):
+        print("  %s" % r["error"], file=sys.stderr)
+        sys.exit(2)
+    print("reference %s rebuilt from %s" % (a.model_id, r.get("model")))
+    print("  digest %s (%s)" % ((r.get("digest") or "?")[:20],
+                                "matches" if r.get("digest_ok") else "CHANGED"))
+    print("  outputs reproduced: %d/%d" % (r["matched"], r["total"]))
+    if not r.get("digest_ok") or r["matched"] < r["total"]:
+        sys.exit(1)
 
 
 def cmd_run(a):
@@ -116,6 +131,11 @@ def main():
     au.add_argument("provider", help="a providers/<id> name, or a path to a manifest .json")
     au.add_argument("--seed", type=int, default=DEFAULT_SEED)
     au.set_defaults(func=cmd_audit)
+
+    vr = sub.add_parser("verify-ref", help="rebuild a reference from its pinned source and diff")
+    vr.add_argument("model_id", help="reference model_id, e.g. qwen-2.5-7b-instruct")
+    vr.add_argument("--seed", type=int, default=DEFAULT_SEED)
+    vr.set_defaults(func=cmd_verify_ref)
 
     a = p.parse_args()
     a.func(a)

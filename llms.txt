@@ -39,8 +39,14 @@ python3 -m venv .venv && .venv/bin/pip install cryptography
 .venv/bin/python attest.py run                 # run a full cycle, writes results/
 .venv/bin/python attest.py build-ref --adapter ollama --model <m>   # build a reference
 .venv/bin/python attest.py verify              # re-verify published seals offline, no keys
+.venv/bin/python attest.py verify-ref <model>  # rebuild a reference from its pinned weight digest + diff
 .venv/bin/python attest.py audit <id|path>     # audit ONE provider -> publishable bundle
 ```
+
+References are anchored: each `references/store/<model>.json` records `source.digest`,
+the Ollama content hash of the exact weights it was built from. `verify-ref`
+rebuilds from that digest and diffs the outputs — so the ground truth a verdict
+rests on is reproducible, not "trust us".
 
 Layout (flat domain folders):
 - `providers/<id>.json` — one manifest per provider (the unit you usually add).
