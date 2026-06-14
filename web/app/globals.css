@@ -119,6 +119,8 @@ a{color:inherit;}
 .thesis .lead{font-family:var(--display);font-size:22px;font-weight:700;color:var(--ink);line-height:1.26;margin-bottom:20px;}
 .thesis p{font-size:14.5px;color:var(--ink-soft);line-height:1.62;margin-bottom:15px;}
 .thesis strong{color:var(--ink);font-weight:700;}
+.thesis a{color:var(--seal);text-decoration:underline;text-underline-offset:2px;font-weight:600;}
+.thesis a:hover{color:var(--red);}
 .thesis .sign{margin-top:20px;padding-top:16px;border-top:1px solid var(--hair);
   font-family:var(--display);font-style:italic;font-size:16px;color:var(--seal);margin-bottom:0;}
 .thesis .sign-seal{display:inline-grid;place-items:center;width:18px;height:18px;border:1.5px double var(--seal);border-radius:50%;font-style:normal;font-size:9px;vertical-align:-3px;margin-right:6px;}

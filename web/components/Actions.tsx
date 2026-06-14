@@ -114,10 +114,20 @@ function Thesis() {
         audit the receipts. So I built that.
       </p>
       <p>
-        This is made for a future that is already showing up. As more of the world runs on models you
-        cannot see, the question stops being whether the answer was private and becomes whether it was
-        the thing they said it was. attest.fail is a small, stubborn answer. It does not trust the
-        seal. It checks.
+        You can already see the shape of it. The strongest models now ship in{" "}
+        <a href="https://www.anthropic.com/news/claude-fable-5-mythos-5" target="_blank" rel="noopener noreferrer">two grades</a>:
+        a public one with the brakes on, and a quieter one, brakes off, for a short list of vetted
+        organizations. Then a government asked, and public access to the top tier was switched off
+        overnight, foreign nationals first. You are given what you are given, and you get no say. A
+        few houses and a few states are deciding which intelligence the rest of us are allowed to touch.
+      </p>
+      <p>
+        attest.fail does not break that gate. It takes back the one thing they cannot ration: the
+        truth of what you were served. When you cannot choose the model, you can at least prove you
+        got the one you were promised. And it gives the open, ungated, verifiable providers a way to
+        prove they are honest, which is the only road that runs around the gatekeepers. That is how a
+        little power comes back to the people using these systems instead of the few rationing them.
+        attest.fail does not trust the seal. It checks.
       </p>
       <p className="sign"><span className="sign-seal">✦</span> Built by Wisdom. Inspired by Eigen Labs. Built for the future, as the future comes.</p>
     </div>
