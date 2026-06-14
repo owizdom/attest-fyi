@@ -21,3 +21,8 @@ submissions/*.json
 # frontend toolchain
 web/node_modules/
 *.tsbuildinfo
+
+# next.js
+web/.next/
+web/out/
+web/next-env.d.ts

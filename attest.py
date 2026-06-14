@@ -3,7 +3,8 @@
 
   python3 attest.py build-ref --adapter ollama --model llama3.2:1b-instruct-q8_0
   python3 attest.py run
-  python3 attest.py build-site
+
+The web app (web/, Next.js) reads results/ directly; it is not started here.
 """
 import argparse
 import sys
@@ -43,23 +44,6 @@ def cmd_run(a):
     print("\ncycle %d  trust-gap=%d%%  pass=%d partial=%d fail=%d skipped=%d"
           % (res["cycle"], s["trust_gap_pct"], s["pass"], s["partial"],
              s["fail"], s["skipped"]))
-    if a.build_site:
-        from web.build import build_site
-        build_site()
-        print("snapshot written -> web/data.js")
-
-
-def cmd_build_site(a):
-    from web.build import build_site
-    out = build_site()
-    print("snapshot written -> %s" % out)
-
-
-def cmd_serve(a):
-    from web.build import build_site
-    build_site()
-    from server import serve
-    serve(a.port)
 
 
 def main():
@@ -79,15 +63,7 @@ def main():
 
     c = sub.add_parser("run", help="run a benchmark cycle over providers/")
     c.add_argument("--seed", type=int, default=DEFAULT_SEED)
-    c.add_argument("--no-build-site", dest="build_site", action="store_false")
-    c.set_defaults(func=cmd_run, build_site=True)
-
-    b = sub.add_parser("build-site", help="write web/data.js snapshot for file:// use")
-    b.set_defaults(func=cmd_build_site)
-
-    sv = sub.add_parser("serve", help="run the web server (site + JSON API)")
-    sv.add_argument("--port", type=int, default=8787)
-    sv.set_defaults(func=cmd_serve)
+    c.set_defaults(func=cmd_run)
 
     a = p.parse_args()
     a.func(a)
