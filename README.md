@@ -126,18 +126,18 @@ attest-fail/
 ### Run it
 
 ```bash
-# 1. build a reference fingerprint for a model you trust as ground truth
-python3 attest.py build-ref --adapter ollama --model llama3.2:1b-instruct-q8_0
+# one-time: a venv with the attestation crypto deps (DCAP needs `cryptography`)
+python3 -m venv .venv && .venv/bin/pip install -r requirements.txt
 
-# 2. run a cycle over providers/ (skips any provider whose key is missing)
-python3 attest.py run
+# run a cycle over providers/ : probes funded providers, verifies every
+# reachable Intel TDX seal via DCAP (chain to Intel SGX Root CA + TCB), and
+# skips providers with no key
+.venv/bin/python attest.py run
 
-# 3. (run already rebuilds the site) render it standalone if needed
-python3 attest.py build-site
-open web/index.html
+# the site (Next.js) reads results/ directly
+cd web && npm install && npm run dev      # http://localhost:3000
 ```
 
-The site stays a single self-contained file: the cycle data is injected into
-`web/index.html`, no fetch and no server. Add real providers by dropping their
-keys in a gitignored `.env` (`REDPILL_API_KEY`, `GROQ_API_KEY`, ...); see
-[TARGETS.md](./TARGETS.md). See [DESIGN.md](./DESIGN.md) for the full system.
+Add real providers by dropping their keys in a gitignored `.env`
+(`REDPILL_API_KEY`, `NEAR_AI_API_KEY`, ...); see [TARGETS.md](./TARGETS.md).
+See [DESIGN.md](./DESIGN.md) for the full system.
