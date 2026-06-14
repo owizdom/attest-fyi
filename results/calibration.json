@@ -1,5 +1,5 @@
 {
-  "n_probes": 24,
+  "n_probes": 60,
   "seed": 1729,
   "thresholds": {
     "SIM_TRUST_MIN": 0.55,
@@ -20,9 +20,9 @@
       "decoy": "qwen-7b",
       "label": "quant",
       "pred": "bind",
-      "sim_trusted": 0.608,
-      "sim_decoy": 0.3163,
-      "margin": 0.2917
+      "sim_trusted": 0.6665,
+      "sim_decoy": 0.3568,
+      "margin": 0.3097
     },
     {
       "served": "llama1b-fp16",
@@ -30,9 +30,9 @@
       "decoy": "qwen-7b",
       "label": "quant",
       "pred": "bind",
-      "sim_trusted": 0.9564,
-      "sim_decoy": 0.3772,
-      "margin": 0.5792
+      "sim_trusted": 0.9515,
+      "sim_decoy": 0.3971,
+      "margin": 0.5544
     },
     {
       "served": "llama1b-q8",
@@ -40,9 +40,9 @@
       "decoy": "qwen-7b",
       "label": "quant",
       "pred": "bind",
-      "sim_trusted": 0.9582,
-      "sim_decoy": 0.3563,
-      "margin": 0.6019
+      "sim_trusted": 0.9529,
+      "sim_decoy": 0.3848,
+      "margin": 0.5681
     },
     {
       "served": "llama1b-q4",
@@ -50,9 +50,9 @@
       "decoy": "qwen-7b",
       "label": "quant",
       "pred": "bind",
-      "sim_trusted": 0.6081,
-      "sim_decoy": 0.3163,
-      "margin": 0.2918
+      "sim_trusted": 0.6494,
+      "sim_decoy": 0.3568,
+      "margin": 0.2926
     },
     {
       "served": "qwen-7b",
@@ -60,9 +60,9 @@
       "decoy": "llama8b-q4",
       "label": "swap",
       "pred": "diverge",
-      "sim_trusted": 0.3556,
-      "sim_decoy": 0.3607,
-      "margin": -0.0051
+      "sim_trusted": 0.3887,
+      "sim_decoy": 0.371,
+      "margin": 0.0177
     },
     {
       "served": "llama8b-q4",
@@ -70,9 +70,9 @@
       "decoy": "llama1b-q8",
       "label": "swap",
       "pred": "diverge",
-      "sim_trusted": 0.3886,
-      "sim_decoy": 0.3989,
-      "margin": -0.0103
+      "sim_trusted": 0.3756,
+      "sim_decoy": 0.4358,
+      "margin": -0.0602
     },
     {
       "served": "llama1b-q8",
@@ -80,9 +80,9 @@
       "decoy": "llama8b-q4",
       "label": "swap",
       "pred": "diverge",
-      "sim_trusted": 0.3563,
-      "sim_decoy": 0.3944,
-      "margin": -0.0381
+      "sim_trusted": 0.3848,
+      "sim_decoy": 0.4334,
+      "margin": -0.0486
     },
     {
       "served": "llama1b-q8",
@@ -90,9 +90,9 @@
       "decoy": "qwen-7b",
       "label": "swap",
       "pred": "diverge",
-      "sim_trusted": 0.3944,
-      "sim_decoy": 0.3563,
-      "margin": 0.0381
+      "sim_trusted": 0.4334,
+      "sim_decoy": 0.3848,
+      "margin": 0.0486
     },
     {
       "served": "llama8b-q4",
@@ -100,9 +100,9 @@
       "decoy": "qwen-7b",
       "label": "swap",
       "pred": "diverge",
-      "sim_trusted": 0.3989,
-      "sim_decoy": 0.3886,
-      "margin": 0.0103
+      "sim_trusted": 0.4358,
+      "sim_decoy": 0.3756,
+      "margin": 0.0602
     }
   ]
 }

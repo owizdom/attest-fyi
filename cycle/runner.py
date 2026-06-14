@@ -5,10 +5,11 @@ import datetime
 import glob
 import json
 import os
+import random
 import re
 
 from config import (PROVIDERS_DIR, RESULTS_DIR, DEFAULT_SEED, SUITE_VERSION, load_key)
-from probes.suite import generate, suite_commit
+from probes.suite import generate, sample, suite_commit
 from models.factory import make_client
 from harness.runner import run_probes
 from references.registry import load_reference
@@ -60,10 +61,11 @@ def _next_cycle():
     return (max(nums) + 1) if nums else 1
 
 
-def audit_one(m, probes, seed=DEFAULT_SEED, workers=2):
+def audit_one(m, probes, idx=None, seed=DEFAULT_SEED, workers=2):
     """Audit one provider manifest with the full metric (liveness + probes + seal
-    verify + score). Returns (row, seal_evidence). Pure: writes nothing and never
-    touches the board, so `attest.py audit` and a cycle both call it."""
+    verify + score). `probes` is the sampled subset of the pool and `idx` their
+    pool positions, used to slice the reference's outputs to the same probes.
+    Returns (row, seal_evidence). Pure: writes nothing and never touches the board."""
     served = m["served"]
     decoding = m.get("decoding") or {"temperature": 0.0, "max_tokens": 256, "seed": seed}
     attested_label = m.get("claims", {}).get("label") or m.get("claims", {}).get("attested_model")
@@ -99,8 +101,11 @@ def audit_one(m, probes, seed=DEFAULT_SEED, workers=2):
             trusted = load_reference(refcfg["model_id"])
             decoy = load_reference(refcfg["decoy_id"]) if refcfg.get("decoy_id") else None
             if trusted:
+                def _slice(ref):
+                    o = ref["outputs"]
+                    return [o[i] for i in idx] if idx is not None else o
                 identity = behavioural_binding(
-                    outputs, trusted["outputs"], decoy["outputs"] if decoy else None)
+                    outputs, _slice(trusted), _slice(decoy) if decoy else None)
             else:
                 identity = {"no_reference": True, "detail": "trusted reference not built"}
         else:
@@ -153,12 +158,16 @@ def write_evidence(pid, ev):
     json.dump(ev, open(os.path.join(evdir, "%s.json" % pid), "w"), indent=2)
 
 
-def run_cycle(seed=DEFAULT_SEED, workers=2, verbose=True):
-    probes = generate(seed)
+def run_cycle(seed=DEFAULT_SEED, workers=2, verbose=True, k=24):
+    pool = generate(seed)
+    # Fresh per-run nonce -> unpredictable subset of the pool. A provider can't
+    # know which probes this run uses, so it can't whitelist the test set.
+    nonce = "%016x" % random.getrandbits(64)
+    probes, idx = sample(pool, k, nonce)
     manifests = _load_manifests()
     rows = []
     for m in manifests:
-        row, ev = audit_one(m, probes, seed=seed, workers=workers)
+        row, ev = audit_one(m, probes, idx, seed=seed, workers=workers)
         write_evidence(m["id"], ev)
         rows.append(row)
         if verbose:
@@ -202,6 +211,10 @@ def run_cycle(seed=DEFAULT_SEED, workers=2, verbose=True):
         "generated_at": datetime.datetime.now().isoformat(timespec="seconds"),
         "suite_version": SUITE_VERSION, "seed": seed,
         "seed_commit": suite_commit(seed),
+        # The reveal: which probes this run used, sampled unpredictably from the
+        # pool by `nonce`. sample(pool, k, nonce) reproduces `indices` exactly.
+        "sample": {"nonce": nonce, "pool_size": len(pool), "pool_commit": suite_commit(seed),
+                   "k": len(idx), "indices": idx},
         "summary": summary, "providers": rows,
     }
     os.makedirs(RESULTS_DIR, exist_ok=True)

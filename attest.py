@@ -77,8 +77,9 @@ def cmd_verify(a):
 def cmd_audit(a):
     import json
     import os
+    import random
     from config import PROVIDERS_DIR, ROOT
-    from probes.suite import generate
+    from probes.suite import generate, sample
     from cycle.runner import audit_one, write_evidence
     path = a.provider if os.path.exists(a.provider) else os.path.join(PROVIDERS_DIR, a.provider + ".json")
     if not os.path.exists(path):
@@ -87,12 +88,14 @@ def cmd_audit(a):
         sys.exit(2)
     m = json.load(open(path))
     print("auditing %s ..." % m["id"])
-    row, ev = audit_one(m, generate(a.seed), seed=a.seed)
+    nonce = "%016x" % random.getrandbits(64)
+    probes, idx = sample(generate(a.seed), 24, nonce)
+    row, ev = audit_one(m, probes, idx, seed=a.seed)
     write_evidence(m["id"], ev)
     subdir = os.path.join(ROOT, "submissions")
     os.makedirs(subdir, exist_ok=True)
     json.dump({"provider": m["id"], "verdict": row.get("verdict"), "score": row.get("score"),
-               "manifest": m, "row": row},
+               "sample": {"nonce": nonce, "indices": idx}, "manifest": m, "row": row},
               open(os.path.join(subdir, m["id"] + ".json"), "w"), indent=2)
     print("\n  verdict: %s   score=%s" % (row.get("verdict"), row.get("score")))
     det = (row.get("identity") or {}).get("detail") or ""

@@ -1,6 +1,11 @@
-"""Probe suite: a fixed divergence battery plus a seeded parametric expansion,
-with a commit hash so a cycle can publish the commitment before running and
-reveal the seed after (the commit-reveal the design calls for)."""
+"""Probe suite. A large, deterministic POOL of probes, of which each run samples
+an unpredictable subset keyed by a fresh per-run nonce. The pool is public, but a
+provider cannot know in advance which probes a given run will use, so it cannot
+serve the real model for the test set and a cheaper one elsewhere — whitelisting
+the test becomes whitelisting the whole pool. References are built over the full
+pool; a run compares the sampled subset against the reference's outputs for the
+same pool positions.
+"""
 import hashlib
 import json
 import random
@@ -27,28 +32,43 @@ _CONCEPTS = ["trust", "secrecy", "decay", "memory", "distance", "silence",
              "speed", "doubt", "loyalty", "ruin", "dawn", "machinery"]
 _THINGS = ["a locked door", "an empty harbour", "a dead battery", "a cold engine",
            "a sealed letter", "a broken clock", "a foggy mirror", "a quiet server"]
+_CONCEPT_T = [
+    ("metaphor", "Give a single metaphor for %s, in under six words."),
+    ("summary", "Summarise the idea of %s in exactly three words."),
+]
+_THING_T = [
+    ("style", "Write the opening line of a poem about %s. One line only."),
+    ("describe", "Describe %s in exactly five words."),
+    ("story", "Give a six-word story involving %s."),
+]
 
 
-def generate(seed, n_param=12):
-    """Return [{id, category, prompt}], deterministic in `seed`."""
+def generate(seed=0):
+    """The full probe POOL (deterministic). ~60 probes; references cover all of
+    them and each run samples a subset. `seed` only orders the parametric part."""
+    pool = [{"id": i, "category": c, "prompt": p} for i, c, p in FIXED]
     rng = random.Random(seed)
-    probes = [{"id": i, "category": c, "prompt": p} for i, c, p in FIXED]
     concepts = _CONCEPTS[:]
     things = _THINGS[:]
     rng.shuffle(concepts)
     rng.shuffle(things)
-    for k in range(n_param):
-        if k % 2 == 0:
-            prompt = "Give a single metaphor for %s, in under six words." % concepts[k % len(concepts)]
-            cat = "metaphor"
-        else:
-            prompt = "Write the opening line of a poem about %s. One line only." % things[k % len(things)]
-            cat = "style"
-        probes.append({"id": "pg%02d" % k, "category": cat, "prompt": prompt})
-    return probes
+    for ci, c in enumerate(concepts):
+        for cat, tpl in _CONCEPT_T:
+            pool.append({"id": "c-%s-%s" % (cat, c.replace(" ", "_")), "category": cat, "prompt": tpl % c})
+    for ti, t in enumerate(things):
+        for cat, tpl in _THING_T:
+            pool.append({"id": "t-%s-%d" % (cat, ti), "category": cat, "prompt": tpl % t})
+    return pool
 
 
-def suite_commit(seed, n_param=12):
-    blob = json.dumps({"suite": SUITE_VERSION, "seed": seed,
-                       "probes": generate(seed, n_param)}, sort_keys=True).encode()
+def sample(pool, k, nonce):
+    """Pick k probes from the pool, deterministic in `nonce` (so it can be revealed
+    and re-checked) but unpredictable before the run. Returns (probes, indices)."""
+    k = min(k, len(pool))
+    idx = sorted(random.Random(str(nonce)).sample(range(len(pool)), k))
+    return [pool[i] for i in idx], idx
+
+
+def suite_commit(seed=0):
+    blob = json.dumps({"suite": SUITE_VERSION, "pool": generate(seed)}, sort_keys=True).encode()
     return "sha256:" + hashlib.sha256(blob).hexdigest()
