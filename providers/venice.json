@@ -9,6 +9,7 @@
     "key_env": "VENICE_API_KEY"
   },
   "claims": { "attested_model": "llama-3.3-70b", "label": "llama-3.3-70b · h100 cc" },
+  "pitch": "Private inference in NVIDIA H100 confidential computing.",
   "attestation": { "type": "nvidia-cc" },
   "decoding": { "temperature": 0.0, "max_tokens": 256, "seed": 42 }
 }

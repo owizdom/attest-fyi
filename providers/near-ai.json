@@ -9,6 +9,7 @@
     "key_env": "NEAR_AI_API_KEY"
   },
   "claims": { "attested_model": "deepseek-ai/DeepSeek-V4-Flash", "label": "deepseek-v4-flash · gpu-tee" },
+  "pitch": "Confidential, verifiable inference in Intel TDX + H100, with DCAP remote attestation.",
   "attestation": {
     "type": "dstack-tdx",
     "base_url": "https://cloud-api.near.ai/v1",

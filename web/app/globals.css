@@ -176,6 +176,11 @@ a{color:inherit;}
 .notes li{font-family:var(--serif);font-style:italic;font-size:12.5px;color:var(--ink-faint);}
 .pm-pending{font-family:var(--serif);font-size:14px;color:var(--ink-soft);line-height:1.55;}
 .pm-foot{font-family:var(--serif);font-style:italic;font-size:12.5px;color:var(--ink-faint);}
+.pm-binding{margin-top:16px;padding:14px 16px;border:1px solid var(--hair);border-radius:9px;background:rgba(124,32,24,.04);}
+.pm-binding p{font-size:13px;color:var(--ink-soft);line-height:1.55;margin-bottom:8px;}
+.pm-binding p:last-child{margin-bottom:0;}
+.pm-binding b{color:var(--ink);font-weight:700;}
+.pm-claim{border-top:1px dotted var(--hair-strong);padding-top:9px;margin-top:9px;font-style:italic;}
 
 @media(max-width:640px){
   .headline{font-size:34px;}

@@ -20,18 +20,31 @@ except Exception:
     _HAVE_DCAP = False
 
 
+_RUNTIME_LOAD = ("hugging_face_hub_token", "hf_token", "model_discovery",
+                 "huggingface", "model_download")
+
+
 def _model_binding(att, served_model):
-    """Do the measured values bind the model weights? For these gateways the
-    measured boundary is the OS image + the compose config; LLM weights are
-    loaded at runtime and no provider publishes a measurement->model reference,
-    so there is no weight-level binding. Honest determination, not asserted."""
+    """Honest, evidence-based determination of whether the quote binds the model
+    weights. The measured boundary is the gateway OS image + compose config;
+    these gateways pull weights at runtime, which is visible *in the attested
+    config itself*, so the quote binds the enclave, not the weights."""
     info = att.get("info", {}) or {}
-    compose = (info.get("tcb_info", {}) or {}).get("app_compose") or info.get("app_compose") or ""
+    compose = str((info.get("tcb_info", {}) or {}).get("app_compose")
+                  or info.get("app_compose") or "").lower()
+    runtime_load = any(k in compose for k in _RUNTIME_LOAD)
     slug = (served_model or "").split("/")[-1].lower()
-    referenced = bool(slug and slug in str(compose).lower())
+    referenced = bool(slug and slug in compose)
+    if runtime_load:
+        return False, ("the attested config loads weights at runtime (a HuggingFace token / "
+                       "model-discovery service is inside the measured compose), so the seal binds the "
+                       "gateway enclave, not the model — a swapped or quantised model behind the same "
+                       "seal would be indistinguishable here")
     if referenced:
-        return False, "model named in measured config, but weights load at runtime (config-bound, not weight-bound)"
-    return False, "not bound — weights load outside the measured image; no published measurement-to-model reference"
+        return False, ("the served model is named in the measured config, but the weight bytes are not "
+                       "themselves measured — the quote binds the image + config, not the weights")
+    return False, ("model weights load outside the measured boundary; the quote binds the enclave and "
+                   "its code, not which model answered")
 
 
 def verify(cfg, ctx):

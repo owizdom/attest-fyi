@@ -9,6 +9,7 @@
     "key_env": "NANOGPT_API_KEY"
   },
   "claims": { "attested_model": "TEE/qwen3.6-27b", "label": "qwen3.6-27b · h100 + ecdsa" },
+  "pitch": "Confidential inference on H100 with per-request ECDSA signatures.",
   "attestation": { "type": "nvidia-cc" },
   "decoding": { "temperature": 0.0, "max_tokens": 256, "seed": 42 }
 }

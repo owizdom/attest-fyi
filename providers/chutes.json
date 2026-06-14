@@ -9,6 +9,7 @@
     "key_env": "CHUTES_API_KEY"
   },
   "claims": { "attested_model": "Qwen/Qwen3-32B-TEE", "label": "qwen3-32b · sev-snp" },
+  "pitch": "Confidential inference in AMD SEV-SNP TEEs.",
   "attestation": { "type": "amd-sev-snp" },
   "decoding": { "temperature": 0.0, "max_tokens": 256, "seed": 42 }
 }

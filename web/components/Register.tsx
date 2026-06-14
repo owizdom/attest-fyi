@@ -15,9 +15,16 @@ function scoreSub(p: ProviderRow): string {
   const id = p.identity;
   if (id && !id.no_reference && id.exact != null) return `exact ${id.exact} · sim ${id.sim}`;
   const a = p.attestation;
+  if (a?.present && a?.root_trusted)
+    return `intel-rooted seal · tcb ${a.tcb_status === "UpToDate" ? "ok" : (a.tcb_status || "?")}`;
   if (a?.present && a?.signature_valid) return "tdx seal · dcap pending";
   if (a?.present) return `attest ${a.score}`;
   return "no reference";
+}
+
+function bindReason(a: { notes?: string[] }): string {
+  const n = (a.notes || []).find((x) => x.toLowerCase().startsWith("model binding:"));
+  return n ? n.replace(/^model binding:\s*/i, "") : "the weights load outside the measured boundary.";
 }
 
 function Delta({ d }: { d: number | null | undefined }) {
@@ -79,6 +86,12 @@ function ProviderDetail({ p, checked, onClose }: { p: ProviderRow; checked: stri
                 <Check label={`TCB status: ${a.tcb_status || "unknown"}`} state={a.tcb_status === "UpToDate"} />
                 <Check label="Model binding (measurement → weights)" state={!!a.binds_model} />
               </ul>
+
+              <div className="pm-binding">
+                <p><b>What this seal proves:</b> a genuine Intel TDX enclave{a.root_trusted ? ", rooted in Intel&apos;s SGX Root CA" : ""}{a.tcb_status ? ` (TCB ${a.tcb_status})` : ""} ran the gateway, and the prompt stayed inside it.</p>
+                <p><b>What it does not prove:</b> which model&apos;s weights answered. {bindReason(a)}</p>
+                {p.pitch && <p className="pm-claim"><b>{p.displayName} claims:</b> {p.pitch}</p>}
+              </div>
               {a.signing_address && (
                 <div className="pm-kv"><span className="k">Gateway key</span><span className="mono">{a.signing_address}</span></div>
               )}

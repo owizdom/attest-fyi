@@ -9,6 +9,7 @@
     "key_env": "PPQ_API_KEY"
   },
   "claims": { "attested_model": "gpt-oss-120b", "label": "gpt-oss-120b · sev-snp + tinfoil" },
+  "pitch": "Confidential inference via AMD SEV-SNP with a Tinfoil backend.",
   "attestation": { "type": "amd-sev-snp" },
   "decoding": { "temperature": 0.0, "max_tokens": 256, "seed": 42 }
 }

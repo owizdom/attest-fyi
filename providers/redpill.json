@@ -9,6 +9,7 @@
     "key_env": "REDPILL_API_KEY"
   },
   "claims": { "attested_model": "phala/qwen-2.5-7b-instruct", "label": "qwen-2.5-7b · gpu-tee" },
+  "pitch": "Confidential inference — gateway in Intel TDX plus GPU TEE (H100); prompts stay private and execution is attested on-chain.",
   "attestation": {
     "type": "dstack-tdx",
     "base_url": "https://api.redpill.ai/v1",

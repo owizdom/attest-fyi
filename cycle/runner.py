@@ -52,7 +52,7 @@ def run_cycle(seed=DEFAULT_SEED, workers=2, verbose=True):
         attested_label = m.get("claims", {}).get("label") or m.get("claims", {}).get("attested_model")
         base_row = {"id": m["id"], "displayName": m["displayName"],
                     "tags": m.get("tags", []), "served_model": served.get("model"),
-                    "attested_label": attested_label}
+                    "attested_label": attested_label, "pitch": m.get("pitch")}
 
         if _needs_missing_key(served):
             rows.append(dict(base_row, status="skipped",
