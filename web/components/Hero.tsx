@@ -2,9 +2,30 @@ import type { Latest } from "@/lib/types";
 
 export function Hero({ latest }: { latest: Latest | null }) {
   const s = latest?.summary;
-  const gap = s?.trust_gap_pct ?? 0;
-  const matched = s ? s.with_reference - s.deviating : 0;
-  const date = latest ? latest.generated_at.replace("T", " ").slice(0, 16) : "—";
+  const tested = s ? s.with_reference : 0;
+
+  // Nothing reproducible yet (no keys / no references): say so plainly,
+  // never a fake 0% that reads as "everyone is honest".
+  if (!s || tested === 0) {
+    return (
+      <section className="hero">
+        <div className="kicker">Independent benchmark · verifiable inference</div>
+        <h1 className="headline">
+          <span className="hl-num">—</span> The verifiable-AI market is mapped below. None audited yet,
+          awaiting keys to probe.
+        </h1>
+        <div className="substat">
+          {s
+            ? `${s.providers} real providers wired · ${s.skipped} awaiting an API key · cycle ${latest!.cycle}`
+            : "no cycle has run yet"}
+        </div>
+      </section>
+    );
+  }
+
+  const gap = s.trust_gap_pct;
+  const matched = s.with_reference - s.deviating;
+  const date = latest!.generated_at.replace("T", " ").slice(0, 16);
 
   return (
     <section className="hero">
@@ -28,7 +49,7 @@ export function Hero({ latest }: { latest: Latest | null }) {
       </div>
 
       <div className="substat">
-        {s ? `${s.scored} providers audited · ${matched} served what they attest · ${s.deviating} did not · ${s.skipped} skipped · cycle ${latest!.cycle} · ${date}` : "no cycle has run yet"}
+        {`${s.scored} providers audited · ${matched} served what they attest · ${s.deviating} did not · ${s.skipped} skipped · cycle ${latest!.cycle} · ${date}`}
       </div>
     </section>
   );

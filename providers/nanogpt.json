@@ -1,0 +1,14 @@
+{
+  "id": "nanogpt",
+  "displayName": "NanoGPT",
+  "tags": ["attested", "nvidia-cc"],
+  "served": {
+    "adapter": "openai_compat",
+    "base_url": "https://nano-gpt.com/api/v1",
+    "model": "deepseek-v3",
+    "key_env": "NANOGPT_API_KEY"
+  },
+  "claims": { "attested_model": "deepseek-v3", "label": "deepseek-v3 · h100 + ecdsa" },
+  "attestation": { "type": "nvidia-cc" },
+  "decoding": { "temperature": 0.0, "max_tokens": 256, "seed": 42 }
+}

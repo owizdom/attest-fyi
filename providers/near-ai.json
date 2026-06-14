@@ -1,0 +1,14 @@
+{
+  "id": "near-ai",
+  "displayName": "NEAR AI",
+  "tags": ["attested", "tdx"],
+  "served": {
+    "adapter": "openai_compat",
+    "base_url": "https://cloud-api.near.ai/v1",
+    "model": "deepseek-v3",
+    "key_env": "NEAR_AI_API_KEY"
+  },
+  "claims": { "attested_model": "deepseek-v3", "label": "deepseek-v3 · tdx+h100" },
+  "attestation": { "type": "intel-tdx" },
+  "decoding": { "temperature": 0.0, "max_tokens": 256, "seed": 42 }
+}

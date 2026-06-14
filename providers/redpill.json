@@ -8,11 +8,7 @@
     "model": "phala/llama-3.3-70b-instruct",
     "key_env": "REDPILL_API_KEY"
   },
-  "claims": { "attested_model": "llama-3.3-70b-instruct", "label": "llama-3.3-70b · tdx" },
-  "attestation": {
-    "type": "redpill",
-    "base_url": "https://api.redpill.ai/v1",
-    "key_env": "REDPILL_API_KEY"
-  },
+  "claims": { "attested_model": "llama-3.3-70b-instruct", "label": "llama-3.3-70b · tdx+h100" },
+  "attestation": { "type": "redpill", "base_url": "https://api.redpill.ai/v1", "key_env": "REDPILL_API_KEY" },
   "decoding": { "temperature": 0.0, "max_tokens": 256, "seed": 42 }
 }

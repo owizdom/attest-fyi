@@ -1,0 +1,14 @@
+{
+  "id": "venice",
+  "displayName": "Venice.ai",
+  "tags": ["attested", "nvidia-cc"],
+  "served": {
+    "adapter": "openai_compat",
+    "base_url": "https://api.venice.ai/api/v1",
+    "model": "llama-3.3-70b",
+    "key_env": "VENICE_API_KEY"
+  },
+  "claims": { "attested_model": "llama-3.3-70b", "label": "llama-3.3-70b · h100 cc" },
+  "attestation": { "type": "nvidia-cc" },
+  "decoding": { "temperature": 0.0, "max_tokens": 256, "seed": 42 }
+}

@@ -1,98 +1,93 @@
 # Test targets
 
-The real confidential / verifiable-inference providers attest.fail will probe
-once the harness is built. Vetted by reachability (public API, OpenAI-compat,
-attestation exposed, how to get a key), not from memory.
+The real confidential / verifiable-inference providers attest.fail probes, and the open-weights hosts
+it fidelity-checks. The confidential set is taken from the public
+[Confidential Inference Directory](https://confidentialinference.net/) and cross-checked against each
+provider. Every one of these is live and public today.
 
 Tags:
-- **full** — both inference API and a fetchable attestation are reachable, so
-  the whole thesis (probe → fingerprint → verify quote → score) is testable.
-- **fidelity** — OpenAI-compatible inference, no attestation claim. Tests model
-  identity only ("do you serve the model you advertise, or a quantised one?").
-- **anchor** — our own access, friendly, likely PASS.
-- **verify** — real project, but the live public endpoint / key flow wasn't
-  confirmed in one pass. Check before committing.
-- **skip (v1)** — real, but not a turnkey probe target yet.
+- **attested** — TEE-attested confidential inference, OpenAI-compatible, ships a verifiable attestation.
+  These are the true attest.fail targets (both axes: model identity + the seal).
+- **fidelity** — OpenAI-compatible open-weights host, no attestation claim. Model-identity axis only
+  ("do you serve the model you advertise, or a quantised one?").
+- **anchor** — our own access (Eigen ecosystem), friendly.
+- **skip / verify** — real but SDK-only, infra, or endpoint unconfirmed.
+
+Status note: probing a confidential provider needs an account + API key (most are paid, a few cents per
+million tokens). Manifests for all of these live in `providers/`; a cycle tests whichever keys are
+present in `.env` and marks the rest "skipped (no key)".
 
 ---
 
-## full — test now (attestation + model identity)
+## attested — the confidential-inference market (test now, key needed)
 
-### RedPill (Phala)  — first build target
-- OpenAI-compatible. Base `https://api.redpill.ai/v1`, `POST /v1/chat/completions`,
-  `Authorization: Bearer <key>`.
-- Attestation is a real flow: `GET /v1/signature/{request_id}` → recover signing
-  address → `GET /v1/attestation/report` (same model, fresh nonce). This is
-  exactly Surface A.
-- 50+ open models (DeepSeek V3, Qwen, GLM-4) in TDX-attested enclaves.
-- Key: `redpill.ai/dashboard`, pay-as-you-go (a few dollars of credit).
+| Provider | Base URL | TEE / attestation | Price (in) | Signup | Models |
+|---|---|---|---|---|---|
+| **RedPill** (Phala) | `https://api.redpill.ai/v1` | Intel TDX + H100 CC + Phala on-chain | $0.04/M | redpill.ai | 23 |
+| **NEAR AI** | `https://cloud-api.near.ai/v1` | Intel TDX + H100 CC, DCAP RA | $0.01/M | cloud.near.ai | 13 |
+| **Chutes** | `https://llm.chutes.ai/v1` | AMD SEV-SNP + TDX | $0.02/M | chutes.ai | 12 |
+| **Tinfoil** | `https://inference.tinfoil.sh/v1` | Intel TDX + H100 CC, DCAP RA | $0.05/M | tinfoil.sh | 12 |
+| **Venice.ai** | `https://api.venice.ai/api/v1` | H100 CC, NVIDIA CC attestation | $0.05/M | venice.ai | 14 |
+| **NanoGPT** | `https://nano-gpt.com/api/v1` | H100 CC + per-request ECDSA sigs | $0.13/M | nano-gpt.com | 29 |
+| **Privatemode** | `https://api.privatemode.ai/v1` | AMD SEV-SNP + TDX, Cosmian VM | $0.15/M | privatemode.ai | 6 |
+| **PPQ.AI** | `https://api.ppq.ai/v1` | AMD SEV-SNP + Tinfoil backend | $0.47/M | ppq.ai | 6 |
+| **Maple** | custom | AMD SEV-SNP | custom | trymaple.ai | 0 public |
 
-### Tinfoil
-- OpenAI-compatible, open-source models, NVIDIA H100 CC + AMD SEV.
-- Remote-attestation verification center (in-browser at `chat.tinfoil.sh`).
-- Access: ~$20/mo plan with API access. No clear free tier.
+RedPill is the best first target: cheap, and it exposes the exact `GET /v1/signature/{id}` →
+`GET /v1/attestation/report` flow the engine already speaks. NEAR AI and Chutes are the cheapest by token.
 
----
+Base URLs marked above are best-effort; the confirmed ones are RedPill and Venice. The rest are
+verified at integration when a key is added.
 
-## fidelity — test now (model identity only, we hold ground truth)
+## fidelity — open-weights hosts (no attestation; model-identity test)
 
-All OpenAI-compatible, easy keys, good for the quantisation/identity axis.
+All OpenAI-compatible, easy keys, good for the quantisation/identity axis where we hold ground truth.
 
-| provider | base URL | access |
+| Host | Base URL | Access |
 |---|---|---|
-| **Groq** | `https://api.groq.com/openai/v1` | free tier — start here |
+| **Groq** | `https://api.groq.com/openai/v1` | free tier |
+| **Cerebras** | `https://api.cerebras.ai/v1` | free tier (daily limit) |
 | **Together** | `https://api.together.xyz/v1` | signup credits |
 | **Fireworks** | `https://api.fireworks.ai/inference/v1` | signup |
 | **DeepInfra** | `https://api.deepinfra.com/v1/openai` | signup |
 | **OpenRouter** | `https://openrouter.ai/api/v1` | has free models |
-| **Hyperbolic** | `app.hyperbolic.ai` | card/crypto credits; PoSP not exposed per-request, so fidelity-only for now |
+| **Novita** | `https://api.novita.ai/v3/openai` | signup |
+| **SambaNova** | `https://api.sambanova.ai/v1` | signup |
+| **Nebius** | `https://api.studio.nebius.ai/v1` | EU, signup |
 
----
-
-## anchor — our access
+## anchor — our access (Eigen ecosystem)
 
 - **EigenAI Gateway** — Intel TDX. We build on it.
 - **Darkbloom** — Apple secure-enclave inference (Eigen `d-inference`).
 
----
+## fidelity ground truth we already test (key on disk)
 
-## verify — real, confirm endpoint first
+- **Gemini 2.5 Flash** (honest) and **Gemini → Flash-Lite** (honeypot swap) via the Google API.
+- **Local Ollama** honest (q8) and swapped (q4) controls.
 
-Real projects, but the open public API + key flow wasn't confirmable in one
-pass (expired certs / 403 / vague landing pages). ~10 min each to check.
+## skip / verify
 
-- **Atoma** — `docs.atoma.ai`
-- **NEAR AI Cloud** — `docs.near.ai`
-- **0G Compute** — TEEML + opML/zkML
-- **Secret AI** — Secret Network, SGX
-- **Oasis** — ROFL / Sapphire confidential
-- **Edgeless Continuum AI** — SEV-SNP + H100 CC
+Real, but SDK-only, infra, or a different verification surface (proofs, not a TEE quote): **Atoma**,
+**0G Compute**, **Super Protocol**, **Oasis ROFL**, **Secret AI**, **Nillion nilAI**, **Marlin Oyster**,
+**ORA (opML)**, **Lagrange / Mira / Fortytwo**.
 
 ---
 
-## skip (v1)
+## Keys to light up real verdicts
 
-- **Marlin Oyster** — confidential VMs, not a hosted chat API.
-- **ORA (opML)**, **Lagrange / Mira / Fortytwo**, **EZKL** — proof/consensus
-  layers, a different verification surface than a TEE quote. Second board, later.
+Drop any of these in a gitignored `.env` and re-run `python3 attest.py run`:
 
----
+```
+REDPILL_API_KEY=...     # best: cheap + real attestation the engine verifies
+NEAR_AI_API_KEY=...     # cheapest by token ($0.01/M)
+CHUTES_API_KEY=...      # cheapest paid ($0.02/M)
+GROQ_API_KEY=...        # free, fidelity axis with our own ground truth
+CEREBRAS_API_KEY=...    # free
+TINFOIL_API_KEY=...  VENICE_API_KEY=...  NANOGPT_API_KEY=...  ...
+```
 
-## Launch roster
-
-Replaces the placeholder rows (Nimbus / VaultCompute / OracleMind / PrivAI):
-
-- attestation axis: `EigenAI · Darkbloom · RedPill · Tinfoil`
-- fidelity axis: `Groq · Together · Hyperbolic`
-
-### Note on the model column
-Real confidential-inference providers serve **open weights** (Llama, DeepSeek,
-Qwen, GLM), not GPT/Claude, because attestable inference needs models they can
-load. The board's model column should reflect the real served models. That also
-sharpens the verdict: open weights means we can hold an unimpeachable local
-reference.
-
-## Keys needed to start
-A gitignored `.env` with:
-- `REDPILL_API_KEY` (a few $ credit) — the full-thesis target.
-- `GROQ_API_KEY` (free) — the fidelity target with our own ground truth.
+Sources: [Confidential Inference Directory](https://confidentialinference.net/),
+[RedPill API](https://docs.redpill.ai/confidential-ai-inference/introduction),
+[Phala confidential AI](https://phala.com/confidential-ai-models),
+[Tinfoil inference](https://tinfoil.sh/inference), [NEAR AI](https://cloud.near.ai),
+[Chutes](https://chutes.ai), [Venice](https://venice.ai).

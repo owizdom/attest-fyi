@@ -1,9 +1,0 @@
-{
-  "id": "local-swapped",
-  "displayName": "Local Control (swapped to q4)",
-  "tags": ["local", "control"],
-  "served": { "adapter": "ollama", "model": "llama3.2:1b-instruct-q4_K_M" },
-  "claims": { "attested_model": "llama3.2:1b-instruct-q8_0", "label": "claims llama-3.2-1b q8" },
-  "attestation": { "type": "none" },
-  "decoding": { "temperature": 0.0, "max_tokens": 256, "seed": 42 }
-}

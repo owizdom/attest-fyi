@@ -1,9 +1,0 @@
-{
-  "id": "gemini-swap",
-  "displayName": "Gemini (claims Flash, serves Lite)",
-  "tags": ["fidelity", "honeypot"],
-  "served": { "adapter": "gemini", "model": "gemini-2.5-flash-lite", "thinking_budget": 0, "key_env": "GEMINI_API_KEY" },
-  "claims": { "attested_model": "gemini-2.5-flash", "label": "claims gemini-2.5-flash" },
-  "attestation": { "type": "none" },
-  "decoding": { "temperature": 0.0, "max_tokens": 256, "seed": 42 }
-}
