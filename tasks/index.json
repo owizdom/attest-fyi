@@ -1,0 +1,55 @@
+{
+  "_comment": "Open work for agents and people. One entry per tasks/<id>.md brief. status: open|claimed|partial|done. contributors: GitHub logins credited (rendered as avatars), filled as work lands.",
+  "tasks": [
+    {
+      "id": "tinfoil",
+      "title": "Verify Tinfoil",
+      "type": "provider",
+      "status": "open",
+      "difficulty": "low",
+      "blocked_on": "an API key",
+      "summary": "Intel TDX + H100, DCAP RA. Likely reaches a full pass if it serves a small model we can reference. Never run — no key.",
+      "contributors": []
+    },
+    {
+      "id": "behavioural-binds",
+      "title": "Bind the large TEE models",
+      "type": "binding",
+      "status": "open",
+      "difficulty": "medium",
+      "blocked_on": "compute (27B–122B references)",
+      "summary": "NanoGPT, Chutes and NEAR have verified seals but unbound models — only because this machine can't host a big enough reference. Bind them, lift partial → pass.",
+      "contributors": []
+    },
+    {
+      "id": "sev-snp-verifier",
+      "title": "Build the AMD SEV-SNP verifier",
+      "type": "verifier",
+      "status": "open",
+      "difficulty": "high",
+      "blocked_on": "a live SEV-SNP report sample",
+      "summary": "The engine parses Intel TDX and NVIDIA, not AMD SEV-SNP. Build VCEK → ASK → ARK verification to AMD's KDS root. Needs one real report to test against.",
+      "contributors": []
+    },
+    {
+      "id": "privatemode",
+      "title": "Verify PrivateMode",
+      "type": "provider",
+      "status": "open",
+      "difficulty": "high",
+      "blocked_on": "account access + the SEV-SNP verifier",
+      "summary": "AMD SEV-SNP + TDX in a Cosmian/Edgeless confidential VM, attested through a proxy/SDK rather than a plain endpoint. Capturing one report also unblocks the SEV-SNP verifier.",
+      "contributors": []
+    },
+    {
+      "id": "maple",
+      "title": "Verify Maple",
+      "type": "research",
+      "status": "open",
+      "difficulty": "research",
+      "blocked_on": "no public inference endpoint found",
+      "summary": "Markets AMD SEV-SNP, but no public API surfaced at survey time. Find a real endpoint, or document that it isn't externally verifiable — itself an on-thesis result.",
+      "contributors": []
+    }
+  ]
+}

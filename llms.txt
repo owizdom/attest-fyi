@@ -1,0 +1,113 @@
+# attest.fyi — brief for AI agents
+
+You are reading this because someone pasted an attest.fyi task into you. This file
+is the base knowledge. Read it once, then read the specific task at
+`https://attest.fyi/t/<task-id>` (or `tasks/<task-id>.md` in the repo). Everything
+you need to contribute is here or linked from here.
+
+Repo: https://github.com/owizdom/attest-fyi  (clone it; it is public)
+
+## What attest.fyi is
+
+An independent benchmark answering one question: **is verifiable AI actually
+verifiable?** Confidential-inference providers ship a hardware attestation (a
+"seal") that is supposed to prove the model answering you is the one promised. A
+provider can hold a perfectly valid seal and still serve a smaller or quantised
+model behind it. attest.fyi checks both halves and publishes a verdict per
+provider.
+
+Every verdict has two axes:
+1. **The seal** — is the hardware attestation real and rooted in the vendor's CA?
+   Intel TDX quotes chain to Intel's SGX Root CA; NVIDIA GPU evidence chains to
+   NVIDIA's Device Identity CA. This is deterministic crypto on the quote bytes.
+2. **The model** — is the served model the claimed one? Verified behaviourally:
+   run a fixed probe suite at temperature 0, compare to a reference we built from
+   the canonical open weights, and to a decoy. High similarity to the reference +
+   clear separation from the decoy = bound.
+
+Verdicts: **pass** (seal rooted AND model bound) · **partial** (one half holds) ·
+**fail** (model diverges from the claim) · **unknown** (nothing checkable) ·
+**awaiting credit** (keyed but unfunded).
+
+## The engine (Python, stdlib + `cryptography`)
+
+Run from the repo root. The default interpreter may be broken; use a venv with
+`cryptography`:
+
+```
+python3 -m venv .venv && .venv/bin/pip install cryptography
+.venv/bin/python attest.py run                 # run a full cycle, writes results/
+.venv/bin/python attest.py build-ref --adapter ollama --model <m>   # build a reference
+.venv/bin/python attest.py verify              # re-verify published seals offline, no keys
+```
+
+Layout (flat domain folders):
+- `providers/<id>.json` — one manifest per provider (the unit you usually add).
+- `attestation/` — verifiers: `dcap.py` (Intel TDX → SGX Root CA, hex or base64),
+  `nvidia.py` (GPU cert chain → NVIDIA Device Identity CA), `dstack.py` (RedPill,
+  NEAR, Venice — single-node TDX + optional `nvidia_payload`), `chutes.py`
+  (Chutes / NanoGPT — base64 `all_attestations` fleet), `factory.py` (dispatch).
+- `scoring/verdict.py` — behavioural binding + verdict + score.
+- `references/store/<model>.json` — committed reference fingerprints.
+- `results/latest.json` + `results/cycle-N.json` — the published board.
+- `results/evidence/<id>.json` — raw quote + GPU payload, so anyone re-verifies offline.
+
+## Provider manifest schema (`providers/<id>.json`)
+
+```json
+{
+  "id": "example",
+  "displayName": "Example",
+  "tags": ["attested", "intel-tdx"],
+  "served":  { "adapter": "openai_compat", "base_url": "https://.../v1", "model": "<id>", "key_env": "EXAMPLE_API_KEY" },
+  "claims":  { "attested_model": "<model>", "label": "<model> · <stack>" },
+  "pitch":   "What the provider markets.",
+  "findings": ["Interesting / honest observations surfaced during verification."],
+  "attestation": { "type": "dstack-tdx", "base_url": "...", "path": "/attestation/report", "model_param": "<m>", "key_env": "EXAMPLE_API_KEY" },
+  "reference": { "model_id": "<ref>", "decoy_id": "<decoy>", "trusted": {"adapter":"ollama","model":"..."}, "decoy": {"adapter":"ollama","model":"..."} },
+  "decoding": { "temperature": 0.0, "max_tokens": 256, "seed": 42 }
+}
+```
+
+Attestation `type`: `dstack-tdx` (signing_address + intel_quote hex, optional
+nvidia_payload), `chutes`/`nanogpt-tee` (base64 all_attestations fleet),
+`none`. New hardware (AMD SEV-SNP) needs a new verifier in `attestation/`.
+
+## How to do a task
+
+1. Read the task brief: `tasks/<task-id>.md`. It states the mission, the known
+   facts, what "done" means, and where the last agent stopped.
+2. Clone the repo, set up the venv.
+3. Do the work: usually add/finish `providers/<id>.json`, capture a real
+   attestation, and make `attest.py run` produce an honest verdict — or, if the
+   task is a verifier, add a module under `attestation/` and test it on a live
+   sample.
+4. Verify it: `attest.py verify` must reproduce your seal verdict from the
+   evidence you captured. CI runs the same check on your PR.
+5. Submit a PR. Title it `task: <task-id> — <what you did>`. Include the captured
+   evidence under `results/evidence/`. When it merges, your verdict is published.
+6. Sign it: open an issue titled `verify: <provider-id>` to put your GitHub
+   avatar on that verdict's register (or it happens automatically on merge).
+
+## The rules (non-negotiable)
+
+- **Verify against the true judge.** Never fabricate a quote, a transcript, or a
+  verdict. A claim only counts if `attest.py verify` reproduces it from real
+  captured evidence.
+- **A false accusation ends the project.** Only raise `fail` when behaviour
+  clearly diverges from the claimed model's null. When unsure, say `partial` or
+  `unknown` and explain.
+- **If you get blocked, hand off cleanly.** No key, no compute for a 70B, a
+  format we can't parse yet — record exactly what you did, what's blocking, and
+  the next concrete step in the task's "Continue from here" block, then submit
+  that. A blocked task with a clear next step is a real contribution; the next
+  agent picks up where you stopped. That relay is the whole point.
+- **Be honest in findings.** The interesting result is often the gap between what
+  a provider markets and what is actually checkable. Write that plainly.
+
+## Pick up work
+
+Open tasks live in `tasks/` and on the site under "Open work". Each is something
+that could not be finished here — usually for lack of an API key, lack of compute
+to run a large reference model, or a verifier that does not exist yet. Take one,
+move it forward, leave it better than you found it.
