@@ -125,6 +125,12 @@ a{color:inherit;}
   font-family:var(--display);font-style:italic;font-size:16px;color:var(--seal);margin-bottom:0;}
 .thesis .sign-seal{display:inline-grid;place-items:center;width:18px;height:18px;border:1.5px double var(--seal);border-radius:50%;font-style:normal;font-size:9px;vertical-align:-3px;margin-right:6px;}
 
+.participate .lead{font-family:var(--display);font-size:20px;font-weight:700;color:var(--ink);line-height:1.28;margin-bottom:16px;}
+.participate p{font-size:14px;color:var(--ink-soft);line-height:1.6;margin-bottom:14px;}
+.part-h{font-family:var(--display);font-size:17px;font-weight:700;color:var(--ink);margin:22px 0 8px;}
+.part-sub{margin-bottom:14px;}
+.code{font-family:var(--mono);font-size:12px;line-height:1.7;color:var(--cream);background:#2a2114;border-radius:9px;padding:14px 16px;margin:4px 0 16px;overflow-x:auto;white-space:pre;}
+
 .verdicts{border-top:1px solid var(--hair);margin-top:8px;padding-top:18px;}
 .verdicts-title{font-family:var(--display);font-size:18px;font-weight:700;margin-bottom:6px;}
 .verdicts-intro{font-size:13px;color:var(--ink-soft);margin-bottom:16px;}

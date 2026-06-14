@@ -97,6 +97,38 @@ function SubmitForm() {
   );
 }
 
+function Participate() {
+  return (
+    <div className="participate">
+      <p className="lead">Don&apos;t take our word for it. The whole point is that you don&apos;t have to.</p>
+      <p>
+        The harness is open and every verdict reproduces. The numbers on this page are not a claim you
+        are asked to trust. They are a thing you can re-run.
+      </p>
+      <h4 className="part-h">Verify a verdict yourself</h4>
+      <pre className="code">{`# clone the benchmark
+git clone https://github.com/owizdom/attest-fail
+cd attest-fail
+
+# build a reference from a model you trust as ground truth
+python3 attest.py build-ref --adapter ollama \\
+  --model llama3.2:1b-instruct-q8_0
+
+# drop provider keys in .env, then run a cycle
+python3 attest.py run`}</pre>
+      <p>
+        You land on the same verdict we publish. Every probe and transcript is content-hashed, so you
+        can check ours against yours, line by line. No login, no permission asked. That is the point.
+      </p>
+      <h4 className="part-h">Add a provider to the board</h4>
+      <p className="part-sub">
+        Know a confidential-inference endpoint that should be tested? Queue it and it gets probed next cycle.
+      </p>
+      <SubmitForm />
+    </div>
+  );
+}
+
 function Thesis() {
   return (
     <div className="thesis">
@@ -135,15 +167,15 @@ function Thesis() {
 }
 
 export function Actions() {
-  const [open, setOpen] = useState<null | "thesis" | "how" | "submit">(null);
+  const [open, setOpen] = useState<null | "thesis" | "how" | "participate">(null);
   return (
     <>
       <button onClick={() => setOpen("thesis")}>Thesis</button>
       <button onClick={() => setOpen("how")}>How it works</button>
-      <button onClick={() => setOpen("submit")}>Submit</button>
+      <button onClick={() => setOpen("participate")}>Participate</button>
       {open === "thesis" && <Modal title="Thesis" onClose={() => setOpen(null)}><Thesis /></Modal>}
       {open === "how" && <Modal title="How it works" onClose={() => setOpen(null)}><HowItWorks /></Modal>}
-      {open === "submit" && <Modal title="Submit an endpoint" onClose={() => setOpen(null)}><SubmitForm /></Modal>}
+      {open === "participate" && <Modal title="Participate" onClose={() => setOpen(null)}><Participate /></Modal>}
     </>
   );
 }
