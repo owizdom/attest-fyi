@@ -1,0 +1,40 @@
+{
+  "model_id": "llama-3.1-8b-instruct",
+  "suite_version": "0.1.0",
+  "seed": 1729,
+  "decoding": {
+    "temperature": 0.0,
+    "max_tokens": 256,
+    "seed": 42
+  },
+  "outputs": [
+    "'she sat alone on the creaky wooden porch'",
+    "\"Echoes whisper through vacant platforms, where trains once came and went.\"",
+    "\"Anchor in the depths of relationship.\"",
+    "Brown",
+    "Veritas",
+    "'the signature was not genuine.'",
+    "Shiver.",
+    "The sky appears blue because of a phenomenon called Rayleigh scattering, where shorter (blue) wavelengths of light are scattered more than longer (red) wavelengths by the tiny molecules of gases in the atmosphere.",
+    "The completed analogy would be:\n\nkey is to lock as password is to computer.\n\nIn this analogy, a key unlocks a physical lock, and similarly, a password unlocks access to a digital system (computer).",
+    "Faithful reliance on others.",
+    "She waited, but he never came.",
+    "Orange-brown.",
+    "A chasm between two shores.",
+    "\"Time stands still, yet marks its pain.\"",
+    "A tapestry of fragmented threads.",
+    "\"Silence falls, like frost on steel.\"",
+    "\"Metal hearts that beat with purpose.\"",
+    "\"In veiled reflection, my face is lost.\"",
+    "A locked and silent safe.",
+    "\"Folded and sealed, its secrets untold.\"",
+    "A compass that always points north.",
+    "\"Time stands still, yet marks its pain.\"",
+    "\"Anchor in the depths of relationship.\"",
+    "\"Silence falls, like frost on steel.\""
+  ],
+  "null_exact": 1.0,
+  "null_sim": 1.0,
+  "errors": 0,
+  "merkle_root": "sha256:e803e1e18577d41bb285baa87cd64c4b2ee51104c6d074687e58d154dc2e52a3"
+}

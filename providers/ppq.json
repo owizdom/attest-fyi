@@ -1,15 +1,24 @@
 {
   "id": "ppq",
   "displayName": "PPQ.AI",
-  "tags": ["attested", "sev-snp"],
+  "tags": ["attested", "sev-snp", "proxy"],
   "served": {
     "adapter": "openai_compat",
     "base_url": "https://api.ppq.ai/v1",
-    "model": "gpt-oss-120b",
+    "model": "qwen/qwen-2.5-7b-instruct",
     "key_env": "PPQ_API_KEY"
   },
-  "claims": { "attested_model": "gpt-oss-120b", "label": "gpt-oss-120b · sev-snp + tinfoil" },
+  "claims": { "attested_model": "qwen-2.5-7b-instruct", "label": "qwen-2.5-7b · sev-snp + tinfoil" },
   "pitch": "Confidential inference via AMD SEV-SNP with a Tinfoil backend.",
+  "findings": [
+    "Behaviour-only verdict. PPQ is a reseller/proxy (Tinfoil backend) serving 327 mostly-proxied models, and it exposes no verifiable attestation quote (its attestation endpoint returns no TDX quote). So model identity is checked here, but the seal cannot be."
+  ],
   "attestation": { "type": "amd-sev-snp" },
+  "reference": {
+    "model_id": "qwen-2.5-7b-instruct",
+    "decoy_id": "decoy-llama-3.2-1b",
+    "trusted": { "adapter": "ollama", "model": "qwen2.5:7b-instruct" },
+    "decoy": { "adapter": "ollama", "model": "llama3.2:1b-instruct-q8_0" }
+  },
   "decoding": { "temperature": 0.0, "max_tokens": 256, "seed": 42 }
 }
