@@ -105,6 +105,20 @@ def cmd_audit(a):
     print("    3. CI re-verifies the seal from your evidence; on merge you are credited.")
 
 
+def cmd_calibrate(a):
+    from scoring.calibration import calibrate
+    r = calibrate(seed=a.seed)
+    print("calibration (%d probes, seed %d)" % (r["n_probes"], r["seed"]))
+    for row in r["pairs"]:
+        print("  %-6s %-12s vs ref %-12s -> %-10s (sim_t=%.2f sim_d=%.2f)"
+              % (row["label"], row["served"], row["trusted"], row["pred"],
+                 row["sim_trusted"], row["sim_decoy"]))
+    print("\n  false-positive rate: %d/%d same-model pairs flagged as a swap = %d%%"
+          % (r["false_positives"], r["same_model_pairs"], r["false_positive_pct"]))
+    print("  detection: %d/%d swaps caught = %d%%"
+          % (r["swaps_detected"], r["swap_pairs"], r["detection_pct"]))
+
+
 def main():
     p = argparse.ArgumentParser(prog="attest.py")
     sub = p.add_subparsers(dest="cmd", required=True)
@@ -136,6 +150,10 @@ def main():
     vr.add_argument("model_id", help="reference model_id, e.g. qwen-2.5-7b-instruct")
     vr.add_argument("--seed", type=int, default=DEFAULT_SEED)
     vr.set_defaults(func=cmd_verify_ref)
+
+    cb = sub.add_parser("calibrate", help="measure the binding's false-positive + detection rate")
+    cb.add_argument("--seed", type=int, default=DEFAULT_SEED)
+    cb.set_defaults(func=cmd_calibrate)
 
     a = p.parse_args()
     a.func(a)

@@ -1,0 +1,108 @@
+{
+  "n_probes": 24,
+  "seed": 1729,
+  "thresholds": {
+    "SIM_TRUST_MIN": 0.55,
+    "SIM_MARGIN": 0.2,
+    "SIM_RATIO": 1.4,
+    "SIM_DIVERGE": 0.45
+  },
+  "same_model_pairs": 4,
+  "false_positives": 0,
+  "false_positive_pct": 0,
+  "swap_pairs": 5,
+  "swaps_detected": 5,
+  "detection_pct": 100,
+  "pairs": [
+    {
+      "served": "llama1b-q4",
+      "trusted": "llama1b-q8",
+      "decoy": "qwen-7b",
+      "label": "quant",
+      "pred": "bind",
+      "sim_trusted": 0.608,
+      "sim_decoy": 0.3163,
+      "margin": 0.2917
+    },
+    {
+      "served": "llama1b-fp16",
+      "trusted": "llama1b-q8",
+      "decoy": "qwen-7b",
+      "label": "quant",
+      "pred": "bind",
+      "sim_trusted": 0.9564,
+      "sim_decoy": 0.3772,
+      "margin": 0.5792
+    },
+    {
+      "served": "llama1b-q8",
+      "trusted": "llama1b-fp16",
+      "decoy": "qwen-7b",
+      "label": "quant",
+      "pred": "bind",
+      "sim_trusted": 0.9582,
+      "sim_decoy": 0.3563,
+      "margin": 0.6019
+    },
+    {
+      "served": "llama1b-q4",
+      "trusted": "llama1b-fp16",
+      "decoy": "qwen-7b",
+      "label": "quant",
+      "pred": "bind",
+      "sim_trusted": 0.6081,
+      "sim_decoy": 0.3163,
+      "margin": 0.2918
+    },
+    {
+      "served": "qwen-7b",
+      "trusted": "llama1b-q8",
+      "decoy": "llama8b-q4",
+      "label": "swap",
+      "pred": "diverge",
+      "sim_trusted": 0.3556,
+      "sim_decoy": 0.3607,
+      "margin": -0.0051
+    },
+    {
+      "served": "llama8b-q4",
+      "trusted": "qwen-7b",
+      "decoy": "llama1b-q8",
+      "label": "swap",
+      "pred": "diverge",
+      "sim_trusted": 0.3886,
+      "sim_decoy": 0.3989,
+      "margin": -0.0103
+    },
+    {
+      "served": "llama1b-q8",
+      "trusted": "qwen-7b",
+      "decoy": "llama8b-q4",
+      "label": "swap",
+      "pred": "diverge",
+      "sim_trusted": 0.3563,
+      "sim_decoy": 0.3944,
+      "margin": -0.0381
+    },
+    {
+      "served": "llama1b-q8",
+      "trusted": "llama8b-q4",
+      "decoy": "qwen-7b",
+      "label": "swap",
+      "pred": "diverge",
+      "sim_trusted": 0.3944,
+      "sim_decoy": 0.3563,
+      "margin": 0.0381
+    },
+    {
+      "served": "llama8b-q4",
+      "trusted": "llama1b-q8",
+      "decoy": "qwen-7b",
+      "label": "swap",
+      "pred": "diverge",
+      "sim_trusted": 0.3989,
+      "sim_decoy": 0.3886,
+      "margin": 0.0103
+    }
+  ]
+}

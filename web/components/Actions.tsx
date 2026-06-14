@@ -23,7 +23,7 @@ function Modal({ title, onClose, children }: { title: string; onClose: () => voi
 
 function HowItWorks() {
   const steps: [string, string][] = [
-    ["Fingerprint", "The same probes run at temperature 0 against each provider. A swapped, distilled, or quantised engine diverges from the model it claims; the same model repeats itself, so any drift is real signal."],
+    ["Fingerprint", "The same probes run at temperature 0 against each provider. A swapped or smaller model diverges from the one it claims; a quantised copy of the right model still binds — identity is what's certified, not precision. On a labelled calibration set the binding flags 0% of quantised models as swaps and catches 100% of real swaps (run `attest.py calibrate` to reproduce)."],
     ["Audit", "The attestation quote and image digest are verified, then weighed against what actually came out. A valid seal wrapped around the wrong engine is the headline fault."],
     ["Reproduce", "Every probe set and transcript is content-hashed. Re-run the harness yourself and you land on the same verdict. Blind spots are published, not hidden."],
   ];
