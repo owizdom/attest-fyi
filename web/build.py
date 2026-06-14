@@ -4,13 +4,12 @@ served, app.js prefers the live /api endpoints and ignores this."""
 import json
 import os
 
-from config import RESULTS_DIR, ROOT
-from cycle.history import load_history
+from config import ROOT
+from cycle.history import load_history, enrich_latest
 
 
 def build_site():
-    latest = os.path.join(RESULTS_DIR, "latest.json")
-    data = json.load(open(latest)) if os.path.exists(latest) else None
+    data = enrich_latest() or None
     snap = {"latest": data, "history": load_history()}
     out = os.path.join(ROOT, "web", "data.js")
     open(out, "w").write("window.__ATTEST_SNAPSHOT__ = "

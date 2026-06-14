@@ -11,6 +11,24 @@ def _cycle_no(path):
     return int(base) if base.isdigit() else 0
 
 
+def enrich_latest():
+    """latest.json with each provider's score delta vs the previous cycle."""
+    p = os.path.join(RESULTS_DIR, "latest.json")
+    if not os.path.exists(p):
+        return {}
+    d = json.load(open(p))
+    prev = os.path.join(RESULTS_DIR, "cycle-%d.json" % (d.get("cycle", 1) - 1))
+    prev_scores = {}
+    if os.path.exists(prev):
+        pd = json.load(open(prev))
+        prev_scores = {x["id"]: x.get("score") for x in pd.get("providers", [])}
+    for pr in d.get("providers", []):
+        ps = prev_scores.get(pr["id"])
+        s = pr.get("score")
+        pr["delta"] = (s - ps) if (s is not None and ps is not None) else None
+    return d
+
+
 def load_history():
     out = []
     for f in sorted(glob.glob(os.path.join(RESULTS_DIR, "cycle-*.json")), key=_cycle_no):

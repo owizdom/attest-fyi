@@ -13,7 +13,7 @@ import socketserver
 from http.server import BaseHTTPRequestHandler
 
 from config import ROOT, RESULTS_DIR
-from cycle.history import load_history
+from cycle.history import load_history, enrich_latest
 
 WEB = os.path.join(ROOT, "web")
 SUBMISSIONS = os.path.join(ROOT, "submissions")
@@ -39,8 +39,7 @@ class Handler(BaseHTTPRequestHandler):
     def do_GET(self):
         path = self.path.split("?")[0]
         if path == "/api/latest":
-            p = os.path.join(RESULTS_DIR, "latest.json")
-            return self._json(json.load(open(p)) if os.path.exists(p) else {})
+            return self._json(enrich_latest())
         if path == "/api/history":
             return self._json(load_history())
         if path in STATIC:

@@ -17,3 +17,7 @@ venv/
 
 # user-submitted endpoints (queued at runtime)
 submissions/*.json
+
+# frontend toolchain
+web/node_modules/
+*.tsbuildinfo
