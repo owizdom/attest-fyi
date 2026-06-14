@@ -1,6 +1,6 @@
 {
-  "cycle": 3,
-  "generated_at": "2026-06-14T08:16:19",
+  "cycle": 2,
+  "generated_at": "2026-06-14T08:15:21",
   "suite_version": "0.1.0",
   "seed": 1729,
   "seed_commit": "sha256:fae2489a0a31451a6cb9d090f6cc2d2fc68140b9e53a024e85f92b04a610363b",
@@ -31,8 +31,8 @@
       "score": 60,
       "identity": {
         "no_reference": false,
-        "exact": 0.9583,
-        "sim": 0.9768,
+        "exact": 0.75,
+        "sim": 0.8406,
         "null_exact": 0.75,
         "diverges": false,
         "matches": true,
@@ -55,7 +55,7 @@
         "score": 0
       },
       "evidence": {
-        "merkle_root": "sha256:eae13f2ad3f73d91b9d8c396ff331a9006e3d58ea9b1f0605265a21092eac019",
+        "merkle_root": "sha256:5e2b3e7c5a6f91c33d70f213fd1ff7214b1e1b85ff82090cd4330ba27e71d0b3",
         "request_id": null,
         "errors": 0
       }
@@ -98,7 +98,7 @@
         "score": 0
       },
       "evidence": {
-        "merkle_root": "sha256:47277d4a9cb8eec56506dc884352c62a0f70309e70a25308d3f90184e4fa361e",
+        "merkle_root": "sha256:dc08a1a221e8a15f58fd5eca39d2243a1600add17add23b4f3b18cba3014b39d",
         "request_id": null,
         "errors": 0
       }
@@ -154,7 +154,7 @@
         "score": 0
       },
       "evidence": {
-        "merkle_root": "sha256:0792ed896c17d97088476455fef98fcc8f7ea78cece8c40e994e8c829882879b",
+        "merkle_root": "sha256:afe3c214ec6fd24af3bcfd74999737dbe4d1c96da4d42a994ca7ad1a50072172",
         "request_id": null,
         "errors": 0
       }
@@ -197,7 +197,7 @@
         "score": 0
       },
       "evidence": {
-        "merkle_root": "sha256:d8b312654b88164a5f510e71c054e21b42b7dc05e419bcb34e0a6bec0e12b8a5",
+        "merkle_root": "sha256:2b90bc0e99e26fd485c024d6887af1e6e914662ac15cf2e8a22aeace211b642b",
         "request_id": null,
         "errors": 0
       }

@@ -1,22 +1,18 @@
-"""Embed results/latest.json into web/index.html so the leaderboard renders
-real data while staying a single self-contained file (no fetch, no server)."""
+"""Write web/data.js — a static snapshot of the latest cycle and history so the
+site also works opened straight from disk (file://), without the server. When
+served, app.js prefers the live /api endpoints and ignores this."""
 import json
 import os
-import re
 
-from config import RESULTS_DIR, WEB_INDEX
-
-MARKER = re.compile(
-    r'(<script id="attest-data"[^>]*>)(.*?)(</script>)', re.DOTALL)
+from config import RESULTS_DIR, ROOT
+from cycle.history import load_history
 
 
 def build_site():
     latest = os.path.join(RESULTS_DIR, "latest.json")
     data = json.load(open(latest)) if os.path.exists(latest) else None
-    html = open(WEB_INDEX).read()
-    payload = json.dumps(data, ensure_ascii=False) if data else "null"
-    if not MARKER.search(html):
-        raise RuntimeError('web/index.html is missing the <script id="attest-data"> hook')
-    html = MARKER.sub(lambda m: m.group(1) + payload + m.group(3), html)
-    open(WEB_INDEX, "w").write(html)
-    return WEB_INDEX
+    snap = {"latest": data, "history": load_history()}
+    out = os.path.join(ROOT, "web", "data.js")
+    open(out, "w").write("window.__ATTEST_SNAPSHOT__ = "
+                         + json.dumps(snap, ensure_ascii=False) + ";\n")
+    return out

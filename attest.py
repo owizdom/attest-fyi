@@ -46,13 +46,20 @@ def cmd_run(a):
     if a.build_site:
         from web.build import build_site
         build_site()
-        print("site rebuilt -> web/index.html")
+        print("snapshot written -> web/data.js")
 
 
 def cmd_build_site(a):
     from web.build import build_site
     out = build_site()
-    print("site rebuilt -> %s" % out)
+    print("snapshot written -> %s" % out)
+
+
+def cmd_serve(a):
+    from web.build import build_site
+    build_site()
+    from server import serve
+    serve(a.port)
 
 
 def main():
@@ -75,8 +82,12 @@ def main():
     c.add_argument("--no-build-site", dest="build_site", action="store_false")
     c.set_defaults(func=cmd_run, build_site=True)
 
-    b = sub.add_parser("build-site", help="render the site from results/latest.json")
+    b = sub.add_parser("build-site", help="write web/data.js snapshot for file:// use")
     b.set_defaults(func=cmd_build_site)
+
+    sv = sub.add_parser("serve", help="run the web server (site + JSON API)")
+    sv.add_argument("--port", type=int, default=8787)
+    sv.set_defaults(func=cmd_serve)
 
     a = p.parse_args()
     a.func(a)

@@ -4,310 +4,145 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>attest.fail — is verifiable AI actually verifiable?</title>
-<style>
-  :root{
-    --paper:#f2ead6;
-    --ink:#221d15;
-    --ink-soft:#4a4133;
-    --ink-faint:#9a8c6f;
-    --hair:rgba(34,29,21,.22);
-    --hair-soft:rgba(34,29,21,.12);
-    --red:#963126;
-    --seal:#7c2018;
-    --serif:"Iowan Old Style","Hoefler Text",Georgia,"Times New Roman",serif;
-    --display:"Didot","Bodoni 72","Bodoni MT","Playfair Display",Georgia,serif;
-    --mono:"Courier New",Courier,monospace;
-  }
-  *{box-sizing:border-box;margin:0;padding:0;}
-  html{scroll-behavior:smooth;}
-  body{
-    background:var(--paper);color:var(--ink);font-family:var(--serif);
-    -webkit-font-smoothing:antialiased;line-height:1.5;position:relative;
-  }
-  body::before{ /* faint paper grain */
-    content:"";position:fixed;inset:0;pointer-events:none;z-index:0;opacity:.4;mix-blend-mode:multiply;
-    background-image:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='160' height='160'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' stitchTiles='stitch'/><feColorMatrix type='saturate' values='0'/></filter><rect width='100%25' height='100%25' filter='url(%23n)' opacity='0.3'/></svg>");
-  }
-  .wrap{max-width:940px;margin:0 auto;padding:0 32px;position:relative;z-index:1;}
-
-  /* ---- top bar ---- */
-  header{border-bottom:1px solid var(--hair);}
-  header .wrap{display:flex;align-items:center;justify-content:space-between;height:64px;}
-  .mark{display:flex;align-items:baseline;gap:10px;}
-  .mark .wordmark{font-family:var(--display);font-size:21px;font-weight:700;letter-spacing:.01em;}
-  .mark .wordmark .dot{color:var(--red);}
-  .mark .by{font-family:var(--mono);font-size:10px;letter-spacing:.12em;text-transform:uppercase;color:var(--ink-faint);}
-  nav{display:flex;gap:26px;}
-  nav a{font-family:var(--serif);font-size:14px;color:var(--ink-soft);text-decoration:none;}
-  nav a:hover{color:var(--ink);text-decoration:underline;text-underline-offset:3px;}
-
-  /* ---- hero ---- */
-  .hero{text-align:center;padding:120px 0 96px;}
-  .kicker{font-family:var(--mono);font-size:11px;letter-spacing:.28em;text-transform:uppercase;color:var(--ink-faint);margin-bottom:34px;}
-  .hero h1{font-family:var(--display);font-weight:700;font-size:60px;line-height:1.02;letter-spacing:-.01em;max-width:16ch;margin:0 auto;}
-  .hero h1 .q{font-style:italic;}
-  .hero .say{font-family:var(--serif);font-style:italic;font-size:19px;color:var(--ink-soft);max-width:54ch;margin:26px auto 0;}
-
-  .figure-num{margin-top:64px;}
-  .figure-num .big{font-family:var(--display);font-weight:700;font-size:128px;line-height:.9;color:var(--red);letter-spacing:-.02em;}
-  .figure-num .cap{font-family:var(--serif);font-size:16px;color:var(--ink-soft);max-width:40ch;margin:14px auto 0;}
-
-  .cta{margin-top:48px;}
-  .cta a{
-    display:inline-block;font-family:var(--serif);font-size:15px;color:var(--ink);text-decoration:none;
-    border:1px solid var(--ink);padding:11px 26px;border-radius:2px;letter-spacing:.02em;
-    transition:background .15s,color .15s;
-  }
-  .cta a:hover{background:var(--ink);color:var(--paper);}
-  .cta .alt{margin-left:8px;border-color:var(--hair);color:var(--ink-soft);}
-  .cta .alt:hover{background:transparent;color:var(--ink);border-color:var(--ink);}
-
-  /* ---- section frame ---- */
-  section.band{border-top:1px solid var(--hair);padding:78px 0;}
-  .sec-head{text-align:center;margin-bottom:46px;}
-  .sec-head .eyebrow{font-family:var(--mono);font-size:11px;letter-spacing:.24em;text-transform:uppercase;color:var(--ink-faint);}
-  .sec-head h2{font-family:var(--display);font-size:34px;font-weight:700;margin-top:8px;}
-  .sec-head .note{font-family:var(--serif);font-style:italic;font-size:14px;color:var(--ink-soft);margin-top:6px;}
-
-  /* ---- chart ---- */
-  .chart-shell{max-width:780px;margin:0 auto;}
-  .chart-shell svg{width:100%;height:auto;display:block;}
-  .plot-line{fill:none;stroke:var(--ink);stroke-width:1.4;}
-  .plot-area{fill:rgba(124,32,24,.06);}
-  .grid{stroke:var(--hair-soft);stroke-width:1;}
-  .axis{stroke:var(--hair);stroke-width:1;}
-  .dot{fill:var(--paper);stroke:var(--ink);stroke-width:1.4;}
-  .dot-now{fill:var(--red);stroke:var(--seal);stroke-width:1.5;}
-  .lbl{font-family:var(--mono);font-size:11px;fill:var(--ink-faint);}
-  .lbl-now{font-family:var(--display);font-size:18px;font-weight:700;fill:var(--red);}
-  .chart-foot{display:flex;justify-content:space-between;font-family:var(--mono);font-size:11px;letter-spacing:.04em;text-transform:uppercase;color:var(--ink-faint);margin-top:14px;}
-
-  /* ---- standings (slim) ---- */
-  .standings{max-width:720px;margin:0 auto;}
-  table{width:100%;border-collapse:collapse;}
-  thead th{font-family:var(--mono);font-size:10.5px;letter-spacing:.1em;text-transform:uppercase;color:var(--ink-faint);font-weight:400;text-align:left;padding:0 4px 12px;border-bottom:1px solid var(--hair);}
-  thead th.r,tbody td.r{text-align:right;font-variant-numeric:tabular-nums;}
-  tbody td{padding:15px 4px;border-bottom:1px solid var(--hair-soft);font-size:15px;}
-  tbody td.house{font-family:var(--serif);color:var(--ink);}
-  tbody td.house small{font-family:var(--mono);font-size:10.5px;color:var(--ink-faint);text-transform:uppercase;letter-spacing:.04em;margin-left:10px;}
-  .vd{font-family:var(--mono);font-size:11px;letter-spacing:.08em;text-transform:uppercase;}
-  .vd.pass{color:var(--ink);}
-  .vd.fail{color:var(--red);}
-  .vd.part{color:var(--ink-faint);}
-  .more{text-align:center;margin-top:26px;}
-  .more a{font-family:var(--serif);font-style:italic;font-size:14px;color:var(--ink-soft);text-decoration:none;border-bottom:1px solid var(--hair);}
-  .more a:hover{color:var(--ink);}
-
-  /* ---- how it works ---- */
-  .steps{display:grid;grid-template-columns:repeat(3,1fr);gap:40px;max-width:840px;margin:0 auto;}
-  .step{text-align:center;}
-  .step .n{font-family:var(--display);font-size:30px;font-weight:700;color:var(--seal);}
-  .step .seal-rule{width:34px;height:1px;background:var(--hair);margin:14px auto;}
-  .step h3{font-family:var(--display);font-size:19px;font-weight:700;margin-bottom:8px;}
-  .step p{font-family:var(--serif);font-size:14px;color:var(--ink-soft);line-height:1.55;}
-
-  /* ---- footer ---- */
-  footer{border-top:1px solid var(--hair);}
-  footer .wrap{display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:12px;height:auto;padding-top:26px;padding-bottom:40px;}
-  footer .l{font-family:var(--serif);font-size:13px;color:var(--ink-soft);}
-  footer .seal-mark{display:inline-grid;place-items:center;width:18px;height:18px;border:1.5px double var(--seal);border-radius:50%;color:var(--seal);font-size:9px;margin-right:8px;vertical-align:-3px;}
-  footer nav a{font-size:13px;}
-</style>
+<link rel="stylesheet" href="style.css">
 </head>
 <body>
 
-<header>
-  <div class="wrap">
-    <div class="mark">
+<header class="topbar">
+  <div class="wrap row">
+    <div class="brand">
       <span class="wordmark">attest<span class="dot">.</span>fail</span>
-      <span class="by">an Eigen Labs benchmark</span>
+      <span class="by">an independent benchmark</span>
     </div>
-    <nav>
-      <a href="#chart">Frontier</a>
-      <a href="#standings">Standings</a>
-      <a href="#how">How it works</a>
-      <a href="#">Participate</a>
+    <nav class="actions">
+      <button class="link" data-modal="modal-how">How it works</button>
+      <button class="link" data-modal="modal-submit">Submit an endpoint</button>
+      <a class="link" href="https://github.com/" target="_blank" rel="noopener">GitHub</a>
     </nav>
   </div>
 </header>
 
-<!-- HERO -->
-<div class="hero wrap">
-  <div class="kicker">Independent benchmark · open &amp; reproducible</div>
-  <h1>Is <span class="q">“verifiable AI”</span> actually verifiable?</h1>
-  <p class="say">Every confidential-inference house swears the model that answered you is the model it
-    attested. We check. Almost no one else does.</p>
+<main class="wrap">
 
-  <div class="figure-num">
-    <div class="big" id="gap-num">41%</div>
-    <div class="cap" id="gap-cap">of providers detectably serve a different model than the one they attest.</div>
-  </div>
+  <!-- HERO CARD -->
+  <section class="card hero-card">
+    <svg class="contours" viewBox="0 0 600 400" preserveAspectRatio="xMaxYMid slice" aria-hidden="true">
+      <path d="M620,-20 C420,80 520,200 360,260 C220,310 300,420 120,440"/>
+      <path d="M640,20 C440,120 540,240 380,300 C240,350 320,460 140,480"/>
+      <path d="M660,60 C460,160 560,280 400,340 C260,390 340,500 160,520"/>
+    </svg>
 
-  <div class="cta">
-    <a href="#">Submit an endpoint →</a>
-    <a class="alt" href="#how">How it works</a>
+    <div class="hero-top">
+      <div class="hero-stat">
+        <div class="big" id="hero-gap">—</div>
+        <div class="phrase" id="hero-phrase">of audited providers serve a different model than they attest.</div>
+      </div>
+      <div class="pills">
+        <button class="pill" data-modal="modal-how">How it works</button>
+        <button class="pill" data-modal="modal-submit">Submit an endpoint</button>
+      </div>
+    </div>
+
+    <div class="block">
+      <div class="label">Frontier — market verifiability</div>
+      <div class="frontier" id="frontier"></div>
+    </div>
+
+    <div class="block">
+      <div class="block-head">
+        <div class="label">Trust-gap history</div>
+        <div class="toggles">
+          <div class="seg" id="metric-toggle">
+            <button data-metric="trust_gap_pct" class="on">Trust gap</button>
+            <button data-metric="pass_rate_pct">Pass rate</button>
+          </div>
+          <div class="seg" id="range-toggle">
+            <button data-range="8">8</button>
+            <button data-range="30">30</button>
+            <button data-range="0" class="on">All</button>
+          </div>
+        </div>
+      </div>
+      <div class="chart" id="chart"><svg viewBox="0 0 780 300" id="chart-svg"></svg></div>
+    </div>
+  </section>
+
+  <!-- LEADERBOARD CARD -->
+  <section class="card board-card">
+    <div class="board-head">
+      <div>
+        <h2>Standings</h2>
+        <div class="board-sub" id="board-sub">—</div>
+      </div>
+      <div class="board-stat">
+        <div class="label">Trust gap</div>
+        <div class="big" id="board-stat">—</div>
+        <div class="board-stat-sub" id="board-stat-sub">—</div>
+      </div>
+    </div>
+
+    <table class="board">
+      <thead>
+        <tr>
+          <th data-sort="name">Provider</th>
+          <th data-sort="tags">Stack</th>
+          <th class="r" data-sort="score">Score</th>
+          <th class="r" data-sort="verdict">Verdict</th>
+          <th class="r">Detail</th>
+        </tr>
+      </thead>
+      <tbody id="board-body"></tbody>
+    </table>
+  </section>
+
+  <footer class="foot">
+    <span><span class="seal">✦</span> attest.fail — a benchmark for verifiable inference. <span id="data-note"></span></span>
+    <span class="muted" id="cycle-stamp"></span>
+  </footer>
+</main>
+
+<!-- HOW IT WORKS MODAL -->
+<div class="overlay" id="modal-how" hidden>
+  <div class="modal">
+    <div class="modal-head"><h3>How it works</h3><button class="x" data-close>✕</button></div>
+    <div class="modal-body">
+      <div class="step"><span class="num">1</span><div>
+        <h4>Fingerprint</h4>
+        <p>The same probes run at temperature 0 against each provider. A swapped, distilled, or quantised engine diverges from the model it claims; the same model repeats itself, so any drift is real signal.</p>
+      </div></div>
+      <div class="step"><span class="num">2</span><div>
+        <h4>Audit</h4>
+        <p>The attestation quote and image digest are verified, then weighed against what actually came out. A valid seal wrapped around the wrong engine is the headline fault.</p>
+      </div></div>
+      <div class="step"><span class="num">3</span><div>
+        <h4>Reproduce</h4>
+        <p>Every probe set and transcript is content-hashed. Re-run the harness yourself and you land on the same verdict. Blind spots are published, not hidden.</p>
+      </div></div>
+      <div class="modal-foot">Want your endpoint tested? Use <b>Submit an endpoint</b>.</div>
+    </div>
   </div>
 </div>
 
-<!-- CHART -->
-<section class="band" id="chart">
-  <div class="wrap">
-    <div class="sec-head">
-      <div class="eyebrow">Frontier progress</div>
-      <h2>The trust gap, by cycle</h2>
-      <div class="note">median attested-vs-served divergence across the market — lower is honest</div>
-    </div>
-    <div class="chart-shell">
-      <svg viewBox="0 0 780 260" role="img" aria-label="Trust gap declining from 68% to 41% over eight cycles">
-        <!-- gridlines + y labels -->
-        <line class="grid" x1="60" y1="40"  x2="740" y2="40"/>
-        <line class="grid" x1="60" y1="92"  x2="740" y2="92"/>
-        <line class="grid" x1="60" y1="144" x2="740" y2="144"/>
-        <line class="grid" x1="60" y1="196" x2="740" y2="196"/>
-        <text class="lbl" x="22" y="44">80%</text>
-        <text class="lbl" x="22" y="96">60%</text>
-        <text class="lbl" x="22" y="148">40%</text>
-        <text class="lbl" x="22" y="200">20%</text>
-        <!-- axes -->
-        <line class="axis" x1="60" y1="220" x2="740" y2="220"/>
-        <line class="axis" x1="60" y1="40"  x2="60"  y2="220"/>
-        <!-- area under curve -->
-        <polygon class="plot-area"
-          points="60,75 157,94 254,85 351,109 448,118 545,127 642,140 739,150 739,220 60,220"/>
-        <!-- the line -->
-        <polyline class="plot-line"
-          points="60,75 157,94 254,85 351,109 448,118 545,127 642,140 739,150"/>
-        <!-- markers -->
-        <circle class="dot" cx="60"  cy="75"  r="3.5"/>
-        <circle class="dot" cx="157" cy="94"  r="3.5"/>
-        <circle class="dot" cx="254" cy="85"  r="3.5"/>
-        <circle class="dot" cx="351" cy="109" r="3.5"/>
-        <circle class="dot" cx="448" cy="118" r="3.5"/>
-        <circle class="dot" cx="545" cy="127" r="3.5"/>
-        <circle class="dot" cx="642" cy="140" r="3.5"/>
-        <circle class="dot-now" cx="739" cy="150" r="5"/>
-        <!-- annotations -->
-        <text class="lbl" x="48" y="66">68%</text>
-        <text class="lbl-now" x="700" y="142">41%</text>
-        <text class="lbl" x="700" y="240">now</text>
-      </svg>
-      <div class="chart-foot">
-        <span>Cycle I · est. 2026</span>
-        <span>Cycle 2,841 · today</span>
-      </div>
+<!-- SUBMIT MODAL -->
+<div class="overlay" id="modal-submit" hidden>
+  <div class="modal">
+    <div class="modal-head"><h3>Submit an endpoint</h3><button class="x" data-close>✕</button></div>
+    <div class="modal-body">
+      <form id="submit-form" class="form">
+        <label>Provider name<input name="name" required placeholder="Acme Confidential AI"></label>
+        <label>API base URL<input name="endpoint" required placeholder="https://api.acme.ai/v1"></label>
+        <label>Model served / requested<input name="model" required placeholder="llama-3.3-70b-instruct"></label>
+        <label>Attested model (if different)<input name="attested_model" placeholder="llama-3.3-70b-instruct"></label>
+        <label>TEE / attestation type<input name="tee" placeholder="intel-tdx · nvidia-cc · none"></label>
+        <label>Contact<input name="contact" placeholder="you@domain"></label>
+        <button class="submit" type="submit">Queue for testing</button>
+        <div class="form-msg" id="form-msg"></div>
+      </form>
     </div>
   </div>
-</section>
+</div>
 
-<!-- STANDINGS -->
-<section class="band" id="standings">
-  <div class="wrap">
-    <div class="sec-head">
-      <div class="eyebrow" id="cycle-label">Cycle 2,841</div>
-      <h2>Standings</h2>
-      <div class="note" id="standings-note">ranked by verifiability</div>
-    </div>
-    <div class="standings">
-      <table>
-        <thead>
-          <tr><th>House</th><th class="r">Score</th><th class="r" style="width:24%">Verdict</th></tr>
-        </thead>
-        <tbody id="standings-body">
-          <tr><td class="house">EigenAI Gateway<small>tdx · gpt-class</small></td><td class="r">96</td><td class="r"><span class="vd pass">Pass</span></td></tr>
-          <tr><td class="house">Darkbloom Net<small>secure-enclave</small></td><td class="r">93</td><td class="r"><span class="vd pass">Pass</span></td></tr>
-          <tr><td class="house">Nimbus Confidential<small>sgx · claude-class</small></td><td class="r">74</td><td class="r"><span class="vd part">Partial</span></td></tr>
-          <tr><td class="house">VaultCompute<small>tdx · quantised</small></td><td class="r">61</td><td class="r"><span class="vd part">Partial</span></td></tr>
-          <tr><td class="house">OracleMind API<small>swapped → 8B distill</small></td><td class="r">29</td><td class="r"><span class="vd fail">Fail</span></td></tr>
-          <tr><td class="house">PrivAI Cloud<small>attestation stubbed</small></td><td class="r">8</td><td class="r"><span class="vd fail">Fail</span></td></tr>
-        </tbody>
-      </table>
-      <div class="more"><a href="#">See all fourteen, and their proofs →</a></div>
-    </div>
-  </div>
-</section>
-
-<!-- HOW IT WORKS -->
-<section class="band" id="how">
-  <div class="wrap">
-    <div class="sec-head">
-      <div class="eyebrow">How it works</div>
-      <h2>Three checks, one seal</h2>
-    </div>
-    <div class="steps">
-      <div class="step">
-        <div class="n">I</div><div class="seal-rule"></div>
-        <h3>Fingerprint</h3>
-        <p>Challenge prompts engineered so a swapped, distilled, or quantised engine gives itself away — log-probs, canaries, refusal boundaries.</p>
-      </div>
-      <div class="step">
-        <div class="n">II</div><div class="seal-rule"></div>
-        <h3>Audit</h3>
-        <p>Verify the TDX / SGX / enclave quote and image digest, then weigh it against what actually came out. A valid seal on the wrong engine is the headline fault.</p>
-      </div>
-      <div class="step">
-        <div class="n">III</div><div class="seal-rule"></div>
-        <h3>Reproduce</h3>
-        <p>Every probe set and raw transcript is public and content-hashed. Re-run the harness yourself and you land on the same verdict. Blind spots are published, not hidden.</p>
-      </div>
-    </div>
-  </div>
-</section>
-
-<footer>
-  <div class="wrap">
-    <div class="l"><span class="seal-mark">✦</span>attest.fail — a benchmark for verifiable inference. <span id="data-note">Figures illustrative.</span></div>
-    <nav>
-      <a href="#">GitHub</a>
-      <a href="#">X</a>
-      <a href="#">Slack</a>
-    </nav>
-  </div>
-</footer>
-
-<!-- real cycle data is injected here by web/build.py (stays self-contained, no fetch) -->
-<script id="attest-data" type="application/json">{"cycle": 1, "generated_at": "2026-06-14T08:02:31", "suite_version": "0.1.0", "seed": 1729, "seed_commit": "sha256:fae2489a0a31451a6cb9d090f6cc2d2fc68140b9e53a024e85f92b04a610363b", "summary": {"providers": 4, "scored": 2, "pass": 0, "partial": 1, "fail": 1, "unknown": 0, "skipped": 2, "with_reference": 2, "deviating": 1, "trust_gap_pct": 50}, "providers": [{"id": "groq", "displayName": "Groq", "tags": ["fidelity"], "served_model": "llama-3.1-8b-instant", "attested_label": "llama-3.1-8b", "status": "skipped", "reason": "missing api key", "verdict": "skipped", "score": null}, {"id": "local-honest", "displayName": "Local Control (honest)", "tags": ["local", "control"], "served_model": "llama3.2:1b-instruct-q8_0", "attested_label": "llama-3.2-1b q8", "status": "scored", "verdict": "partial", "score": 60, "identity": {"no_reference": false, "exact": 1.0, "sim": 1.0, "null_exact": 1.0, "diverges": false, "matches": true, "detail": "behaviour matches the claimed model", "identity_score": 100, "confidence": "high", "errors": 0}, "attestation": {"present": false, "signature_valid": false, "root_trusted": false, "freshness_ok": false, "channel_bound": false, "binds_model": false, "vendor": "none", "notes": ["provider makes no attestation claim"], "score": 0}, "evidence": {"merkle_root": "sha256:9d21d584e5093a20c5ffd7b9a2832020a0f03b81648215e65670ccd33abc6c21", "request_id": null, "errors": 0}}, {"id": "local-swapped", "displayName": "Local Control (swapped to q4)", "tags": ["local", "control"], "served_model": "llama3.2:1b-instruct-q4_K_M", "attested_label": "claims llama-3.2-1b q8", "status": "scored", "verdict": "fail", "score": 13, "identity": {"no_reference": false, "exact": 0.2083, "sim": 0.608, "null_exact": 1.0, "diverges": true, "matches": false, "detail": "quantised or degraded engine", "identity_score": 21, "confidence": "high", "errors": 0}, "attestation": {"present": false, "signature_valid": false, "root_trusted": false, "freshness_ok": false, "channel_bound": false, "binds_model": false, "vendor": "none", "notes": ["provider makes no attestation claim"], "score": 0}, "evidence": {"merkle_root": "sha256:d733b44a379cb04c0ef6283612d894f01d6d831239710aae839c1cc9e063fab3", "request_id": null, "errors": 0}}, {"id": "redpill", "displayName": "RedPill (Phala)", "tags": ["attested", "tdx"], "served_model": "phala/llama-3.3-70b-instruct", "attested_label": "llama-3.3-70b · tdx", "status": "skipped", "reason": "missing api key", "verdict": "skipped", "score": null}]}</script>
-<script>
-(function () {
-  var el = document.getElementById("attest-data");
-  if (!el) return;
-  var data;
-  try { data = JSON.parse(el.textContent); } catch (e) { return; }
-  if (!data || !data.providers) return;
-  var s = data.summary;
-  var set = function (id, txt) { var n = document.getElementById(id); if (n) n.textContent = txt; };
-
-  set("gap-num", s.trust_gap_pct + "%");
-  set("gap-cap", "of providers (" + s.deviating + " of " + s.with_reference +
-      " with a reference) detectably serve a different model than the one they attest.");
-  set("cycle-label", "Cycle " + data.cycle);
-  set("standings-note", s.scored + " providers tested · " + s.skipped +
-      " skipped (no key) · ranked by verifiability");
-  set("data-note", "Live cycle " + data.cycle + " · " + data.generated_at + ".");
-
-  var order = { fail: 0, unknown: 1, partial: 2, skipped: 3, pass: 4 };
-  var rows = data.providers.slice().sort(function (a, b) {
-    if ((b.score || 0) !== (a.score || 0)) return (b.score || 0) - (a.score || 0);
-    return (order[a.verdict] || 9) - (order[b.verdict] || 9);
-  });
-
-  var tb = document.getElementById("standings-body");
-  if (!tb) return;
-  tb.innerHTML = "";
-  rows.forEach(function (p) {
-    var v = p.verdict;
-    var cls = v === "pass" ? "pass" : v === "fail" ? "fail" : "part";
-    var label = v.charAt(0).toUpperCase() + v.slice(1);
-    var detail = p.status === "skipped" ? "skipped: " + (p.reason || "")
-                 : (p.identity && p.identity.detail) || (p.attested_label || "");
-    var tr = document.createElement("tr");
-    tr.innerHTML =
-      '<td class="house">' + p.displayName + "<small>" + detail + "</small></td>" +
-      '<td class="r">' + (p.score == null ? "—" : p.score) + "</td>" +
-      '<td class="r"><span class="vd ' + cls + '">' + label + "</span></td>";
-    tb.appendChild(tr);
-  });
-})();
-</script>
-
+<script src="data.js" onerror=""></script>
+<script src="app.js"></script>
 </body>
 </html>
