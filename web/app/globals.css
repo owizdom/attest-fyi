@@ -116,6 +116,13 @@ a{color:inherit;}
 .step .num{flex:none;width:26px;height:26px;border-radius:50%;border:1px solid var(--hair-strong);display:grid;place-items:center;font-family:var(--display);font-weight:700;font-size:14px;color:var(--seal);}
 .step h4{font-family:var(--display);font-size:17px;margin-bottom:4px;}
 .step p{font-size:14px;color:var(--ink-soft);}
+.thesis .lead{font-family:var(--display);font-size:22px;font-weight:700;color:var(--ink);line-height:1.26;margin-bottom:20px;}
+.thesis p{font-size:14.5px;color:var(--ink-soft);line-height:1.62;margin-bottom:15px;}
+.thesis strong{color:var(--ink);font-weight:700;}
+.thesis .sign{margin-top:20px;padding-top:16px;border-top:1px solid var(--hair);
+  font-family:var(--display);font-style:italic;font-size:16px;color:var(--seal);margin-bottom:0;}
+.thesis .sign-seal{display:inline-grid;place-items:center;width:18px;height:18px;border:1.5px double var(--seal);border-radius:50%;font-style:normal;font-size:9px;vertical-align:-3px;margin-right:6px;}
+
 .verdicts{border-top:1px solid var(--hair);margin-top:8px;padding-top:18px;}
 .verdicts-title{font-family:var(--display);font-size:18px;font-weight:700;margin-bottom:6px;}
 .verdicts-intro{font-size:13px;color:var(--ink-soft);margin-bottom:16px;}

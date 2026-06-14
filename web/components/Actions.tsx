@@ -97,12 +97,41 @@ function SubmitForm() {
   );
 }
 
+function Thesis() {
+  return (
+    <div className="thesis">
+      <p className="lead">Verifiable AI is arriving. Almost no one checks whether the proof holds.</p>
+      <p>
+        Confidential inference and hardware attestation are being built so a provider can prove the
+        model that answered you is the one it promised. And a provider can hold a perfectly valid
+        attestation while quietly serving a smaller or quantised engine behind it.{" "}
+        <strong>The seal is real. The model is not.</strong> Nobody sells you that gap, so this measures it.
+      </p>
+      <p>
+        I spent a good while inside the verifiable-compute world, much of it on the projects coming
+        out of Eigen Labs: EigenCompute, EigenDA, EigenAI. They convinced me of one plain thing.
+        Computation is starting to come with a receipt. What was missing was anyone independent to
+        audit the receipts. So I built that.
+      </p>
+      <p>
+        This is made for a future that is already showing up. As more of the world runs on models you
+        cannot see, the question stops being whether the answer was private and becomes whether it was
+        the thing they said it was. attest.fail is a small, stubborn answer. It does not trust the
+        seal. It checks.
+      </p>
+      <p className="sign"><span className="sign-seal">✦</span> Built by Wisdom. Inspired by Eigen Labs. Built for the future, as the future comes.</p>
+    </div>
+  );
+}
+
 export function Actions() {
-  const [open, setOpen] = useState<null | "how" | "submit">(null);
+  const [open, setOpen] = useState<null | "thesis" | "how" | "submit">(null);
   return (
     <>
+      <button onClick={() => setOpen("thesis")}>Thesis</button>
       <button onClick={() => setOpen("how")}>How it works</button>
       <button onClick={() => setOpen("submit")}>Submit</button>
+      {open === "thesis" && <Modal title="Thesis" onClose={() => setOpen(null)}><Thesis /></Modal>}
       {open === "how" && <Modal title="How it works" onClose={() => setOpen(null)}><HowItWorks /></Modal>}
       {open === "submit" && <Modal title="Submit an endpoint" onClose={() => setOpen(null)}><SubmitForm /></Modal>}
     </>
