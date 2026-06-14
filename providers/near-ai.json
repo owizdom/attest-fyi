@@ -13,7 +13,6 @@
   "findings": [
     "Most of the catalog is proxied, not confidential. 28 of NEAR's 40 models are closed (every Claude, GPT, Gemini, o3/o4). Closed weights cannot run in NEAR's TEE, so they are forwarded to Anthropic, OpenAI, or Google — the prompt leaves to a third party. The gateway still returns the same valid TDX seal for every model: it proves the gateway enclave is genuine, not where the model actually ran.",
     "8 models are self-hosted and open (deepseek-v4-flash, kimi-k2.6, gpt-oss-120b, qwen3.5-122B, qwen3.6-27B/35B, qwen3.7-max, glm-5.1) — but all are 27B to 122B. None is small enough to reference on our own hardware, so NEAR cannot earn a behavioural Pass here. RedPill passed only because it serves the 7B qwen-2.5. That is our hardware limit, not NEAR's.",
-    "Flag, not a verdict: NEAR's gemini-2.5-flash behaved nothing like first-party Google gemini (similarity 0.39 vs a 0.91 self-null). That could be a swap, but it is confounded by decoding and reasoning settings we cannot control through the proxy — a lead to investigate, not an accusation.",
     "Coverage: NEAR's attestation is gateway-only (no GPU payload), versus RedPill's gateway TDX plus an NVIDIA GPU-CC payload."
   ],
   "attestation": {
