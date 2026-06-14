@@ -119,6 +119,18 @@ Trust boundary, state it honestly in your PR:
   Otherwise the transcript is "as submitted" — reproducible against the public
   reference, but captured by you. Label the verdict accordingly.
 
+## Freshness — a verdict is a live claim, not a snapshot
+
+A dstack TDX quote attests the *enclave* and binds its signing key; it is stable
+per gateway boot and is not bound to a client nonce (dstack does not accept one —
+RedPill 400s on a nonce param). So freshness does not come from the quote. It
+comes from two places:
+- **per response:** the gold path. Each response is signed by the attested key, so
+  it cannot be replayed or forged — it is fresh and tied to the enclave.
+- **over time:** the re-audit workflow (`.github/workflows/re-audit.yml`) re-runs
+  the whole benchmark on a cadence and commits each cycle, so a provider that
+  passes and then quietly swaps a model is caught on the next run.
+
 ## The rules (non-negotiable)
 
 - **Verify against the true judge.** Never fabricate a quote, a transcript, or a

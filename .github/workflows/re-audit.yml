@@ -1,0 +1,45 @@
+name: re-audit
+
+# A verdict is a live claim, not a one-time snapshot: re-run the whole benchmark
+# on a cadence and commit each cycle, so "RedPill: pass" means "still pass today",
+# and a provider that quietly swaps a model after passing gets caught next run.
+# Provider keys come from repo secrets; references are committed, so no Ollama is
+# needed here. Runs weekly, or on manual dispatch.
+on:
+  schedule:
+    - cron: "0 6 * * 1"
+  workflow_dispatch: {}
+
+permissions:
+  contents: write
+
+jobs:
+  re-audit:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - run: pip install cryptography
+      - name: assemble .env from secrets
+        run: |
+          {
+            echo "REDPILL_API_KEY=${{ secrets.REDPILL_API_KEY }}"
+            echo "NEAR_AI_API_KEY=${{ secrets.NEAR_AI_API_KEY }}"
+            echo "CHUTES_API_KEY=${{ secrets.CHUTES_API_KEY }}"
+            echo "VENICE_API_KEY=${{ secrets.VENICE_API_KEY }}"
+            echo "NANOGPT_API_KEY=${{ secrets.NANOGPT_API_KEY }}"
+            echo "PPQ_API_KEY=${{ secrets.PPQ_API_KEY }}"
+          } > .env
+      - name: run cycle
+        run: python3 attest.py run
+      - name: re-verify the published seals
+        run: python3 attest.py verify
+      - name: commit the new cycle
+        run: |
+          git config user.name "attest-fyi-bot"
+          git config user.email "bot@attest.fyi"
+          git add results/
+          git commit -m "re-audit: cycle on $(date -u +%Y-%m-%d)" || { echo "no change"; exit 0; }
+          git push
