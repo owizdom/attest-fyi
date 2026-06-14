@@ -1,14 +1,14 @@
 {
-  "cycle": 25,
-  "generated_at": "2026-06-14T18:34:01",
+  "cycle": 23,
+  "generated_at": "2026-06-14T18:09:28",
   "suite_version": "0.1.0",
   "seed": 1729,
   "seed_commit": "sha256:fae2489a0a31451a6cb9d090f6cc2d2fc68140b9e53a024e85f92b04a610363b",
   "summary": {
     "providers": 6,
     "scored": 6,
-    "pass": 2,
-    "partial": 3,
+    "pass": 1,
+    "partial": 4,
     "fail": 0,
     "unknown": 1,
     "error": 0,
@@ -58,8 +58,8 @@
         "score": 0
       },
       "evidence": {
-        "merkle_root": "sha256:110939c21aa4652895427179cf761600461229611f2c692182e9c13e8923a97a",
-        "request_id": "de363a6796df419db28f8298784ace52",
+        "merkle_root": "sha256:91e2551480d21a3f4054602310edd3e096c86d3cfdc6d1cd383e17eea06ab3d6",
+        "request_id": "f421fca66c54422d85c757897f334b94",
         "errors": 0
       }
     },
@@ -72,8 +72,8 @@
         "nvidia-cc",
         "resold"
       ],
-      "served_model": "TEE/qwen3.6-27b",
-      "attested_label": "qwen3.6-27b \u00b7 intel tdx + nvidia blackwell",
+      "served_model": "TEE/gemma-3-27b-it",
+      "attested_label": "gemma-3-27b \u00b7 intel tdx + nvidia blackwell",
       "pitch": "Confidential inference it sells as H100 with per-request ECDSA signatures.",
       "findings": [
         "NanoGPT sells this as \u201cH100 + per-request ECDSA.\u201d The attestation it actually serves is Chutes\u2019. The report carries `attestation_type: chutes` in plain sight, so NanoGPT is reselling Chutes\u2019 confidential stack under its own name.",
@@ -86,9 +86,7 @@
       "score": 72,
       "identity": {
         "no_reference": true,
-        "probes_unavailable": true,
-        "reason": "EMPTY",
-        "detail": "served model returned an empty completion at the liveness check (reasoning model); seal audited, behaviour not probed this cycle"
+        "detail": "no reference fingerprint for claimed model"
       },
       "attestation": {
         "present": true,
@@ -119,8 +117,8 @@
         }
       },
       "evidence": {
-        "merkle_root": null,
-        "request_id": null,
+        "merkle_root": "sha256:3cbb96478c8368181531323b57cf07f3ab16480d1876ec26c299211cf9cf80dd",
+        "request_id": "chatcmpl-b5803f351c07f31c",
         "errors": 0
       }
     },
@@ -177,8 +175,8 @@
         "fmspc": "b0c06f000000"
       },
       "evidence": {
-        "merkle_root": "sha256:c4e5fcb1f38f8f38065b08d824d65f5fda4e8402d831c3ca30c3698ca4d7e280",
-        "request_id": "adee5752ee39459c9091d5e609fb3c5c",
+        "merkle_root": "sha256:3b5bceccf889d02233b1f1238e1179f782a0aaa338fe47d357684112b456672b",
+        "request_id": "94fe28cde3c14cebaca73ee89d4346d9",
         "errors": 0
       }
     },
@@ -206,10 +204,10 @@
         "bound": true,
         "diverges": false,
         "matches": true,
-        "sim_trusted": 0.6956,
-        "exact_trusted": 0.375,
-        "sim_decoy": 0.3339,
-        "margin": 0.3617,
+        "sim_trusted": 0.6854,
+        "exact_trusted": 0.3333,
+        "sim_decoy": 0.3525,
+        "margin": 0.3329,
         "identity_score": 100,
         "detail": "behaviour matches the claimed open weights, and is distinguishable from a decoy"
       },
@@ -227,8 +225,8 @@
         "score": 0
       },
       "evidence": {
-        "merkle_root": "sha256:f329b1b3f3d8045dfaa79fb1205d85f87edca48732a82d0e163fd67a5caf6900",
-        "request_id": "gen-1781454752-xUnShuKlL2MUIZUanrKA",
+        "merkle_root": "sha256:7cc20cf07acb7c49f5e92694763b090628aea3bc12bf92c93b7380d7b1d9e2c3",
+        "request_id": "gen-1781453291-Ts9FP7Tp472gAiEd4jmI",
         "errors": 0
       }
     },
@@ -247,20 +245,20 @@
         "Attestation is not uniform across the catalog. RedPill returns a valid TDX quote for qwen-2.5-7b but none for gemma-4-31b \u2014 some models you can seal-check, others you cannot. Worth knowing before trusting GPU-TEE as a blanket label."
       ],
       "status": "scored",
-      "verdict": "pass",
-      "score": 95,
+      "verdict": "partial",
+      "score": 74,
       "identity": {
         "no_reference": false,
         "binding": "behavioural",
-        "bound": true,
+        "bound": false,
         "diverges": false,
         "matches": true,
-        "sim_trusted": 0.5762,
+        "sim_trusted": 0.593,
         "exact_trusted": 0.25,
-        "sim_decoy": 0.3914,
-        "margin": 0.1848,
-        "identity_score": 100,
-        "detail": "behaviour matches the claimed open weights, and is distinguishable from a decoy"
+        "sim_decoy": 0.3969,
+        "margin": 0.1961,
+        "identity_score": 59,
+        "detail": "partly matches the claim but not decisively"
       },
       "attestation": {
         "present": true,
@@ -296,8 +294,8 @@
         "gpu_root_trusted": true
       },
       "evidence": {
-        "merkle_root": "sha256:41f09399d087234357113fb5f23fbfc588cff2a5102b6b2948bb89a4cd350718",
-        "request_id": "chatcmpl-9c9d90b2b9b14a698e2e1d6951db6a0a",
+        "merkle_root": "sha256:ed10c61702cead85d3b509b0cd2d39fed795da9459957d73f422ed5110348352",
+        "request_id": "chatcmpl-a51e4c98618246929c0f76f319170c4b",
         "errors": 0
       }
     },
@@ -327,10 +325,10 @@
         "bound": true,
         "diverges": false,
         "matches": true,
-        "sim_trusted": 0.6326,
-        "exact_trusted": 0.2083,
-        "sim_decoy": 0.3768,
-        "margin": 0.2558,
+        "sim_trusted": 0.6148,
+        "exact_trusted": 0.125,
+        "sim_decoy": 0.3648,
+        "margin": 0.25,
         "identity_score": 100,
         "detail": "behaviour matches the claimed open weights, and is distinguishable from a decoy"
       },
@@ -368,8 +366,8 @@
         "gpu_root_trusted": true
       },
       "evidence": {
-        "merkle_root": "sha256:ade58556d0b2f2a534727343db072178a99a7d091d33f38ac5bb72786124c7c9",
-        "request_id": "chatcmpl-7a611d19252540a7a13f0772de4b1e08",
+        "merkle_root": "sha256:e79d5bfc904d9a2b85c53b0813e8ef79a2ca41a5c027924c589febe40ef55fb5",
+        "request_id": "chatcmpl-a2476cabcbf943e0a24ef20b41116574",
         "errors": 0
       }
     }

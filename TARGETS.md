@@ -39,6 +39,26 @@ RedPill is the best first target: cheap, and it exposes the exact `GET /v1/signa
 Base URLs marked above are best-effort; the confirmed ones are RedPill and Venice. The rest are
 verified at integration when a key is added.
 
+### What we actually verified (live, against the real APIs)
+
+The "TEE / attestation" column above is what each provider *markets*. Probing the seals turned up a
+gap between that and what is actually checkable:
+
+- **The "AMD SEV-SNP" providers don't serve SEV-SNP.** Chutes is Intel TDX + NVIDIA Blackwell (its own
+  quotes say so), and its public API exposes only an opaque `chutes_verification` token, not a
+  retrievable quote. PPQ exposes no attestation at all: a bare proxy whose attestation paths return a
+  catch-all 404. There was no SEV-SNP quote to verify anywhere in the set.
+- **NanoGPT resells Chutes.** Its "H100 + per-request ECDSA" is Intel TDX + NVIDIA Blackwell (GB202);
+  the report literally carries `attestation_type: chutes`. The seal verifies across a 5-node fleet.
+- **Venice runs on Phala.** Its "verifiable E2EE" is Intel TDX (Phala) + NVIDIA Hopper (GH100), and
+  `e2ee-qwen-2-5-7b-p` is plain qwen-2.5-7b upstream. Seal and behaviour both verify, so it earns a Pass.
+- **RedPill and NEAR** are dstack/Phala Intel TDX; RedPill also ships an NVIDIA Hopper payload, now
+  verified too.
+
+Seals the engine now parses and roots: Intel TDX (hex from dstack gateways, base64 from Chutes) to
+Intel's SGX Root CA, and NVIDIA GPU device-identity chains (Hopper and Blackwell) to NVIDIA's Device
+Identity CA.
+
 ## fidelity — open-weights hosts (no attestation; model-identity test)
 
 All OpenAI-compatible, easy keys, good for the quantisation/identity axis where we hold ground truth.

@@ -13,6 +13,7 @@ from models._http import get
 from .base import report
 from . import tdx
 from . import binding
+from . import nvidia
 
 try:
     from . import dcap
@@ -52,7 +53,7 @@ def verify(cfg, ctx):
     base = cfg["base_url"].rstrip("/")
     key = load_key(cfg.get("key_env"))
     headers = {"Authorization": "Bearer " + key} if key else {}
-    url = base + "/attestation/report"
+    url = base + cfg.get("path", "/attestation/report")
     mp = cfg.get("model_param")
     if mp:
         url += "?model=" + urllib.parse.quote(mp, safe="/")
@@ -92,17 +93,30 @@ def verify(cfg, ctx):
             d = dcap.verify(quote)
         except Exception as e:
             d = {"root_trusted": False, "tcb_status": "unknown", "error": str(e)[:60]}
-    root_trusted = bool(d.get("root_trusted"))
+    cpu_root = bool(d.get("root_trusted"))
     tcb = d.get("tcb_status", "unknown")
     mbound, mnote = binding.measurement_binding(att)   # strongest path: weights measured?
     _, bind_reason = _model_binding(att, ctx.get("model"))  # evidence for why not
 
+    # Optional NVIDIA GPU confidential-computing payload. Venice (on Phala) ships
+    # an nvidia_payload alongside the TDX quote; RedPill/NEAR are CPU-only.
+    gpu = nvidia.verify(att.get("nvidia_payload") or att.get("gpu_evidence"))
+    gpu_present = bool(gpu.get("present"))
+    root_trusted = cpu_root and (gpu.get("root_trusted") if gpu_present else True)
+    vendor = "intel-tdx+nvidia" if gpu_present else "intel-tdx"
+
     m = v["measurements"]
     notes = [
         "Intel TDX v4 quote, QE vendor %s" % ("Intel verified" if v["intel_qe"] else "UNKNOWN"),
-        "DCAP signature chain to Intel SGX Root CA: %s" % ("VERIFIED" if root_trusted else "not verified"),
+        "DCAP signature chain to Intel SGX Root CA: %s" % ("VERIFIED" if cpu_root else "not verified"),
         "TCB status: %s" % tcb,
         "report_data binds gateway key: %s" % ("yes" if v["binds_key"] else "no"),
+    ]
+    if gpu_present:
+        notes.append("NVIDIA %s GPU cert chain to NVIDIA Device Identity CA: %s"
+                     % (gpu.get("arch") or "?",
+                        "VERIFIED" if gpu.get("root_trusted") else "not verified"))
+    notes += [
         "measurement binding: %s" % mnote,
         "model binding: %s" % bind_reason,
         "MRTD %s…" % m["mrtd"][:24],
@@ -114,11 +128,15 @@ def verify(cfg, ctx):
         freshness_ok=bool(nonce),
         channel_bound=v["binds_key"],
         binds_model=mbound,
-        vendor="intel-tdx",
+        vendor=vendor,
         notes=notes,
     )
     r["measurements"] = m
     r["signing_address"] = signing
     r["tcb_status"] = tcb
     r["fmspc"] = d.get("fmspc")
+    if gpu_present:
+        r["gpu_arch"] = gpu.get("arch")
+        r["gpu_die"] = gpu.get("die")
+        r["gpu_root_trusted"] = gpu.get("root_trusted")
     return r

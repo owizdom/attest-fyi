@@ -11,9 +11,10 @@
   "claims": { "attested_model": "qwen-2.5-7b-instruct", "label": "qwen-2.5-7b · sev-snp + tinfoil" },
   "pitch": "Confidential inference via AMD SEV-SNP with a Tinfoil backend.",
   "findings": [
-    "Behaviour-only verdict. PPQ is a reseller/proxy (Tinfoil backend) serving 327 mostly-proxied models, and it exposes no verifiable attestation quote (its attestation endpoint returns no TDX quote). So model identity is checked here, but the seal cannot be."
+    "Tagged AMD SEV-SNP + Tinfoil. Neither shows up. PPQ is a proxy: chat returns only reseller fields (`provider`, `service_tier`), no verification field, no attestation headers, and every attestation path returns a catch-all 404. There is no quote to check.",
+    "Behaviour is still checkable, and it passes. The served qwen-2.5-7b matches the canonical open weights and separates cleanly from a decoy, so model identity holds here. The seal is the part that doesn’t exist."
   ],
-  "attestation": { "type": "amd-sev-snp" },
+  "attestation": { "type": "none" },
   "reference": {
     "model_id": "qwen-2.5-7b-instruct",
     "decoy_id": "decoy-llama-3.2-1b",

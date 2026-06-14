@@ -70,8 +70,12 @@ def run_cycle(seed=DEFAULT_SEED, workers=2, verbose=True):
             outputs, run_rec = [], {"request_id": None, "merkle_root": None, "errors": 0}
             reason = live.strip("<>").strip()
             reason = reason[4:] if reason.startswith("ERR ") else reason
+            detail = ("served model returned an empty completion at the liveness check "
+                      "(reasoning model); seal audited, behaviour not probed this cycle"
+                      if reason.upper().startswith("EMPTY")
+                      else "behaviour pending: " + reason)
             identity = {"no_reference": True, "probes_unavailable": True,
-                        "reason": reason, "detail": "behaviour pending: " + reason}
+                        "reason": reason, "detail": detail}
         else:
             outputs, run_rec = run_probes(client, probes, decoding, workers=workers)
             refcfg = m.get("reference")

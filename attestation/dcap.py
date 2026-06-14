@@ -11,8 +11,10 @@ End to end this proves the quote is a genuine Intel-attested TDX quote:
 
 Tested against live RedPill and NEAR AI quotes.
 """
+import base64
 import hashlib
 import json
+import string
 import urllib.parse
 import urllib.request
 
@@ -188,12 +190,35 @@ def tcb_status(quote, leaf):
         return "unknown", "tcb eval failed: %s" % type(e).__name__
 
 
-def verify(quote_hex):
-    """Return the DCAP verdict for a TDX quote (hex string)."""
+def _to_quote_bytes(q):
+    """Accept a TDX quote as raw bytes, a hex string, or base64. dstack
+    gateways (RedPill, NEAR) hand us hex; Chutes/NanoGPT hand us base64. Pick
+    whichever decoding yields a sane TDX header (version 3/4/5)."""
+    if isinstance(q, (bytes, bytearray)):
+        return bytes(q)
+    s = "".join(q.split())
+    cands = []
+    if len(s) % 2 == 0 and s and all(c in string.hexdigits for c in s):
+        try:
+            cands.append(bytes.fromhex(s))
+        except Exception:
+            pass
+    try:
+        cands.append(base64.b64decode(s, validate=False))
+    except Exception:
+        pass
+    for b in cands:
+        if len(b) >= 8 and int.from_bytes(b[0:2], "little") in (3, 4, 5):
+            return b
+    return cands[0] if cands else b""
+
+
+def verify(quote_in):
+    """Return the DCAP verdict for a TDX quote (hex string, base64, or bytes)."""
     out = {"quote_sig_ok": False, "qe_bind_ok": False, "qe_sig_ok": False,
            "chain_ok": False, "root_trusted": False, "fmspc": None, "dcap_ok": False}
     try:
-        quote = bytes.fromhex(quote_hex)
+        quote = _to_quote_bytes(quote_in)
         att_sig, att_pub, qe_report, qe_sig, auth, pem = _parse_sig(quote)
     except Exception as e:
         out["error"] = "parse: %s" % e

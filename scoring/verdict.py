@@ -9,9 +9,16 @@ MARGIN = 0.25          # how far below the null counts as divergence (from exp01
 MATCH_BAND = 0.10      # within this of the null = a match
 
 # Behavioural model binding (vs a TRUSTED reference of the claimed open weights,
-# with a decoy for discrimination). Thresholds are set from measured data.
+# with a decoy for discrimination). Thresholds are set from measured data:
+# across three independent providers serving qwen-2.5-7b, similarity to the
+# trusted weights lands in [0.59, 0.69] and to the 1B decoy in [0.35, 0.40] —
+# cleanly separated, but a 24-probe sample at temp-0 wobbles enough to flip an
+# equivalent provider across a tight absolute margin. So discrimination is
+# accepted on an absolute OR a relative (ratio) gap, which is scale-robust and
+# still rejects a true swap (where served is as close to the decoy as the claim).
 SIM_TRUST_MIN = 0.55   # served must be at least this similar to the trusted ref
-SIM_MARGIN = 0.20      # and this much closer to the trusted ref than to the decoy
+SIM_MARGIN = 0.20      # absolute gap over the decoy that counts as discriminating
+SIM_RATIO = 1.4        # or this relative gap (stable when sims run low at temp 0)
 SIM_DIVERGE = 0.45     # at/below this and not clearly closer to the ref = a swap
 
 
@@ -23,7 +30,9 @@ def behavioural_binding(served, trusted_outputs, decoy_outputs=None):
     e_t = round(exact_rate(served, trusted_outputs), 4)
     s_d = round(sim_rate(served, decoy_outputs), 4) if decoy_outputs else None
     margin = round(s_t - s_d, 4) if s_d is not None else None
-    bound = s_t >= SIM_TRUST_MIN and (s_d is None or margin >= SIM_MARGIN)
+    discriminates = (s_d is None or margin >= SIM_MARGIN
+                     or (s_d > 0 and s_t >= SIM_RATIO * s_d))
+    bound = s_t >= SIM_TRUST_MIN and discriminates
     diverges = (s_d is not None and s_t <= s_d) or s_t < SIM_DIVERGE
     if diverges:
         detail = "served model diverges from the claimed open weights"

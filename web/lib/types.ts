@@ -34,6 +34,8 @@ export interface Attestation {
   present: boolean;
   signature_valid?: boolean;
   root_trusted?: boolean;
+  freshness_ok?: boolean;
+  channel_bound?: boolean;
   binds_model?: boolean;
   score?: number;
   vendor?: string;
@@ -42,6 +44,11 @@ export interface Attestation {
   signing_address?: string;
   tcb_status?: string;
   fmspc?: string;
+  fleet_size?: number;
+  gpu_arch?: string;
+  gpu_die?: string;
+  gpu_root_trusted?: boolean;
+  attestation_type?: string;
 }
 
 export interface ProviderRow {

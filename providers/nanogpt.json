@@ -1,24 +1,27 @@
 {
   "id": "nanogpt",
   "displayName": "NanoGPT",
-  "tags": ["attested", "h100", "ecdsa"],
+  "tags": ["attested", "intel-tdx", "nvidia-cc", "resold"],
   "served": {
     "adapter": "openai_compat",
     "base_url": "https://nano-gpt.com/api/v1",
-    "model": "meta-llama/llama-3.1-8b-instruct",
+    "model": "TEE/qwen3.6-27b",
     "key_env": "NANOGPT_API_KEY"
   },
-  "claims": { "attested_model": "llama-3.1-8b-instruct", "label": "llama-3.1-8b · h100 + ecdsa" },
-  "pitch": "Confidential inference on H100 with per-request ECDSA signatures.",
+  "claims": { "attested_model": "qwen3.6-27b", "label": "qwen3.6-27b · intel tdx + nvidia blackwell" },
+  "pitch": "Confidential inference it sells as H100 with per-request ECDSA signatures.",
   "findings": [
-    "Behaviour-only verdict. NanoGPT's seal is per-request ECDSA signatures plus H100 confidential computing — a format attest.fail does not yet parse, and it exposes no Intel TDX quote. So model identity is checked here, but the TEE seal is not."
+    "NanoGPT sells this as “H100 + per-request ECDSA.” The attestation it actually serves is Chutes’. The report carries `attestation_type: chutes` in plain sight, so NanoGPT is reselling Chutes’ confidential stack under its own name.",
+    "The seal checks out in full. Across a 5-node fleet, every Intel TDX quote chains to Intel’s SGX Root CA at TCB UpToDate, and every GPU certificate chains to NVIDIA’s Device Identity CA. attest.fail verifies all five nodes, both chips.",
+    "The GPU is NVIDIA Blackwell (GB202), a generation past the advertised H100. And the quote arrives base64-encoded where dstack gateways hand over hex. That one detail is the whole reason it first read as unparseable.",
+    "Partial, not Pass: a verified seal proves the node and its code, not which weights ran, and no TEE model here is small enough to reference locally. Model identity stays unbound."
   ],
-  "attestation": { "type": "nvidia-cc" },
-  "reference": {
-    "model_id": "llama-3.1-8b-instruct",
-    "decoy_id": "qwen-2.5-7b-instruct",
-    "trusted": { "adapter": "ollama", "model": "llama3.1:8b-instruct-q8_0" },
-    "decoy": { "adapter": "ollama", "model": "qwen2.5:7b-instruct" }
+  "attestation": {
+    "type": "nanogpt-tee",
+    "base_url": "https://nano-gpt.com/api/v1",
+    "path": "/tee/attestation",
+    "model_param": "TEE/qwen3.6-27b",
+    "key_env": "NANOGPT_API_KEY"
   },
   "decoding": { "temperature": 0.0, "max_tokens": 256, "seed": 42 }
 }

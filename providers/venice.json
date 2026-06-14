@@ -1,15 +1,32 @@
 {
   "id": "venice",
   "displayName": "Venice.ai",
-  "tags": ["attested", "nvidia-cc"],
+  "tags": ["attested", "intel-tdx", "nvidia-cc", "phala"],
   "served": {
     "adapter": "openai_compat",
     "base_url": "https://api.venice.ai/api/v1",
-    "model": "llama-3.3-70b",
+    "model": "e2ee-qwen-2-5-7b-p",
     "key_env": "VENICE_API_KEY"
   },
-  "claims": { "attested_model": "llama-3.3-70b", "label": "llama-3.3-70b · h100 cc" },
-  "pitch": "Private inference in NVIDIA H100 confidential computing.",
-  "attestation": { "type": "nvidia-cc" },
+  "claims": { "attested_model": "qwen-2.5-7b-instruct", "label": "qwen-2.5-7b · intel tdx (phala) + nvidia hopper" },
+  "pitch": "Private inference it brands as verifiable end-to-end encryption on H100.",
+  "findings": [
+    "Venice’s “verifiable E2EE” runs on Phala. The attestation says so itself: `tee_provider: phala`, `tee_hardware: intel-tdx`. It is the same dstack confidential cloud as RedPill and NEAR, rebranded. The `e2ee-qwen-2-5-7b-p` you call is plain `qwen/qwen-2.5-7b-instruct` upstream.",
+    "The seal is real and it checks out. Intel TDX rooted in Intel’s SGX Root CA at TCB UpToDate, plus an NVIDIA Hopper (GH100) GPU whose certificate chains to NVIDIA’s Device Identity CA. This is the H100-class confidential computing Venice advertises, and here it actually verifies.",
+    "Two catches worth knowing. The freshness nonce is server-chosen (`nonce_source: server`), so the quote is not bound to your specific request the way a client challenge would bind it. And Venice ships its own verdict (`verified: true`, a `server_verification` block) that asks you to trust it already checked. attest.fail re-verified the quote independently, and it holds."
+  ],
+  "attestation": {
+    "type": "dstack-tdx",
+    "base_url": "https://api.venice.ai/api/v1",
+    "path": "/tee/attestation",
+    "model_param": "e2ee-qwen-2-5-7b-p",
+    "key_env": "VENICE_API_KEY"
+  },
+  "reference": {
+    "model_id": "qwen-2.5-7b-instruct",
+    "decoy_id": "decoy-llama-3.2-1b",
+    "trusted": { "adapter": "ollama", "model": "qwen2.5:7b-instruct" },
+    "decoy": { "adapter": "ollama", "model": "llama3.2:1b-instruct-q8_0" }
+  },
   "decoding": { "temperature": 0.0, "max_tokens": 256, "seed": 42 }
 }

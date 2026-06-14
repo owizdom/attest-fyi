@@ -15,10 +15,13 @@ function scoreSub(p: ProviderRow): string {
   const id = p.identity;
   if (id && !id.no_reference && id.exact != null) return `exact ${id.exact} · sim ${id.sim}`;
   const a = p.attestation;
-  if (a?.present && a?.root_trusted)
-    return `intel-rooted seal · tcb ${a.tcb_status === "UpToDate" ? "ok" : (a.tcb_status || "?")}`;
+  if (a?.present && a?.root_trusted) {
+    const gpu = a.gpu_arch ? ` + ${a.gpu_arch.toLowerCase()}` : "";
+    return `intel-rooted${gpu} seal · tcb ${a.tcb_status === "UpToDate" ? "ok" : (a.tcb_status || "?")}`;
+  }
   if (a?.present && a?.signature_valid) return "tdx seal · dcap pending";
   if (a?.present) return `attest ${a.score}`;
+  if (p.verdict === "unknown") return "no verifiable seal";
   return "no reference";
 }
 
@@ -77,13 +80,19 @@ function ProviderDetail({ p, checked, onClose }: { p: ProviderRow; checked: stri
 
           {a?.present ? (
             <div className="pm-section">
-              <h4>The seal — Intel TDX attestation</h4>
+              <h4>The seal — {a.vendor?.includes("nvidia") ? "Intel TDX CPU + NVIDIA GPU confidential computing" : "Intel TDX attestation"}</h4>
               <ul className="checks">
                 <Check label="Attestation quote present" state={!!a.present} />
                 <Check label="Genuine Intel TDX v4 quote (Intel QE vendor)" state={!!a.signature_valid} />
-                <Check label="report_data binds the gateway signing key" state={!!a.channel_bound} />
+                {a.fleet_size ? (
+                  <Check label={`Verified across all ${a.fleet_size} nodes serving this model`} state={!!a.root_trusted} />
+                ) : null}
                 <Check label="DCAP signature chain → Intel SGX Root CA" state={!!a.root_trusted} />
-                <Check label={`TCB status: ${a.tcb_status || "unknown"}`} state={a.tcb_status === "UpToDate"} />
+                <Check label={`CPU TCB status: ${a.tcb_status || "unknown"}`} state={a.tcb_status === "UpToDate"} />
+                {a.gpu_arch ? (
+                  <Check label={`NVIDIA ${a.gpu_arch}${a.gpu_die ? ` (${a.gpu_die})` : ""} GPU cert chain → NVIDIA Device Identity CA`} state={!!a.gpu_root_trusted} />
+                ) : null}
+                <Check label={a.vendor?.includes("nvidia") ? "report_data binds the enclave session key (E2E)" : "report_data binds the gateway signing key"} state={!!a.channel_bound} />
                 <Check label="Model bound by measurement (weights in the quote)" state={!!a.binds_model} />
                 {id?.binding === "behavioural" && (
                   <Check label="Model verified by behaviour (vs trusted weights + decoy)" state={!!id.bound} />
@@ -91,7 +100,11 @@ function ProviderDetail({ p, checked, onClose }: { p: ProviderRow; checked: stri
               </ul>
 
               <div className="pm-binding">
-                <p><b>What this seal proves:</b> a genuine Intel TDX enclave{a.root_trusted ? ", rooted in Intel’s SGX Root CA" : ""}{a.tcb_status ? ` (TCB ${a.tcb_status})` : ""} ran the gateway, and the prompt stayed inside it.</p>
+                {a.vendor?.includes("nvidia") ? (
+                  <p><b>What this seal proves:</b> {a.fleet_size ? `all ${a.fleet_size} nodes serving this model run` : "the node runs"} a genuine Intel TDX enclave{a.root_trusted ? ", rooted in Intel’s SGX Root CA," : ","} each paired with {a.gpu_arch ? `an NVIDIA ${a.gpu_arch}${a.gpu_die ? ` (${a.gpu_die})` : ""}` : "an NVIDIA"} GPU whose certificate chains to NVIDIA’s Device Identity CA{a.tcb_status ? ` (TCB ${a.tcb_status})` : ""}. The prompt stayed inside that boundary.</p>
+                ) : (
+                  <p><b>What this seal proves:</b> a genuine Intel TDX enclave{a.root_trusted ? ", rooted in Intel’s SGX Root CA" : ""}{a.tcb_status ? ` (TCB ${a.tcb_status})` : ""} ran the gateway, and the prompt stayed inside it.</p>
+                )}
                 {id?.bound ? (
                   <p><b>Model verified:</b> the served model behaviourally matches the claimed open weights{id.sim_trusted != null ? ` (similarity ${id.sim_trusted}${id.sim_decoy != null ? `, vs ${id.sim_decoy} for a decoy model` : ""})` : ""} — it is the model claimed, not a swap. Identity is verified against weights we ran ourselves; exact precision (quantisation) is not certified.</p>
                 ) : (
