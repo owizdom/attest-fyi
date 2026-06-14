@@ -105,6 +105,13 @@ function Participate() {
         Every verdict here reproduces, and every verdict can be co-signed. The numbers are not a claim
         you are asked to trust. They are a thing you can re-run, and then put your name on.
       </p>
+      <h4 className="part-h">Hand it to your agent</h4>
+      <p className="part-sub">
+        Paste this into any coding agent (Claude Code, Cursor, …). It reads the brief, picks an open
+        task from <b>Open work</b>, does the verification, and opens a PR with your name on it — the
+        whole protocol in one line.
+      </p>
+      <pre className="code">{`Read https://attest.fyi/llms.txt and help verify confidential AI: pick an open task at https://attest.fyi (the "Open work" board), do it, open a PR, and put your name on the register.`}</pre>
       <h4 className="part-h">Sign a verdict</h4>
       <p className="part-sub">
         Open any provider, read the proof, and hit <b>Verify &amp; add your name</b>. It opens a GitHub

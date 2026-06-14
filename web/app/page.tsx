@@ -1,17 +1,20 @@
-import { getLatest } from "@/lib/data";
+import { getLatest, getTasks } from "@/lib/data";
 import { TopBar } from "@/components/TopBar";
 import { Hero } from "@/components/Hero";
 import { Register } from "@/components/Register";
+import { Tasks } from "@/components/Tasks";
 
 export const dynamic = "force-dynamic";
 
 export default function Page() {
   const latest = getLatest();
+  const tasks = getTasks();
   return (
     <main className="page">
       <TopBar />
       <Hero latest={latest} />
       <Register providers={latest?.providers ?? []} checked={latest?.generated_at ?? ""} />
+      <Tasks tasks={tasks} />
       <footer className="footer">
         <span>
           <span className="seal-mark">✦</span>

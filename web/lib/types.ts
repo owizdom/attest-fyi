@@ -57,6 +57,17 @@ export interface Verifier {
   at?: string;
 }
 
+export interface Task {
+  id: string;
+  title: string;
+  type: string;
+  status: string;
+  difficulty?: string;
+  blocked_on?: string;
+  summary: string;
+  contributors?: string[];
+}
+
 export interface ProviderRow {
   id: string;
   displayName: string;
