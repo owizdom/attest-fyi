@@ -75,8 +75,9 @@ function ProviderDetail({ p, checked, onClose }: { p: ProviderRow; checked: stri
                 <Check label="Attestation quote present" state={!!a.present} />
                 <Check label="Genuine Intel TDX v4 quote (Intel QE vendor)" state={!!a.signature_valid} />
                 <Check label="report_data binds the gateway signing key" state={!!a.channel_bound} />
-                <Check label="Intel DCAP root chain + TCB status" state={a.root_trusted ? true : "pending"} />
-                <Check label="Model binding (measurement → weights)" state={a.binds_model ? true : "pending"} />
+                <Check label="DCAP signature chain → Intel SGX Root CA" state={!!a.root_trusted} />
+                <Check label={`TCB status: ${a.tcb_status || "unknown"}`} state={a.tcb_status === "UpToDate"} />
+                <Check label="Model binding (measurement → weights)" state={!!a.binds_model} />
               </ul>
               {a.signing_address && (
                 <div className="pm-kv"><span className="k">Gateway key</span><span className="mono">{a.signing_address}</span></div>

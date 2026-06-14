@@ -34,6 +34,8 @@ export interface Attestation {
   notes?: string[];
   measurements?: Record<string, string>;
   signing_address?: string;
+  tcb_status?: string;
+  fmspc?: string;
 }
 
 export interface ProviderRow {
