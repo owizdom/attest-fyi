@@ -1,18 +1,18 @@
 {
-  "cycle": 7,
-  "generated_at": "2026-06-14T14:15:33",
+  "cycle": 6,
+  "generated_at": "2026-06-14T14:13:53",
   "suite_version": "0.1.0",
   "seed": 1729,
   "seed_commit": "sha256:fae2489a0a31451a6cb9d090f6cc2d2fc68140b9e53a024e85f92b04a610363b",
   "summary": {
     "providers": 10,
-    "scored": 2,
+    "scored": 6,
     "pass": 0,
     "partial": 2,
     "fail": 0,
     "unknown": 0,
-    "error": 0,
-    "skipped": 8,
+    "error": 4,
+    "skipped": 4,
     "with_reference": 0,
     "deviating": 0,
     "seals_verified": 2,
@@ -41,10 +41,15 @@
       ],
       "served_model": "Qwen/Qwen3-32B-TEE",
       "attested_label": "qwen3-32b \u00b7 sev-snp",
-      "status": "skipped",
-      "reason": "awaiting credit",
-      "verdict": "skipped",
-      "score": null,
+      "status": "scored",
+      "verdict": "error",
+      "score": 0,
+      "identity": {
+        "no_reference": true,
+        "probes_unavailable": true,
+        "reason": "402",
+        "detail": "behaviour pending: 402"
+      },
       "attestation": {
         "present": false,
         "signature_valid": false,
@@ -57,6 +62,11 @@
           "unsupported attestation type: amd-sev-snp"
         ],
         "score": 0
+      },
+      "evidence": {
+        "merkle_root": null,
+        "request_id": null,
+        "errors": 0
       }
     },
     {
@@ -82,10 +92,15 @@
       ],
       "served_model": "TEE/qwen3.6-27b",
       "attested_label": "qwen3.6-27b \u00b7 h100 + ecdsa",
-      "status": "skipped",
-      "reason": "awaiting credit",
-      "verdict": "skipped",
-      "score": null,
+      "status": "scored",
+      "verdict": "error",
+      "score": 0,
+      "identity": {
+        "no_reference": true,
+        "probes_unavailable": true,
+        "reason": "402",
+        "detail": "behaviour pending: 402"
+      },
       "attestation": {
         "present": false,
         "signature_valid": false,
@@ -98,6 +113,11 @@
           "unsupported attestation type: nvidia-cc"
         ],
         "score": 0
+      },
+      "evidence": {
+        "merkle_root": null,
+        "request_id": null,
+        "errors": 0
       }
     },
     {
@@ -116,8 +136,8 @@
       "identity": {
         "no_reference": true,
         "probes_unavailable": true,
-        "reason": "No spending limit configured. Please contact support to set up credits",
-        "detail": "behaviour pending: No spending limit configured. Please contact support to set up credits"
+        "reason": "No spending limit configured. Please contact support to set",
+        "detail": "behaviour pending: No spending limit configured. Please contact support to set"
       },
       "attestation": {
         "present": true,
@@ -159,10 +179,15 @@
       ],
       "served_model": "gpt-oss-120b",
       "attested_label": "gpt-oss-120b \u00b7 sev-snp + tinfoil",
-      "status": "skipped",
-      "reason": "awaiting credit",
-      "verdict": "skipped",
-      "score": null,
+      "status": "scored",
+      "verdict": "error",
+      "score": 0,
+      "identity": {
+        "no_reference": true,
+        "probes_unavailable": true,
+        "reason": "402",
+        "detail": "behaviour pending: 402"
+      },
       "attestation": {
         "present": false,
         "signature_valid": false,
@@ -175,6 +200,11 @@
           "unsupported attestation type: amd-sev-snp"
         ],
         "score": 0
+      },
+      "evidence": {
+        "merkle_root": null,
+        "request_id": null,
+        "errors": 0
       }
     },
     {
@@ -263,10 +293,15 @@
       ],
       "served_model": "llama-3.3-70b",
       "attested_label": "llama-3.3-70b \u00b7 h100 cc",
-      "status": "skipped",
-      "reason": "awaiting credit",
-      "verdict": "skipped",
-      "score": null,
+      "status": "scored",
+      "verdict": "error",
+      "score": 0,
+      "identity": {
+        "no_reference": true,
+        "probes_unavailable": true,
+        "reason": "402",
+        "detail": "behaviour pending: 402"
+      },
       "attestation": {
         "present": false,
         "signature_valid": false,
@@ -279,6 +314,11 @@
           "unsupported attestation type: nvidia-cc"
         ],
         "score": 0
+      },
+      "evidence": {
+        "merkle_root": null,
+        "request_id": null,
+        "errors": 0
       }
     }
   ]

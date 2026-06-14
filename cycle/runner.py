@@ -5,6 +5,7 @@ import datetime
 import glob
 import json
 import os
+import re
 
 from config import (PROVIDERS_DIR, RESULTS_DIR, DEFAULT_SEED, SUITE_VERSION, load_key)
 from probes.suite import generate, suite_commit
@@ -18,6 +19,13 @@ from scoring.verdict import score_identity, score_provider
 def _needs_missing_key(spec):
     ke = spec.get("key_env")
     return bool(ke) and load_key(ke) is None
+
+
+_UNFUNDED = re.compile(r"balance|credit|quota|payment|spending|insufficient|add credits", re.I)
+
+
+def _is_unfunded(reason):
+    return bool(_UNFUNDED.search(reason or ""))
 
 
 def _load_manifests():
@@ -48,7 +56,7 @@ def run_cycle(seed=DEFAULT_SEED, workers=2, verbose=True):
 
         if _needs_missing_key(served):
             rows.append(dict(base_row, status="skipped",
-                             reason="missing api key", verdict="skipped", score=None))
+                             reason="no key", verdict="skipped", score=None))
             if verbose:
                 print("  %-18s skipped (no key)" % m["id"])
             continue
@@ -69,6 +77,17 @@ def run_cycle(seed=DEFAULT_SEED, workers=2, verbose=True):
 
         att = verify_attestation(m.get("attestation", {}),
                                  {"request_id": run_rec.get("request_id"), "model": served.get("model")})
+
+        # keyed but unfunded and no verifiable seal -> a clean "awaiting credit"
+        # row, not an error. Providers with a verified seal still score below.
+        seal = att.get("present") and att.get("signature_valid")
+        if identity.get("probes_unavailable") and not seal and _is_unfunded(identity.get("reason", "")):
+            rows.append(dict(base_row, status="skipped", reason="awaiting credit",
+                             verdict="skipped", score=None, attestation=att))
+            if verbose:
+                print("  %-18s awaiting credit" % m["id"])
+            continue
+
         scored = score_provider(m, att, identity)
 
         rows.append(dict(base_row, status="scored",

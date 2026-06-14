@@ -11,7 +11,7 @@ function vclass(v: string): string {
 }
 
 function scoreSub(p: ProviderRow): string {
-  if (p.status === "skipped") return "no key";
+  if (p.status === "skipped") return p.reason || "no key";
   const id = p.identity;
   if (id && !id.no_reference && id.exact != null) return `exact ${id.exact} · sim ${id.sim}`;
   const a = p.attestation;
@@ -96,7 +96,11 @@ function ProviderDetail({ p, checked, onClose }: { p: ProviderRow; checked: stri
           <div className="pm-section">
             <h4>Behaviour</h4>
             {p.status === "skipped" ? (
-              <p className="pm-pending">Not tested this cycle. Awaiting an API key — drop it in <span className="mono">.env</span> and re-run.</p>
+              <p className="pm-pending">
+                {p.reason === "awaiting credit"
+                  ? "Key is valid, but the account balance is $0. Fund it and re-run for the behavioural verdict."
+                  : <>Not tested this cycle. Awaiting an API key — drop it in <span className="mono">.env</span> and re-run.</>}
+              </p>
             ) : id && !id.no_reference && id.exact != null ? (
               <p className="pm-pending">
                 exact-match {id.exact} · similarity {id.sim} vs the reference null {id.null_exact}.{" "}
