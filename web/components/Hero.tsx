@@ -14,27 +14,29 @@ export function Hero({ latest }: { latest: Latest | null }) {
   const tested = s.with_reference;
   const seals = s.seals_verified ?? 0;
 
-  // Behavioural axis is live (we hold references): the trust-gap headline.
+  // Behavioural axis is live (we hold references): lead with the gap that
+  // actually matters — how many providers you can't verify the model for.
   if (tested > 0) {
-    const gap = s.trust_gap_pct;
-    const matched = s.with_reference - s.deviating;
+    const verified = s.model_verified ?? Math.max(0, s.with_reference - s.deviating);
+    const unverified = s.model_unverified ?? Math.max(0, s.scored - verified);
+    const unvPct = s.model_unverified_pct ?? (s.scored ? Math.round((100 * unverified) / s.scored) : 0);
     const date = latest!.generated_at.replace("T", " ").slice(0, 16);
     return (
       <section className="hero">
         <div className="kicker">Independent benchmark · verifiable inference</div>
         <h1 className="headline">
-          <span className="hl-num">{gap}%</span> of audited providers serve a model they never attested.
-          <span className="info" title="Share of providers whose probed behaviour diverges from the model they attest, among those we hold a reference for.">ⓘ</span>
+          <span className="hl-num">{unvPct}%</span> of audited providers can&apos;t prove which model you were served.
+          <span className="info" title="Share of audited providers whose model identity is unverifiable: the seal does not bind the weights and no reference exists to check behaviour, so a swapped or quantised model would be invisible. Separately, none of the providers we could check were caught serving a wrong model.">ⓘ</span>
         </h1>
         <div className="meter">
           <div className="meter-bar">
-            <div className="meter-fill" style={{ width: `${gap}%` }} />
-            <div className="meter-tick" style={{ left: `${gap}%` }}><span className="v">{gap}%</span></div>
+            <div className="meter-fill" style={{ width: `${unvPct}%` }} />
+            <div className="meter-tick" style={{ left: `${unvPct}%` }}><span className="v">{unvPct}%</span></div>
           </div>
-          <div className="meter-ends"><span>0% · honest</span><span>theatre · 100%</span></div>
+          <div className="meter-ends"><span>0% · model checkable</span><span>blind trust · 100%</span></div>
         </div>
         <div className="substat">
-          {`${s.scored} providers audited · ${matched} served what they attest · ${s.deviating} did not · ${s.skipped} skipped · cycle ${latest!.cycle} · ${date}`}
+          {`${s.scored} audited · ${verified} let you verify the model · ${unverified} you can't · ${s.deviating} caught serving a wrong model · cycle ${latest!.cycle} · ${date}`}
         </div>
       </section>
     );

@@ -100,6 +100,9 @@ export interface Summary {
   deviating: number;
   seals_verified?: number;
   trust_gap_pct: number;
+  model_verified?: number;
+  model_unverified?: number;
+  model_unverified_pct?: number;
 }
 
 export interface Latest {

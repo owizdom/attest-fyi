@@ -129,6 +129,11 @@ def run_cycle(seed=DEFAULT_SEED, workers=2, verbose=True):
     deviating = [r for r in with_ref if r["identity"].get("diverges")]
     seals = [r for r in scored_rows
              if r.get("attestation", {}).get("present") and r["attestation"].get("signature_valid")]
+    # Model is verified iff bound by behaviour OR measured in the quote. Everything
+    # else has a seal (or not) but no proof of which model actually answered.
+    model_verified = [r for r in scored_rows if r["identity"].get("bound")
+                      or r.get("attestation", {}).get("binds_model")]
+    model_unverified = len(scored_rows) - len(model_verified)
 
     def count(v):
         return sum(1 for r in scored_rows if r["verdict"] == v)
@@ -141,6 +146,9 @@ def run_cycle(seed=DEFAULT_SEED, workers=2, verbose=True):
         "with_reference": len(with_ref), "deviating": len(deviating),
         "seals_verified": len(seals),
         "trust_gap_pct": round(100 * len(deviating) / len(with_ref)) if with_ref else 0,
+        "model_verified": len(model_verified),
+        "model_unverified": model_unverified,
+        "model_unverified_pct": round(100 * model_unverified / len(scored_rows)) if scored_rows else 0,
     }
 
     cycle_no = _next_cycle()
