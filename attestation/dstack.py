@@ -6,6 +6,7 @@ under a wrapper key like `gateway_attestation`), and verifies it with tdx.py.
 The gateway attestation is fetchable without inference, so a provider can be
 seal-audited even when its inference is unavailable.
 """
+import time
 import urllib.error
 import urllib.parse
 
@@ -23,14 +24,20 @@ def verify(cfg, ctx):
     mp = cfg.get("model_param")  # some gateways (RedPill) require ?model=<slug>
     if mp:
         url += "?model=" + urllib.parse.quote(mp, safe="/")
-    try:
-        rep = get(url, headers, timeout=30)
-    except urllib.error.HTTPError as e:
-        return report(present=False, vendor="intel-tdx",
-                      notes=["attestation endpoint HTTP %d" % e.code])
-    except Exception as e:
-        return report(present=False, vendor="intel-tdx",
-                      notes=["attestation fetch failed: %s" % type(e).__name__])
+    rep, last = None, None
+    for attempt in range(3):  # the seal is stable infra; retry transient failures
+        try:
+            rep = get(url, headers, timeout=30)
+            break
+        except urllib.error.HTTPError as e:
+            last = "attestation endpoint HTTP %d" % e.code
+            if e.code < 500:  # 4xx won't fix on retry
+                break
+        except Exception as e:
+            last = "attestation fetch failed: %s" % type(e).__name__
+        time.sleep(1.5)
+    if rep is None:
+        return report(present=False, vendor="intel-tdx", notes=[last or "attestation fetch failed"])
 
     wrap = cfg.get("wrapped")
     att = rep.get(wrap) if (wrap and isinstance(rep.get(wrap), dict)) else rep
