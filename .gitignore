@@ -1,0 +1,16 @@
+# secrets — never commit keys
+.env
+.env.*
+*.key
+*.pem
+
+# python
+__pycache__/
+*.pyc
+.venv/
+venv/
+
+# os
+.DS_Store
+
+# ollama model blobs are not stored in-repo (only result JSON is)
