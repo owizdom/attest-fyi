@@ -12,6 +12,8 @@ export interface HistoryPoint {
 
 export interface Identity {
   no_reference?: boolean;
+  probes_unavailable?: boolean;
+  reason?: string;
   exact?: number;
   sim?: number;
   null_exact?: number;
@@ -47,6 +49,7 @@ export interface ProviderRow {
   delta?: number | null;
   identity?: Identity;
   attestation?: Attestation;
+  evidence?: { merkle_root?: string | null; request_id?: string | null; errors?: number };
 }
 
 export interface Summary {
