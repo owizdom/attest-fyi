@@ -13,7 +13,7 @@ Tested against live RedPill and NEAR AI quotes.
 """
 import hashlib
 import json
-import os
+import urllib.parse
 import urllib.request
 
 from cryptography import x509
@@ -22,6 +22,8 @@ from cryptography.hazmat.primitives.asymmetric import ec
 from cryptography.hazmat.primitives.asymmetric.utils import encode_dss_signature
 from cryptography.exceptions import InvalidSignature
 
+# Pinned Intel SGX Root CA (see attestation/intel_sgx_root_ca.pem). The chain's
+# root must match this fingerprint; we never trust a fetched root.
 INTEL_ROOT_FPR = "44a0196b2b99f889b8e149e95b807a350e7424964399e885a7cbb8ccfab674d3"
 SGX_EXT_OID = "1.2.840.113741.1.13.1"
 FMSPC_OID_TLV = bytes.fromhex("060a2a864886f84d010d0104")  # OID 1.2.840.113741.1.13.1.4
