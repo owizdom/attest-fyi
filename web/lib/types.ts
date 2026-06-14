@@ -51,6 +51,7 @@ export interface ProviderRow {
   served_model?: string;
   attested_label?: string;
   pitch?: string;
+  findings?: string[];
   status: string;
   reason?: string;
   verdict: string;

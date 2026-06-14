@@ -132,6 +132,15 @@ function ProviderDetail({ p, checked, onClose }: { p: ProviderRow; checked: stri
             )}
           </div>
 
+          {p.findings && p.findings.length ? (
+            <div className="pm-section">
+              <h4>Findings</h4>
+              <div className="pm-findings">
+                {p.findings.map((f, i) => <p key={i}>{f}</p>)}
+              </div>
+            </div>
+          ) : null}
+
           {a?.notes && a.notes.length ? (
             <div className="pm-section">
               <h4>Notes</h4>

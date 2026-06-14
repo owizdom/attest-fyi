@@ -181,6 +181,10 @@ a{color:inherit;}
 .pm-binding p:last-child{margin-bottom:0;}
 .pm-binding b{color:var(--ink);font-weight:700;}
 .pm-claim{border-top:1px dotted var(--hair-strong);padding-top:9px;margin-top:9px;font-style:italic;}
+.pm-findings{border-left:2px solid var(--seal);padding-left:14px;}
+.pm-findings p{font-size:13px;color:var(--ink-soft);line-height:1.58;margin-bottom:11px;}
+.pm-findings p:last-child{margin-bottom:0;}
+.pm-findings p:first-child{color:var(--ink);}
 
 @media(max-width:640px){
   .headline{font-size:34px;}
