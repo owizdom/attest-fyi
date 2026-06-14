@@ -3,17 +3,16 @@ import { useState } from "react";
 import type { Task } from "@/lib/types";
 
 const SITE = "https://attest.fyi";
-const REPO_TASKS = "https://github.com/owizdom/attest-fyi/tree/main/tasks";
 
 function oneLiner(id: string): string {
   return `Read ${SITE}/llms.txt, then complete ${SITE}/t/${id} — verify a confidential-AI provider for the attest.fyi benchmark and open a PR with the captured evidence.`;
 }
 
-function Copy({ text, label }: { text: string; label: string }) {
+function CopyLine({ text }: { text: string }) {
   const [done, setDone] = useState(false);
   return (
     <button
-      className="task-copy"
+      className="work-copy"
       onClick={(e) => {
         e.stopPropagation();
         navigator.clipboard.writeText(text).then(() => {
@@ -22,56 +21,64 @@ function Copy({ text, label }: { text: string; label: string }) {
         });
       }}
     >
-      {done ? "copied ✓" : label}
+      {done ? "copied ✓" : "copy for your agent"}
     </button>
   );
 }
 
-export function Tasks({ tasks }: { tasks: Task[] }) {
-  if (!tasks.length) return null;
-  const master = `Read ${SITE}/llms.txt and help verify confidential AI: pick an open task at ${REPO_TASKS}, do the work, open a PR, and put your name on the register.`;
+// Headerless list — rendered inside the register's "Open work" tab.
+export function WorkList({ tasks }: { tasks: Task[] }) {
+  const [open, setOpen] = useState<string | null>(null);
+  if (!tasks.length) return <p className="work-foot">No open tasks right now.</p>;
   return (
-    <section className="tasks">
-      <div className="reg-top">
-        <h2>Open work</h2>
-        <span className="label">{tasks.length} tasks · paste one into your agent</span>
-      </div>
-      <p className="tasks-lead">
-        These are the verifications we couldn&apos;t finish — for lack of an API key, lack of compute to
-        run a large model, or a verifier that doesn&apos;t exist yet. Hand one to your agent: it reads
-        the brief, does the work, and opens a PR. Where it gets stuck, it records the next step and the
-        task passes to whoever comes next. Every contributor&apos;s avatar lands on the verdict.
-      </p>
-      <div className="task-grid">
-        {tasks.map((t) => (
-          <div className={`task-card s-${t.status}`} key={t.id}>
-            <div className="task-head">
-              <a className="task-title" href={`/t/${t.id}`} target="_blank" rel="noopener noreferrer">
-                {t.title}
-              </a>
-              <span className={`task-type ${t.type}`}>{t.type}</span>
-            </div>
-            <p className="task-sum">{t.summary}</p>
-            <div className="task-meta">
-              <span className={`task-status s-${t.status}`}>{t.status}</span>
-              {t.blocked_on ? <span className="task-block">blocked: {t.blocked_on}</span> : null}
-              {t.difficulty ? <span className="task-diff">{t.difficulty}</span> : null}
-            </div>
-            {t.contributors && t.contributors.length ? (
-              <div className="task-vs">
-                {t.contributors.slice(0, 6).map((c) => (
-                  <img key={c} src={`https://github.com/${c}.png?size=40`} alt={c} title={c} loading="lazy" />
-                ))}
+    <>
+      <div className="work-list">
+        {tasks.map((t) => {
+          const isOpen = open === t.id;
+          return (
+            <div className="work-item" key={t.id}>
+              <div
+                className="work-row"
+                role="button"
+                tabIndex={0}
+                onClick={() => setOpen(isOpen ? null : t.id)}
+                onKeyDown={(e) => e.key === "Enter" && setOpen(isOpen ? null : t.id)}
+              >
+                <span className="work-name">
+                  {t.title}
+                  <small>{t.type}{t.blocked_on ? ` · blocked: ${t.blocked_on}` : ""}</small>
+                </span>
+                <span className="work-right">
+                  {t.contributors && t.contributors.length ? (
+                    <span className="work-vs">
+                      {t.contributors.slice(0, 4).map((c) => (
+                        <img key={c} src={`https://github.com/${c}.png?size=40`} alt={c} loading="lazy" />
+                      ))}
+                    </span>
+                  ) : null}
+                  <span className={`work-status s-${t.status}`}>{t.status}</span>
+                  <span className="work-chev">{isOpen ? "–" : "+"}</span>
+                </span>
               </div>
-            ) : null}
-            <Copy text={oneLiner(t.id)} label="copy for your agent" />
-          </div>
-        ))}
+              {isOpen ? (
+                <div className="work-detail">
+                  <p>{t.summary}</p>
+                  <div className="work-actions">
+                    <CopyLine text={oneLiner(t.id)} />
+                    <a className="work-brief" href={`/t/${t.id}`} target="_blank" rel="noopener noreferrer">
+                      read the full brief →
+                    </a>
+                  </div>
+                </div>
+              ) : null}
+            </div>
+          );
+        })}
       </div>
-      <div className="tasks-foot">
-        <span>Or point your agent at the whole board.</span>
-        <Copy text={master} label="copy board prompt" />
-      </div>
-    </section>
+      <p className="work-foot">
+        Each is a verification we couldn&apos;t finish — no key, no compute, or a verifier that
+        doesn&apos;t exist yet. Paste one into your agent; it does the work and opens a PR with your name on it.
+      </p>
+    </>
   );
 }

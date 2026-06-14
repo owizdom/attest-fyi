@@ -1,7 +1,8 @@
 "use client";
 import { useEffect, useState } from "react";
-import type { ProviderRow, Verifier } from "@/lib/types";
+import type { ProviderRow, Verifier, Task } from "@/lib/types";
 import { Seal } from "./Seal";
+import { WorkList } from "./Tasks";
 
 const REPO = "owizdom/attest-fyi";
 
@@ -215,10 +216,12 @@ function ProviderDetail({ p, checked, onClose }: { p: ProviderRow; checked: stri
 }
 
 /* ---------- register ---------- */
-export function Register({ providers, checked }: { providers: ProviderRow[]; checked: string }) {
+export function Register({ providers, checked, tasks = [] }:
+  { providers: ProviderRow[]; checked: string; tasks?: Task[] }) {
   const [key, setKey] = useState<Key>("score");
   const [dir, setDir] = useState(-1);
   const [sel, setSel] = useState<ProviderRow | null>(null);
+  const [tab, setTab] = useState<"register" | "work">("register");
 
   function sortBy(k: Key) {
     if (k === key) setDir(-dir);
@@ -244,30 +247,41 @@ export function Register({ providers, checked }: { providers: ProviderRow[]; che
   return (
     <section className="register">
       <div className="reg-top">
-        <h2>The register</h2>
-        <span className="label">{providers.length} providers · click a row for proof</span>
-      </div>
-
-      <div className="reg-head">
-        <span />
-        {head("name", "Provider")}
-        {head("score", "Score", "r")}
-        <span className="col-delta">{head("delta", "Δ", "r")}</span>
-        {head("verdict", "Verdict", "r")}
-      </div>
-
-      {rows.map((p) => (
-        <div className="reg-row" key={p.id} onClick={() => setSel(p)} role="button" tabIndex={0}
-          onKeyDown={(e) => e.key === "Enter" && setSel(p)}>
-          <Seal verdict={vclass(p.verdict || "unknown")} />
-          <div className="prov">{p.displayName}<small>{(p.tags || []).join(" · ")}</small><VerifierWall vs={p.verifiers} /></div>
-          <div className="cell-r">
-            <span className="score">{p.score == null ? "—" : p.score}<span className="sub">{scoreSub(p)}</span></span>
-          </div>
-          <div className="cell-r col-delta"><Delta d={p.delta} /></div>
-          <div className="cell-r"><span className={`vd ${vclass(p.verdict || "unknown")}`}>{p.verdict}</span></div>
+        <div className="board-tabs">
+          <button className={`board-tab ${tab === "register" ? "on" : ""}`} onClick={() => setTab("register")}>The register</button>
+          <button className={`board-tab ${tab === "work" ? "on" : ""}`} onClick={() => setTab("work")}>Open work</button>
         </div>
-      ))}
+        <span className="label">{tab === "register"
+          ? `${providers.length} providers · click a row for proof`
+          : `${tasks.length} tasks · click one for your agent`}</span>
+      </div>
+
+      {tab === "register" ? (
+        <>
+          <div className="reg-head">
+            <span />
+            {head("name", "Provider")}
+            {head("score", "Score", "r")}
+            <span className="col-delta">{head("delta", "Δ", "r")}</span>
+            {head("verdict", "Verdict", "r")}
+          </div>
+
+          {rows.map((p) => (
+            <div className="reg-row" key={p.id} onClick={() => setSel(p)} role="button" tabIndex={0}
+              onKeyDown={(e) => e.key === "Enter" && setSel(p)}>
+              <Seal verdict={vclass(p.verdict || "unknown")} />
+              <div className="prov">{p.displayName}<small>{(p.tags || []).join(" · ")}</small><VerifierWall vs={p.verifiers} /></div>
+              <div className="cell-r">
+                <span className="score">{p.score == null ? "—" : p.score}<span className="sub">{scoreSub(p)}</span></span>
+              </div>
+              <div className="cell-r col-delta"><Delta d={p.delta} /></div>
+              <div className="cell-r"><span className={`vd ${vclass(p.verdict || "unknown")}`}>{p.verdict}</span></div>
+            </div>
+          ))}
+        </>
+      ) : (
+        <WorkList tasks={tasks} />
+      )}
 
       {sel && <ProviderDetail p={sel} checked={checked} onClose={() => setSel(null)} />}
     </section>
