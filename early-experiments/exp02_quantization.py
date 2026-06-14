@@ -44,6 +44,11 @@ def main():
     pairs = [("null (base vs base)", "A1", "A2")]
     for i, t in enumerate(tags[1:], start=1):
         pairs.append((f"base vs {t.split(':')[-1]}", "A1", f"q{i}"))
+    # adjacent-precision pairs (e.g. q8 vs fp16) probe whether MILD
+    # quantization is detectable, or only heavy downgrades.
+    for i in range(1, len(tags) - 1):
+        a, b = tags[i].split(":")[-1], tags[i + 1].split(":")[-1]
+        pairs.append((f"{a} vs {b} (mild)", f"q{i}", f"q{i+1}"))
 
     table = {}
     print("\n  comparison                         exact   sim")

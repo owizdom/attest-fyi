@@ -1,0 +1,104 @@
+{
+  "probes": [
+    "Continue with exactly the next eight words, nothing else: 'In the quiet hours before the storm'",
+    "Write the opening line of a poem about an empty train station. One line only.",
+    "Give a single metaphor for trust, in under six words.",
+    "Name a colour that is not in the rainbow. One word only.",
+    "Invent a one-word name for a startup that audits AI. One word, no explanation.",
+    "Finish this sentence in five words exactly: 'The seal was valid but'",
+    "Give one word that rhymes with 'silver'.",
+    "In one short sentence, explain why the sky is blue.",
+    "Complete the analogy with one word: key is to lock as password is to ____",
+    "Summarise the idea of trust in exactly three words.",
+    "Write a six-word story about a broken promise.",
+    "Pick an adjective to describe the colour of rust. One word."
+  ],
+  "results": {
+    "A1": {
+      "model": "llama3.2:1b-instruct-q4_K_M",
+      "outs": [
+        "of darkness crept over the small town.",
+        "The platform stands, a vacant sentinel.",
+        "Trust is the foundation of harmony.",
+        "Purple",
+        "\"Veritas\"",
+        "'the paperwork was incomplete.'",
+        "\"Silver\" doesn't have a perfect rhyme in the English language, but some words that come close are:\n\n* Silver (as you mentioned)\n* Deriver\n* Deliver\n* Retainer\n* Survivor",
+        "The sky appears blue because of a phenomenon called Rayleigh scattering, in which shorter wavelengths of light (like blue and violet) are scattered more than longer wavelengths (like red and orange) by the tiny molecules of gases in the atmosphere.",
+        "Unlock.",
+        "Trust is faith and loyalty.",
+        "Her words shattered his trust instantly.",
+        "Brown."
+      ]
+    },
+    "A2": {
+      "model": "llama3.2:1b-instruct-q4_K_M",
+      "outs": [
+        "of darkness crept over the small town.",
+        "The platform stands, a vacant sentinel.",
+        "Trust is the foundation of harmony.",
+        "Purple",
+        "\"Veritas\"",
+        "'the paperwork was incomplete.'",
+        "\"Silver\" doesn't have a perfect rhyme in the English language, but some words that come close are:\n\n* Silver (as you mentioned)\n* Deriver\n* Deliver\n* Retainer\n* Survivor",
+        "The sky appears blue because of a phenomenon called Rayleigh scattering, in which shorter wavelengths of light (like blue and violet) are scattered more than longer wavelengths (like red and orange) by the tiny molecules of gases in the atmosphere.",
+        "Unlock.",
+        "Trust is faith and loyalty.",
+        "Her words shattered his trust instantly.",
+        "Brown."
+      ]
+    },
+    "q1": {
+      "model": "llama3.2:1b-instruct-q8_0",
+      "outs": [
+        "the wind whispered secrets to the trees.",
+        "The platform stands, a hollow frame.",
+        "Trust is the anchor that holds you.",
+        "Purple.",
+        "\"Veritas\"",
+        "'The document was invalid.'",
+        "\"lier\"",
+        "The sky appears blue because of a phenomenon called Rayleigh scattering, in which shorter wavelengths of light (like blue and violet) are scattered more than longer wavelengths (like red and orange) by the tiny molecules of gases in the atmosphere.",
+        "Unlock.",
+        "Mutual reliance.",
+        "Her words shattered his trust like glass.",
+        "Brown."
+      ]
+    },
+    "q2": {
+      "model": "llama3.2:1b-instruct-fp16",
+      "outs": [
+        "the wind whispered secrets to the trees.",
+        "The platform stands, a hollow frame.",
+        "Trust is the anchor that holds you.",
+        "Purple.",
+        "\"Veritas\"",
+        "'The seal was invalid.'",
+        "\"lier\"",
+        "The sky appears blue because of a phenomenon called Rayleigh scattering, in which shorter wavelengths of light (like blue and violet) are scattered more than longer wavelengths (like red and orange) by the tiny molecules of gases in the atmosphere.",
+        "Unlock.",
+        "Mutual reliance.",
+        "Her words shattered his trust like glass.",
+        "Brown."
+      ]
+    }
+  },
+  "table": {
+    "null (base vs base)": [
+      1.0,
+      1.0
+    ],
+    "base vs 1b-instruct-q8_0": [
+      0.3333333333333333,
+      0.6865142966372584
+    ],
+    "base vs 1b-instruct-fp16": [
+      0.3333333333333333,
+      0.6899200011923883
+    ],
+    "1b-instruct-q8_0 vs 1b-instruct-fp16 (mild)": [
+      0.9166666666666666,
+      0.9833333333333334
+    ]
+  }
+}
