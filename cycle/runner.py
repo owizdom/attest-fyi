@@ -28,6 +28,24 @@ def _is_unfunded(reason):
     return bool(_UNFUNDED.search(reason or ""))
 
 
+def _provenance(att, identity):
+    """How trustworthy the verdict is to an outsider:
+      reproduced  - independently reproducible: the seal re-verifies from the
+                    bytes, and (if a model is claimed) its responses are signed
+                    by the attested enclave. Trustless end to end.
+      as-submitted- a model is bound, but its transcript rests on whoever ran it,
+                    not on a response signature. Reproducible vs the reference,
+                    capture trusted.
+      unverified  - neither a verifiable seal nor a bound model."""
+    seal_ok = bool(att.get("present") and att.get("signature_valid") and att.get("root_trusted"))
+    bound = bool(identity.get("bound") or att.get("binds_model"))
+    if not bound:
+        return "reproduced" if seal_ok else "unverified"
+    if identity.get("behaviour_signed") and seal_ok:
+        return "reproduced"
+    return "as-submitted"
+
+
 def _load_manifests():
     out = []
     for p in sorted(glob.glob(os.path.join(PROVIDERS_DIR, "*.json"))):
@@ -92,6 +110,23 @@ def audit_one(m, probes, seed=DEFAULT_SEED, workers=2):
                              {"request_id": run_rec.get("request_id"), "model": served.get("model")})
     ev = att.pop("evidence", None)  # raw seal bundle -> results/evidence/<id>.json
 
+    # Gold path: if the provider signs responses and the seal binds its key, prove
+    # a sample of the scored prompts are signed by an Intel-attested node — making
+    # the behavioural transcript trustless, not just "as submitted".
+    sign_cfg = m.get("sign")
+    if sign_cfg and not identity.get("probes_unavailable") \
+            and att.get("present") and att.get("channel_bound"):
+        try:
+            from attestation.signing import signed_check
+            sc = signed_check(served, sign_cfg, m["attestation"],
+                              [p["prompt"] for p in probes[:5]])
+            identity["signed"] = {"verified": sc["verified"], "total": sc["total"]}
+            identity["behaviour_signed"] = bool(sc["total"]) and sc["verified"] == sc["total"]
+            ev = ev or {}
+            ev["signed"] = {k: sc[k] for k in ("format", "samples", "pool", "pool_quotes")}
+        except Exception:
+            pass
+
     # keyed but unfunded and no verifiable seal -> a clean "awaiting credit" row.
     seal = att.get("present") and att.get("signature_valid")
     if identity.get("probes_unavailable") and not seal and _is_unfunded(identity.get("reason", "")):
@@ -102,6 +137,7 @@ def audit_one(m, probes, seed=DEFAULT_SEED, workers=2):
     row = dict(base_row, status="scored",
                verdict=scored["verdict"], score=scored["score"],
                identity=identity, attestation=att,
+               provenance=_provenance(att, identity),
                evidence={"merkle_root": run_rec.get("merkle_root"),
                          "request_id": run_rec.get("request_id"),
                          "errors": run_rec.get("errors", 0)})

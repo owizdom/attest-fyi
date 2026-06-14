@@ -54,19 +54,29 @@ def _check(att, ev_path):
     if not os.path.exists(ev_path):
         return "skip", ("no seal to re-verify" if not att.get("present") else "no evidence file")
     try:
-        r = reverify_evidence(json.load(open(ev_path)))
+        ev = json.load(open(ev_path))
     except Exception as e:
         return "skip", "evidence unreadable: %s" % type(e).__name__
+    r = reverify_evidence(ev)
     if not r:
         return "skip", "no quote in evidence"
     pub = (bool(att.get("signature_valid")), bool(att.get("root_trusted")))
     got = (bool(r["signature_valid"]), bool(r["root_trusted"]))
+    status = "ok" if pub == got else "MISMATCH"
     detail = "root_trusted=%s sig=%s tcb=%s" % (r["root_trusted"], r["signature_valid"], r["tcb_status"])
-    if pub == got:
-        if att.get("tcb_status") and att["tcb_status"] != r["tcb_status"]:
-            detail += " (tcb was %s at capture)" % att["tcb_status"]
-        return "ok", detail
-    return "MISMATCH", detail + "  (published: root=%s sig=%s)" % pub
+    if status == "ok" and att.get("tcb_status") and att["tcb_status"] != r["tcb_status"]:
+        detail += " (tcb was %s at capture)" % att["tcb_status"]
+    if status == "MISMATCH":
+        detail += "  (published: root=%s sig=%s)" % pub
+    # Gold path: re-recover every signed response and re-root its node's quote.
+    signed = ev.get("signed")
+    if signed:
+        from . import signing
+        sok, stot = signing.reverify_signed(signed)
+        detail += " | signed %d/%d" % (sok, stot)
+        if stot and sok != stot:
+            status = "MISMATCH"
+    return status, detail
 
 
 def verify_published():

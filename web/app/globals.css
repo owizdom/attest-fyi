@@ -86,6 +86,14 @@ a{color:inherit;}
 .vsign{display:inline-block;font-family:var(--mono);font-size:11.5px;font-weight:700;letter-spacing:.04em;text-transform:uppercase;color:var(--paper);background:var(--seal);padding:9px 17px;border-radius:6px;text-decoration:none;}
 .vsign:hover{filter:brightness(1.1);}
 
+/* ---------- provenance badge ---------- */
+.prov-badge{display:block;margin-top:5px;font-family:var(--mono);font-size:8.5px;font-weight:700;text-transform:uppercase;letter-spacing:.04em;color:var(--ink-faint);}
+.prov-badge.repro{color:var(--green);}
+.prov-badge.repro::before{content:"✓ ";}
+.prov-badge.subm,.prov-badge.unver{color:var(--ink-faint);}
+.modal-head .prov-badge{display:inline-block;margin:0 0 0 6px;vertical-align:middle;}
+.prov-note{font-size:12.5px;color:var(--ink-soft);line-height:1.55;margin-top:13px;padding-top:12px;border-top:1px solid var(--hair);}
+
 .delta{font-family:var(--mono);font-size:13px;font-weight:700;}
 .delta.up{color:var(--green);}
 .delta.down{color:var(--red);}

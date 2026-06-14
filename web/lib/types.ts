@@ -28,6 +28,8 @@ export interface Identity {
   sim_decoy?: number;
   exact_trusted?: number;
   margin?: number;
+  behaviour_signed?: boolean;
+  signed?: { verified: number; total: number };
 }
 
 export interface Attestation {
@@ -77,6 +79,7 @@ export interface ProviderRow {
   pitch?: string;
   findings?: string[];
   verifiers?: Verifier[];
+  provenance?: string;
   status: string;
   reason?: string;
   verdict: string;

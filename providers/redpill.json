@@ -19,6 +19,12 @@
     "key_env": "REDPILL_API_KEY",
     "model_param": "phala/qwen-2.5-7b-instruct"
   },
+  "sign": {
+    "format": "eth_personal",
+    "path": "/signature/{id}",
+    "model_param": "phala/qwen-2.5-7b-instruct",
+    "max_tokens": 64
+  },
   "reference": {
     "model_id": "qwen-2.5-7b-instruct",
     "decoy_id": "decoy-llama-3.2-1b",

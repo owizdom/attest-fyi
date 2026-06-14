@@ -35,6 +35,31 @@ function vclass(v: string): string {
   return ["pass", "fail", "partial", "skipped", "unknown"].includes(v) ? v : "unknown";
 }
 
+const PROV: Record<string, { label: string; cls: string }> = {
+  reproduced: { label: "reproduced", cls: "repro" },
+  "as-submitted": { label: "as submitted", cls: "subm" },
+  unverified: { label: "unverified", cls: "unver" },
+};
+
+function provExplain(p: ProviderRow): string {
+  const s = p.identity?.signed;
+  if (p.provenance === "reproduced") {
+    return s && s.total
+      ? `Independently reproduced. The seal re-verifies from the published bytes, and ${s.verified}/${s.total} responses are signed by the attested enclave — trustless end to end, no trust in us required.`
+      : "Independently reproduced. The seal re-verifies from the published bytes — anyone re-runs it with attest.py verify, no keys.";
+  }
+  if (p.provenance === "as-submitted") {
+    return "Model bound by behaviour, but the transcript rests on whoever ran it — there is no per-response signature to make it trustless. Reproducible against the public reference, capture trusted.";
+  }
+  return "Neither a client-verifiable seal nor a bound model on this row.";
+}
+
+function ProvBadge({ p }: { p: ProviderRow }) {
+  const meta = p.provenance ? PROV[p.provenance] : null;
+  if (!meta) return null;
+  return <span className={`prov-badge ${meta.cls}`}>{meta.label}</span>;
+}
+
 function scoreSub(p: ProviderRow): string {
   if (p.status === "skipped") return p.reason || "no key";
   const id = p.identity;
@@ -91,7 +116,7 @@ function ProviderDetail({ p, checked, onClose }: { p: ProviderRow; checked: stri
     <div className="overlay" onClick={(e) => e.target === e.currentTarget && onClose()}>
       <div className="modal pm">
         <div className="modal-head">
-          <h3>{p.displayName} <span className={`vd ${vclass(v)}`}>{v}</span></h3>
+          <h3>{p.displayName} <span className={`vd ${vclass(v)}`}>{v}</span> <ProvBadge p={p} /></h3>
           <button className="modal-x" onClick={onClose} aria-label="close">✕</button>
         </div>
         <div className="modal-body">
@@ -102,6 +127,7 @@ function ProviderDetail({ p, checked, onClose }: { p: ProviderRow; checked: stri
               <div><span className="k">Stack</span><span className="v">{(p.tags || []).join(" · ") || "—"}</span></div>
               <div><span className="k">Score</span><span className="v">{p.score == null ? "—" : p.score} / 100</span></div>
             </div>
+            {p.provenance ? <p className="prov-note">{provExplain(p)}</p> : null}
           </div>
 
           {a?.present ? (
@@ -275,7 +301,7 @@ export function Register({ providers, checked, tasks = [] }:
                 <span className="score">{p.score == null ? "—" : p.score}<span className="sub">{scoreSub(p)}</span></span>
               </div>
               <div className="cell-r col-delta"><Delta d={p.delta} /></div>
-              <div className="cell-r"><span className={`vd ${vclass(p.verdict || "unknown")}`}>{p.verdict}</span></div>
+              <div className="cell-r"><span className={`vd ${vclass(p.verdict || "unknown")}`}>{p.verdict}</span><ProvBadge p={p} /></div>
             </div>
           ))}
         </>
