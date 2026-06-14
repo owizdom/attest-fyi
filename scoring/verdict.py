@@ -8,6 +8,41 @@ from .metrics import exact_rate, sim_rate, error_count
 MARGIN = 0.25          # how far below the null counts as divergence (from exp01/02)
 MATCH_BAND = 0.10      # within this of the null = a match
 
+# Behavioural model binding (vs a TRUSTED reference of the claimed open weights,
+# with a decoy for discrimination). Thresholds are set from measured data.
+SIM_TRUST_MIN = 0.55   # served must be at least this similar to the trusted ref
+SIM_MARGIN = 0.20      # and this much closer to the trusted ref than to the decoy
+SIM_DIVERGE = 0.45     # at/below this and not clearly closer to the ref = a swap
+
+
+def behavioural_binding(served, trusted_outputs, decoy_outputs=None):
+    """Verify the served model IS the claimed model by behaviour: it matches a
+    reference we built from the canonical open weights and is distinguishable
+    from a decoy. This is the honest binding when weights aren't measured."""
+    s_t = round(sim_rate(served, trusted_outputs), 4)
+    e_t = round(exact_rate(served, trusted_outputs), 4)
+    s_d = round(sim_rate(served, decoy_outputs), 4) if decoy_outputs else None
+    margin = round(s_t - s_d, 4) if s_d is not None else None
+    bound = s_t >= SIM_TRUST_MIN and (s_d is None or margin >= SIM_MARGIN)
+    diverges = (s_d is not None and s_t <= s_d) or s_t < SIM_DIVERGE
+    if diverges:
+        detail = "served model diverges from the claimed open weights"
+        if s_d is not None and s_t <= s_d:
+            detail += " — as close to a decoy as to the claim"
+    elif bound:
+        detail = "behaviour matches the claimed open weights"
+        if s_d is not None:
+            detail += ", and is distinguishable from a decoy"
+    else:
+        detail = "partly matches the claim but not decisively"
+    # binding is binary (verified or not), so a bound model scores as verified,
+    # not by the raw similarity (which quant/template differences depress).
+    iscore = 100 if bound else (20 if diverges else round(100 * s_t))
+    return {"no_reference": False, "binding": "behavioural", "bound": bound,
+            "diverges": diverges, "matches": bound or not diverges,
+            "sim_trusted": s_t, "exact_trusted": e_t, "sim_decoy": s_d,
+            "margin": margin, "identity_score": iscore, "detail": detail}
+
 
 def score_identity(provider_outs, reference):
     """reference: the stored fingerprint dict, or None."""
@@ -51,12 +86,16 @@ def decide_verdict(att, identity):
     if identity.get("no_reference"):
         # can't speak to model identity; lean on the seal alone
         return "partial" if seal else "unknown"
-    if identity["diverges"]:
+    if identity.get("diverges"):
         return "fail"                       # wrong engine, regardless of any seal
-    # identity matches or borderline-ok
-    if att["present"] and att["signature_valid"] and att["root_trusted"]:
-        return "pass" if att["binds_model"] else "partial"
-    return "partial" if identity["matches"] else "unknown"
+    # identity matches: Pass needs a DCAP-rooted seal AND the model bound, either
+    # by measurement (strongest) or by behaviour vs a trusted reference.
+    bound = att.get("binds_model") or identity.get("bound")
+    if att["present"] and att["signature_valid"] and att["root_trusted"] and bound:
+        return "pass"
+    if att["present"] and att["signature_valid"]:
+        return "partial"
+    return "partial" if identity.get("matches") else "unknown"
 
 
 def overall_score(att, identity):

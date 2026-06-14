@@ -16,5 +16,11 @@
     "key_env": "REDPILL_API_KEY",
     "model_param": "phala/qwen-2.5-7b-instruct"
   },
+  "reference": {
+    "model_id": "qwen-2.5-7b-instruct",
+    "decoy_id": "decoy-llama-3.2-1b",
+    "trusted": { "adapter": "ollama", "model": "qwen2.5:7b-instruct" },
+    "decoy": { "adapter": "ollama", "model": "llama3.2:1b-instruct-q8_0" }
+  },
   "decoding": { "temperature": 0.0, "max_tokens": 256, "seed": 42 }
 }

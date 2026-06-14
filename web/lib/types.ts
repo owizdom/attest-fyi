@@ -22,6 +22,12 @@ export interface Identity {
   detail?: string;
   identity_score?: number;
   confidence?: string;
+  binding?: string;
+  bound?: boolean;
+  sim_trusted?: number;
+  sim_decoy?: number;
+  exact_trusted?: number;
+  margin?: number;
 }
 
 export interface Attestation {

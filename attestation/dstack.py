@@ -12,6 +12,7 @@ from config import load_key
 from models._http import get
 from .base import report
 from . import tdx
+from . import binding
 
 try:
     from . import dcap
@@ -93,7 +94,8 @@ def verify(cfg, ctx):
             d = {"root_trusted": False, "tcb_status": "unknown", "error": str(e)[:60]}
     root_trusted = bool(d.get("root_trusted"))
     tcb = d.get("tcb_status", "unknown")
-    bound, bind_reason = _model_binding(att, ctx.get("model"))
+    mbound, mnote = binding.measurement_binding(att)   # strongest path: weights measured?
+    _, bind_reason = _model_binding(att, ctx.get("model"))  # evidence for why not
 
     m = v["measurements"]
     notes = [
@@ -101,6 +103,7 @@ def verify(cfg, ctx):
         "DCAP signature chain to Intel SGX Root CA: %s" % ("VERIFIED" if root_trusted else "not verified"),
         "TCB status: %s" % tcb,
         "report_data binds gateway key: %s" % ("yes" if v["binds_key"] else "no"),
+        "measurement binding: %s" % mnote,
         "model binding: %s" % bind_reason,
         "MRTD %s…" % m["mrtd"][:24],
     ]
@@ -110,7 +113,7 @@ def verify(cfg, ctx):
         root_trusted=root_trusted,
         freshness_ok=bool(nonce),
         channel_bound=v["binds_key"],
-        binds_model=bound,
+        binds_model=mbound,
         vendor="intel-tdx",
         notes=notes,
     )

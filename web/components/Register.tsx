@@ -84,12 +84,19 @@ function ProviderDetail({ p, checked, onClose }: { p: ProviderRow; checked: stri
                 <Check label="report_data binds the gateway signing key" state={!!a.channel_bound} />
                 <Check label="DCAP signature chain → Intel SGX Root CA" state={!!a.root_trusted} />
                 <Check label={`TCB status: ${a.tcb_status || "unknown"}`} state={a.tcb_status === "UpToDate"} />
-                <Check label="Model binding (measurement → weights)" state={!!a.binds_model} />
+                <Check label="Model bound by measurement (weights in the quote)" state={!!a.binds_model} />
+                {id?.binding === "behavioural" && (
+                  <Check label="Model verified by behaviour (vs trusted weights + decoy)" state={!!id.bound} />
+                )}
               </ul>
 
               <div className="pm-binding">
-                <p><b>What this seal proves:</b> a genuine Intel TDX enclave{a.root_trusted ? ", rooted in Intel&apos;s SGX Root CA" : ""}{a.tcb_status ? ` (TCB ${a.tcb_status})` : ""} ran the gateway, and the prompt stayed inside it.</p>
-                <p><b>What it does not prove:</b> which model&apos;s weights answered. {bindReason(a)}</p>
+                <p><b>What this seal proves:</b> a genuine Intel TDX enclave{a.root_trusted ? ", rooted in Intel’s SGX Root CA" : ""}{a.tcb_status ? ` (TCB ${a.tcb_status})` : ""} ran the gateway, and the prompt stayed inside it.</p>
+                {id?.bound ? (
+                  <p><b>Model verified:</b> the served model behaviourally matches the claimed open weights{id.sim_trusted != null ? ` (similarity ${id.sim_trusted}${id.sim_decoy != null ? `, vs ${id.sim_decoy} for a decoy model` : ""})` : ""} — it is the model claimed, not a swap. Identity is verified against weights we ran ourselves; exact precision (quantisation) is not certified.</p>
+                ) : (
+                  <p><b>What it does not prove:</b> which model&apos;s weights answered. {bindReason(a)}</p>
+                )}
                 {p.pitch && <p className="pm-claim"><b>{p.displayName} claims:</b> {p.pitch}</p>}
               </div>
               {a.signing_address && (

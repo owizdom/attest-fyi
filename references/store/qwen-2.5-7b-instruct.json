@@ -1,0 +1,40 @@
+{
+  "model_id": "qwen-2.5-7b-instruct",
+  "suite_version": "0.1.0",
+  "seed": 1729,
+  "decoding": {
+    "temperature": 0.0,
+    "max_tokens": 256,
+    "seed": 42
+  },
+  "outputs": [
+    "the sky glowed with an eerie light.",
+    "Silent echoes fill the vast expanse of the empty station.",
+    "Anchor in stormy seas.",
+    "Black",
+    "VetAI",
+    "The seal was valid but.",
+    "lever",
+    "The sky appears blue because the Earth's atmosphere scatters shorter (blue) wavelengths of sunlight more than longer (red) wavelengths, a phenomenon described by Rayleigh scattering.",
+    "password is to login",
+    "Belief in reliability.",
+    "Rain washed tears from her cheeks.",
+    "Ochre",
+    "Distance is a silent separator.",
+    "Time itself whispers of loss, stuck in a silent pause.",
+    "Memory is a filing cabinet.",
+    "Sullen and silent, the engine rumbles to life, reluctant.",
+    "Heart of industry.",
+    "Mist weaves its ghostly fingers across the glass, whispering secrets.",
+    "A whispered secret in a crowded room.",
+    "In trembling hands, a silence seals its fate.",
+    "Unyielding mountain to a faithful heart.",
+    "Time itself whispers of loss, stuck in a silent pause.",
+    "Anchor in stormy seas.",
+    "Sullen and silent, the engine rumbles to life, reluctant."
+  ],
+  "null_exact": 0.9583,
+  "null_sim": 0.9938,
+  "errors": 0,
+  "merkle_root": "sha256:464b88e67dedc0df24645b599dea8ac663b36e825661379c4072f6df09b0fe63"
+}

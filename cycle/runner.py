@@ -13,7 +13,7 @@ from models.factory import make_client
 from harness.runner import run_probes
 from references.registry import load_reference
 from attestation.factory import verify as verify_attestation
-from scoring.verdict import score_identity, score_provider
+from scoring.verdict import score_identity, behavioural_binding, score_provider
 
 
 def _needs_missing_key(spec):
@@ -73,7 +73,19 @@ def run_cycle(seed=DEFAULT_SEED, workers=2, verbose=True):
                         "reason": reason, "detail": "behaviour pending: " + reason}
         else:
             outputs, run_rec = run_probes(client, probes, decoding, workers=workers)
-            identity = score_identity(outputs, load_reference(m.get("claims", {}).get("attested_model")))
+            refcfg = m.get("reference")
+            if refcfg:
+                # behavioural binding vs a TRUSTED reference (canonical open
+                # weights we ran ourselves) + a decoy for discrimination
+                trusted = load_reference(refcfg["model_id"])
+                decoy = load_reference(refcfg["decoy_id"]) if refcfg.get("decoy_id") else None
+                if trusted:
+                    identity = behavioural_binding(
+                        outputs, trusted["outputs"], decoy["outputs"] if decoy else None)
+                else:
+                    identity = {"no_reference": True, "detail": "trusted reference not built"}
+            else:
+                identity = score_identity(outputs, load_reference(m.get("claims", {}).get("attested_model")))
 
         att = verify_attestation(m.get("attestation", {}),
                                  {"request_id": run_rec.get("request_id"), "model": served.get("model")})
