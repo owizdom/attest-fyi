@@ -103,12 +103,41 @@ Prototype. The numbers and providers in the UI are illustrative while the probe 
 
 ## This repo
 
+Flat domain folders, run from the root. Stdlib only, no pip install.
+
 ```
 attest-fail/
-  index.html   the prototype site — single file, HTML + CSS, no build step
-  README.md    you are here
-  DESIGN.md    the engineering design and build plan
+  attest.py        CLI entrypoint
+  config.py        paths, suite version, key loading
+  models/          provider adapters (openai-compat, ollama, gemini)
+  probes/          fixed battery + seeded parametric suite (+ commit hash)
+  harness/         probe runner + transcript hashing (merkle)
+  references/      reference fingerprints (code + store/)
+  attestation/     per-vendor verifiers (none, redpill, ...)
+  scoring/         metrics + verdict logic
+  cycle/           orchestrates a full benchmark cycle
+  web/             the static site (index.html) + builder
+  providers/       provider manifests (json)
+  results/         generated cycle output + latest.json
+  early-experiments/   the Phase-0 validation runs
+  README.md  DESIGN.md  TARGETS.md
 ```
 
-Open `index.html` in any browser. No dependencies, no server.
-See [DESIGN.md](./DESIGN.md) for how the real system is meant to work.
+### Run it
+
+```bash
+# 1. build a reference fingerprint for a model you trust as ground truth
+python3 attest.py build-ref --adapter ollama --model llama3.2:1b-instruct-q8_0
+
+# 2. run a cycle over providers/ (skips any provider whose key is missing)
+python3 attest.py run
+
+# 3. (run already rebuilds the site) render it standalone if needed
+python3 attest.py build-site
+open web/index.html
+```
+
+The site stays a single self-contained file: the cycle data is injected into
+`web/index.html`, no fetch and no server. Add real providers by dropping their
+keys in a gitignored `.env` (`REDPILL_API_KEY`, `GROQ_API_KEY`, ...); see
+[TARGETS.md](./TARGETS.md). See [DESIGN.md](./DESIGN.md) for the full system.
