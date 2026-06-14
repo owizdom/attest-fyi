@@ -1,0 +1,9 @@
+{
+  "_comment": "Public register of independent verifiers, one entry per signer. Appended only by .github/workflows/sign.yml from a GitHub-authenticated issue author (login cannot be spoofed). modes: operator = ran the live benchmark cycle; owner = verified their own account's live seal; witness = re-ran the published-evidence check.",
+  "redpill": [{ "login": "owizdom", "mode": "operator", "at": "2026-06-14" }],
+  "venice": [{ "login": "owizdom", "mode": "operator", "at": "2026-06-14" }],
+  "nanogpt": [{ "login": "owizdom", "mode": "operator", "at": "2026-06-14" }],
+  "near-ai": [{ "login": "owizdom", "mode": "operator", "at": "2026-06-14" }],
+  "ppq": [{ "login": "owizdom", "mode": "operator", "at": "2026-06-14" }],
+  "chutes": [{ "login": "owizdom", "mode": "operator", "at": "2026-06-14" }]
+}

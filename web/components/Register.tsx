@@ -1,7 +1,31 @@
 "use client";
 import { useEffect, useState } from "react";
-import type { ProviderRow } from "@/lib/types";
+import type { ProviderRow, Verifier } from "@/lib/types";
 import { Seal } from "./Seal";
+
+const REPO = "owizdom/attest-fyi";
+
+function signUrl(id: string, name: string): string {
+  const title = encodeURIComponent(`verify: ${id}`);
+  const body = encodeURIComponent(
+    `I re-ran the attest.fyi check for ${name} and it reproduced. Add me to the register.\n\n` +
+      `Leave the title as "verify: ${id}" — the workflow reads it, and your GitHub handle is taken ` +
+      `from this issue automatically (no one can sign as you).`
+  );
+  return `https://github.com/${REPO}/issues/new?title=${title}&body=${body}&labels=verify`;
+}
+
+function VerifierWall({ vs }: { vs?: Verifier[] }) {
+  if (!vs || vs.length === 0) return null;
+  return (
+    <span className="vwall" title={vs.map((v) => "@" + v.login).join(", ")}>
+      {vs.slice(0, 5).map((v) => (
+        <img key={v.login} className="vface" src={`https://github.com/${v.login}.png?size=40`} alt={v.login} loading="lazy" />
+      ))}
+      <em>{vs.length === 1 ? "1 verifier" : `${vs.length} verifiers`}</em>
+    </span>
+  );
+}
 
 const VORDER: Record<string, number> = { fail: 0, unknown: 1, error: 1, partial: 2, skipped: 3, pass: 4 };
 type Key = "name" | "score" | "delta" | "verdict";
@@ -60,6 +84,7 @@ function ProviderDetail({ p, checked, onClose }: { p: ProviderRow; checked: stri
   const id = p.identity;
   const v = p.verdict || "unknown";
   const meas = a?.measurements;
+  const vs = p.verifiers ?? [];
 
   return (
     <div className="overlay" onClick={(e) => e.target === e.currentTarget && onClose()}>
@@ -154,6 +179,25 @@ function ProviderDetail({ p, checked, onClose }: { p: ProviderRow; checked: stri
             </div>
           ) : null}
 
+          <div className="pm-section">
+            <h4>Verified by{vs.length ? ` ${vs.length}` : ""}</h4>
+            {vs.length > 0 ? (
+              <div className="vlist">
+                {vs.map((vf) => (
+                  <a key={vf.login} className="vchip" href={`https://github.com/${vf.login}`} target="_blank" rel="noopener noreferrer" title={`${vf.mode || "witness"}${vf.at ? " · " + vf.at : ""}`}>
+                    <img src={`https://github.com/${vf.login}.png?size=48`} alt={vf.login} loading="lazy" />
+                    <span>@{vf.login}</span>
+                    {vf.mode && vf.mode !== "witness" ? <em className={`vmode ${vf.mode}`}>{vf.mode}</em> : null}
+                  </a>
+                ))}
+              </div>
+            ) : (
+              <p className="pm-pending">No one has signed this verdict yet. Be the first.</p>
+            )}
+            <p className="vnote">Re-run the check, then put your name on it. Signing opens a GitHub issue from your account; a bot reads your handle (it can&apos;t be faked) and appends you to this register.</p>
+            <a className="vsign" href={signUrl(p.id, p.displayName)} target="_blank" rel="noopener noreferrer">Verify &amp; add your name →</a>
+          </div>
+
           {a?.notes && a.notes.length ? (
             <div className="pm-section">
               <h4>Notes</h4>
@@ -216,7 +260,7 @@ export function Register({ providers, checked }: { providers: ProviderRow[]; che
         <div className="reg-row" key={p.id} onClick={() => setSel(p)} role="button" tabIndex={0}
           onKeyDown={(e) => e.key === "Enter" && setSel(p)}>
           <Seal verdict={vclass(p.verdict || "unknown")} />
-          <div className="prov">{p.displayName}<small>{(p.tags || []).join(" · ")}</small></div>
+          <div className="prov">{p.displayName}<small>{(p.tags || []).join(" · ")}</small><VerifierWall vs={p.verifiers} /></div>
           <div className="cell-r">
             <span className="score">{p.score == null ? "—" : p.score}<span className="sub">{scoreSub(p)}</span></span>
           </div>

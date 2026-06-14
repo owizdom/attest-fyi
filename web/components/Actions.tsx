@@ -102,10 +102,17 @@ function Participate() {
     <div className="participate">
       <p className="lead">Don&apos;t take our word for it. The whole point is that you don&apos;t have to.</p>
       <p>
-        The harness is open and every verdict reproduces. The numbers on this page are not a claim you
-        are asked to trust. They are a thing you can re-run.
+        Every verdict here reproduces, and every verdict can be co-signed. The numbers are not a claim
+        you are asked to trust. They are a thing you can re-run, and then put your name on.
       </p>
-      <h4 className="part-h">Verify a verdict yourself</h4>
+      <h4 className="part-h">Sign a verdict</h4>
+      <p className="part-sub">
+        Open any provider, read the proof, and hit <b>Verify &amp; add your name</b>. It opens a GitHub
+        issue from your account; a bot reads your handle — no one can sign as you — and appends your
+        avatar to that verdict in the register. The verifier list lives in the repo, in the open, one
+        commit per signer, so the crowd vouching for a verdict is as auditable as the verdict itself.
+      </p>
+      <h4 className="part-h">Or reproduce it from scratch</h4>
       <pre className="code">{`# clone the benchmark
 git clone https://github.com/owizdom/attest-fyi
 cd attest-fyi
@@ -114,11 +121,11 @@ cd attest-fyi
 python3 attest.py build-ref --adapter ollama \\
   --model llama3.2:1b-instruct-q8_0
 
-# drop provider keys in .env, then run a cycle
+# drop your provider keys in .env, then run a cycle
 python3 attest.py run`}</pre>
       <p>
         You land on the same verdict we publish. Every probe and transcript is content-hashed, so you
-        can check ours against yours, line by line. No login, no permission asked. That is the point.
+        can check ours against yours, line by line. No login, no permission asked.
       </p>
       <h4 className="part-h">Add a provider to the board</h4>
       <p className="part-sub">

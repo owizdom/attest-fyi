@@ -1,9 +1,11 @@
 import fs from "node:fs";
 import path from "node:path";
-import type { Latest, HistoryPoint } from "./types";
+import type { Latest, HistoryPoint, Verifier } from "./types";
 
 // The Python engine writes cycle results here; the site reads them directly.
 const RESULTS = path.join(process.cwd(), "..", "results");
+// Public register of independent verifiers, appended only via the sign workflow.
+const VERIFIERS = path.join(process.cwd(), "..", "verifiers.json");
 
 function readJson<T>(p: string): T | null {
   try {
@@ -19,9 +21,11 @@ export function getLatest(): Latest | null {
   const prev = readJson<Latest>(path.join(RESULTS, `cycle-${d.cycle - 1}.json`));
   const prevScore: Record<string, number | null> = {};
   prev?.providers?.forEach((p) => (prevScore[p.id] = p.score));
+  const verifiers = readJson<Record<string, Verifier[]>>(VERIFIERS) ?? {};
   d.providers?.forEach((p) => {
     const ps = prevScore[p.id];
     p.delta = p.score != null && ps != null ? p.score - ps : null;
+    p.verifiers = Array.isArray(verifiers[p.id]) ? verifiers[p.id] : [];
   });
   return d;
 }

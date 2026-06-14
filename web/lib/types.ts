@@ -51,6 +51,12 @@ export interface Attestation {
   attestation_type?: string;
 }
 
+export interface Verifier {
+  login: string;
+  mode?: string;
+  at?: string;
+}
+
 export interface ProviderRow {
   id: string;
   displayName: string;
@@ -59,6 +65,7 @@ export interface ProviderRow {
   attested_label?: string;
   pitch?: string;
   findings?: string[];
+  verifiers?: Verifier[];
   status: string;
   reason?: string;
   verdict: string;

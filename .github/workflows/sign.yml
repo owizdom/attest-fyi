@@ -1,0 +1,57 @@
+name: sign-verifier
+
+# A reader signs a verdict by opening an issue titled "verify: <provider>".
+# The issue author is GitHub-authenticated, so the handle on the register is
+# always a real account — it cannot be spoofed by typing a name in the body.
+on:
+  issues:
+    types: [opened]
+
+permissions:
+  contents: write
+  issues: write
+
+jobs:
+  sign:
+    if: startsWith(github.event.issue.title, 'verify:')
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: append verifier
+        id: append
+        env:
+          ISSUE_TITLE: ${{ github.event.issue.title }}
+          ISSUE_AUTHOR: ${{ github.event.issue.user.login }}
+          ISSUE_AT: ${{ github.event.issue.created_at }}
+        run: python3 scripts/append_verifier.py
+
+      - name: commit
+        if: steps.append.outputs.result == 'added'
+        run: |
+          git config user.name "attest-fyi-bot"
+          git config user.email "bot@attest.fyi"
+          git add verifiers.json
+          git commit -m "verifier: ${{ github.event.issue.user.login }} signed ${{ steps.append.outputs.provider }}"
+          git push
+
+      - name: comment + close
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const r = "${{ steps.append.outputs.result }}";
+            const p = "${{ steps.append.outputs.provider }}";
+            const who = context.payload.issue.user.login;
+            const msgs = {
+              added: `Signed. @${who} is now on the **${p}** register at attest.fyi. Thanks for putting your name on it.`,
+              dup: `@${who}, you're already on the **${p}** register — no change.`,
+              unknown: "Couldn't read a known provider from the title. Use `verify: <provider-id>` — e.g. `verify: venice`.",
+            };
+            await github.rest.issues.createComment({
+              owner: context.repo.owner, repo: context.repo.repo,
+              issue_number: context.issue.number, body: msgs[r] || msgs.unknown,
+            });
+            await github.rest.issues.update({
+              owner: context.repo.owner, repo: context.repo.repo,
+              issue_number: context.issue.number, state: "closed",
+            });
