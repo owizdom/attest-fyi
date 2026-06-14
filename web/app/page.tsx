@@ -13,8 +13,8 @@ export default function Page() {
     <main className="page">
       <TopBar />
       <Hero latest={latest} />
-      <Register providers={latest?.providers ?? []} checked={latest?.generated_at ?? ""} />
       <Sparkline history={history} />
+      <Register providers={latest?.providers ?? []} checked={latest?.generated_at ?? ""} />
       <footer className="footer">
         <span>
           <span className="seal-mark">✦</span>
