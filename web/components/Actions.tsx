@@ -56,89 +56,47 @@ function HowItWorks() {
   );
 }
 
-function SubmitForm() {
-  const [msg, setMsg] = useState("");
-  async function onSubmit(e: React.FormEvent<HTMLFormElement>) {
-    e.preventDefault();
-    const form = e.currentTarget;
-    const data = Object.fromEntries(new FormData(form).entries());
-    try {
-      const r = await fetch("/api/submit", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(data),
-      }).then((x) => x.json());
-      setMsg(r.ok ? "Queued. We'll probe it next cycle." : r.error || "error");
-      if (r.ok) form.reset();
-    } catch {
-      setMsg("Could not reach the server.");
-    }
-  }
-  const fields: [string, string, boolean][] = [
-    ["name", "Acme Confidential AI", true],
-    ["endpoint", "https://api.acme.ai/v1", true],
-    ["model", "llama-3.3-70b-instruct", true],
-    ["attested_model", "llama-3.3-70b-instruct (if different)", false],
-    ["tee", "intel-tdx · nvidia-cc · none", false],
-    ["contact", "you@domain", false],
-  ];
-  const labels: Record<string, string> = {
-    name: "Provider name", endpoint: "API base URL", model: "Model served / requested",
-    attested_model: "Attested model", tee: "TEE / attestation type", contact: "Contact",
-  };
-  return (
-    <form className="form" onSubmit={onSubmit}>
-      {fields.map(([n, ph, req]) => (
-        <label key={n}>{labels[n]}<input name={n} placeholder={ph} required={req} /></label>
-      ))}
-      <button className="submit" type="submit">Queue for testing</button>
-      <div className="form-msg">{msg}</div>
-    </form>
-  );
-}
-
 function Participate() {
   return (
     <div className="participate">
-      <p className="lead">Don&apos;t take our word for it. The whole point is that you don&apos;t have to.</p>
-      <p>
-        Every verdict here reproduces, and every verdict can be co-signed. The numbers are not a claim
-        you are asked to trust. They are a thing you can re-run, and then put your name on.
+      <p className="lead">
+        Don&apos;t take our word for it. Every verdict here reproduces, and you can put your name on the
+        ones you check.
       </p>
-      <h4 className="part-h">Hand it to your agent</h4>
-      <p className="part-sub">
-        Paste this into any coding agent (Claude Code, Cursor, …). It reads the brief, picks an open
-        task from <b>Open work</b>, does the verification, and opens a PR with your name on it — the
-        whole protocol in one line.
-      </p>
-      <pre className="code">{`Read https://attest.fyi/llms.txt and help verify confidential AI: pick an open task at https://attest.fyi (the "Open work" board), do it, open a PR, and put your name on the register.`}</pre>
+
       <h4 className="part-h">Sign a verdict</h4>
       <p className="part-sub">
         Open any provider, read the proof, and hit <b>Verify &amp; add your name</b>. It opens a GitHub
-        issue from your account; a bot reads your handle — no one can sign as you — and appends your
-        avatar to that verdict in the register. The verifier list lives in the repo, in the open, one
-        commit per signer, so the crowd vouching for a verdict is as auditable as the verdict itself.
+        issue from your account; a bot reads your handle — no one can sign as you — and adds your avatar
+        to that verdict. The verifier list lives in the repo, one commit per signer: auditable, not a
+        number we control.
       </p>
-      <h4 className="part-h">Or reproduce it from scratch</h4>
-      <pre className="code">{`# clone the benchmark
-git clone https://github.com/owizdom/attest-fyi
+
+      <h4 className="part-h">Verify a provider</h4>
+      <p className="part-sub">
+        Point the metric at any confidential-AI endpoint — a new one, or your own. Paste this into your
+        agent; it audits the provider and opens a PR, and CI re-verifies the seal before it can land.
+      </p>
+      <pre className="code">{`Read https://attest.fyi/llms.txt, then audit a confidential-AI provider for the attest.fyi board: write the manifest, run "python3 attest.py audit <id>" with your key, and open a PR titled "verify: <id>".`}</pre>
+
+      <h4 className="part-h">Reproduce it yourself</h4>
+      <p className="part-sub">
+        Clone it and re-run. No keys needed to re-check the seals; add provider keys for the full
+        behavioural verdict.
+      </p>
+      <pre className="code">{`git clone https://github.com/owizdom/attest-fyi
 cd attest-fyi
+python3 -m venv .venv && .venv/bin/pip install cryptography
 
-# build a reference from a model you trust as ground truth
-python3 attest.py build-ref --adapter ollama \\
-  --model llama3.2:1b-instruct-q8_0
+# re-verify every published seal from the evidence — offline, no keys
+.venv/bin/python attest.py verify
 
-# drop your provider keys in .env, then run a cycle
-python3 attest.py run`}</pre>
+# or run the whole benchmark with your provider keys in .env
+.venv/bin/python attest.py run`}</pre>
       <p>
         You land on the same verdict we publish. Every probe and transcript is content-hashed, so you
-        can check ours against yours, line by line. No login, no permission asked.
+        can check ours against yours, line by line.
       </p>
-      <h4 className="part-h">Add a provider to the board</h4>
-      <p className="part-sub">
-        Know a confidential-inference endpoint that should be tested? Queue it and it gets probed next cycle.
-      </p>
-      <SubmitForm />
     </div>
   );
 }
