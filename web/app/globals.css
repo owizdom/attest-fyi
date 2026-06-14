@@ -116,6 +116,17 @@ a{color:inherit;}
 .step .num{flex:none;width:26px;height:26px;border-radius:50%;border:1px solid var(--hair-strong);display:grid;place-items:center;font-family:var(--display);font-weight:700;font-size:14px;color:var(--seal);}
 .step h4{font-family:var(--display);font-size:17px;margin-bottom:4px;}
 .step p{font-size:14px;color:var(--ink-soft);}
+.verdicts{border-top:1px solid var(--hair);margin-top:8px;padding-top:18px;}
+.verdicts-title{font-family:var(--display);font-size:18px;font-weight:700;margin-bottom:6px;}
+.verdicts-intro{font-size:13px;color:var(--ink-soft);margin-bottom:16px;}
+.verdict-row{display:flex;gap:13px;align-items:flex-start;margin-bottom:15px;}
+.verdict-row .seal-glyph{flex:none;margin-top:3px;width:24px;height:24px;}
+.verdict-row p{font-size:13.5px;color:var(--ink-soft);line-height:1.5;}
+.verdict-row b{color:var(--ink);font-weight:700;}
+.verdict-row b.pass{color:var(--green);}
+.verdict-row b.fail{color:var(--red);}
+.verdict-row b.partial{color:var(--seal);}
+.verdict-row b.skipped{color:var(--ink-faint);}
 .form{display:flex;flex-direction:column;gap:12px;}
 .form label{font-family:var(--mono);font-size:10.5px;letter-spacing:.05em;text-transform:uppercase;color:var(--ink-faint);display:flex;flex-direction:column;gap:5px;}
 .form input{font-family:var(--serif);font-size:15px;color:var(--ink);background:var(--paper);border:1px solid var(--hair-strong);border-radius:8px;padding:10px 12px;}
