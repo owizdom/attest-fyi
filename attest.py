@@ -46,6 +46,19 @@ def cmd_run(a):
              s["fail"], s["skipped"]))
 
 
+def cmd_verify(a):
+    from attestation.reverify import verify_published
+    rows = verify_published()
+    mark = {"ok": "✓", "MISMATCH": "✗", "skip": "·"}
+    for pid, status, detail in rows:
+        print("  %s %-10s %s" % (mark[status], pid, detail))
+    okc = sum(1 for _, s, _ in rows if s == "ok")
+    tot = sum(1 for _, s, _ in rows if s in ("ok", "MISMATCH"))
+    print("\n%d/%d published seals reproduced from evidence (offline, no keys)." % (okc, tot))
+    if okc != tot:
+        sys.exit(1)
+
+
 def main():
     p = argparse.ArgumentParser(prog="attest.py")
     sub = p.add_subparsers(dest="cmd", required=True)
@@ -64,6 +77,9 @@ def main():
     c = sub.add_parser("run", help="run a benchmark cycle over providers/")
     c.add_argument("--seed", type=int, default=DEFAULT_SEED)
     c.set_defaults(func=cmd_run)
+
+    v = sub.add_parser("verify", help="re-verify published seals from results/evidence (offline, no keys)")
+    v.set_defaults(func=cmd_verify)
 
     a = p.parse_args()
     a.func(a)

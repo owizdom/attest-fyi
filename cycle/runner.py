@@ -94,6 +94,13 @@ def run_cycle(seed=DEFAULT_SEED, workers=2, verbose=True):
 
         att = verify_attestation(m.get("attestation", {}),
                                  {"request_id": run_rec.get("request_id"), "model": served.get("model")})
+        # Split raw evidence into results/evidence/<id>.json so latest.json stays
+        # lean but anyone can re-verify the seal offline (attest.py verify).
+        ev = att.pop("evidence", None)
+        if ev:
+            evdir = os.path.join(RESULTS_DIR, "evidence")
+            os.makedirs(evdir, exist_ok=True)
+            json.dump(ev, open(os.path.join(evdir, "%s.json" % m["id"]), "w"), indent=2)
 
         # keyed but unfunded and no verifiable seal -> a clean "awaiting credit"
         # row, not an error. Providers with a verified seal still score below.

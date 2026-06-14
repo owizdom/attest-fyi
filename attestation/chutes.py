@@ -129,6 +129,10 @@ def verify(cfg, ctx):
     r["gpu_die"] = die
     r["gpu_root_trusted"] = gpu_root
     r["attestation_type"] = atype
+    # Raw fleet evidence so anyone can re-verify the seal offline (attest.py verify).
+    r["evidence"] = {"format": "chutes-fleet", "nonce": rep.get("nonce"),
+                     "all_attestations": [{"intel_quote": e.get("intel_quote"),
+                                           "gpu_evidence": e.get("gpu_evidence")} for e in fleet]}
     try:
         qb = dcap._to_quote_bytes(fleet[0]["intel_quote"])
         r["measurements"] = {"mrtd": qb[184:232].hex()}

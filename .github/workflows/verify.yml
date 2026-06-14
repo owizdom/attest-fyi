@@ -1,0 +1,34 @@
+name: verify-seals
+
+# Reproduce every published seal from results/evidence, offline, on each change to
+# the evidence, the verifiers, or a provider manifest. This is the integrity gate:
+# a task submission that claims a seal only passes if the bytes actually verify.
+on:
+  pull_request:
+    paths:
+      - "results/**"
+      - "providers/**"
+      - "attestation/**"
+      - "attest.py"
+  push:
+    branches: [main]
+    paths:
+      - "results/**"
+      - "providers/**"
+      - "attestation/**"
+      - "attest.py"
+
+permissions:
+  contents: read
+
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - run: pip install cryptography
+      - name: re-verify published seals
+        run: python3 attest.py verify

@@ -139,4 +139,9 @@ def verify(cfg, ctx):
         r["gpu_arch"] = gpu.get("arch")
         r["gpu_die"] = gpu.get("die")
         r["gpu_root_trusted"] = gpu.get("root_trusted")
+    # Raw evidence so anyone can re-verify the seal offline (attest.py verify).
+    r["evidence"] = {"format": "dstack-tdx", "intel_quote": quote,
+                     "request_nonce": nonce, "signing_address": signing}
+    if gpu_present:
+        r["evidence"]["nvidia_payload"] = att.get("nvidia_payload") or att.get("gpu_evidence")
     return r
