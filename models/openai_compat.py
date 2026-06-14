@@ -47,7 +47,11 @@ class OpenAICompatClient:
             if isinstance(r, dict) and "choices" not in r and ("error" in r or "detail" in r):
                 return "<ERR %s>" % (_err_msg(r) or "api error")
             self.last_id = r.get("id")
-            txt = r["choices"][0]["message"]["content"].strip()
+            msg = r["choices"][0].get("message", {})
+            content = msg.get("content")
+            if content is None:  # reasoning models sometimes put text elsewhere
+                content = msg.get("reasoning_content") or ""
+            txt = content.strip()
             return txt if txt else "<EMPTY>"
         except urllib.error.HTTPError as e:
             msg = ""
