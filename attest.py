@@ -59,6 +59,37 @@ def cmd_verify(a):
         sys.exit(1)
 
 
+def cmd_audit(a):
+    import json
+    import os
+    from config import PROVIDERS_DIR, ROOT
+    from probes.suite import generate
+    from cycle.runner import audit_one, write_evidence
+    path = a.provider if os.path.exists(a.provider) else os.path.join(PROVIDERS_DIR, a.provider + ".json")
+    if not os.path.exists(path):
+        print("no manifest for %r — pass a providers/<id> name or a path to a manifest .json"
+              % a.provider, file=sys.stderr)
+        sys.exit(2)
+    m = json.load(open(path))
+    print("auditing %s ..." % m["id"])
+    row, ev = audit_one(m, generate(a.seed), seed=a.seed)
+    write_evidence(m["id"], ev)
+    subdir = os.path.join(ROOT, "submissions")
+    os.makedirs(subdir, exist_ok=True)
+    json.dump({"provider": m["id"], "verdict": row.get("verdict"), "score": row.get("score"),
+               "manifest": m, "row": row},
+              open(os.path.join(subdir, m["id"] + ".json"), "w"), indent=2)
+    print("\n  verdict: %s   score=%s" % (row.get("verdict"), row.get("score")))
+    det = (row.get("identity") or {}).get("detail") or ""
+    if det:
+        print("  %s" % det)
+    print("\n  wrote submissions/%s.json + results/evidence/%s.json" % (m["id"], m["id"]))
+    print("  to publish to the board:")
+    print("    1. add your manifest at providers/%s.json (if it is new)" % m["id"])
+    print("    2. commit and open a PR titled 'verify: %s'" % m["id"])
+    print("    3. CI re-verifies the seal from your evidence; on merge you are credited.")
+
+
 def main():
     p = argparse.ArgumentParser(prog="attest.py")
     sub = p.add_subparsers(dest="cmd", required=True)
@@ -80,6 +111,11 @@ def main():
 
     v = sub.add_parser("verify", help="re-verify published seals from results/evidence (offline, no keys)")
     v.set_defaults(func=cmd_verify)
+
+    au = sub.add_parser("audit", help="audit ONE provider and write a publishable bundle")
+    au.add_argument("provider", help="a providers/<id> name, or a path to a manifest .json")
+    au.add_argument("--seed", type=int, default=DEFAULT_SEED)
+    au.set_defaults(func=cmd_audit)
 
     a = p.parse_args()
     a.func(a)

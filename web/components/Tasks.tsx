@@ -27,11 +27,13 @@ function CopyLine({ text }: { text: string }) {
 }
 
 // Headerless list — rendered inside the register's "Open work" tab.
+const auditLine = `Read ${SITE}/llms.txt, then audit a confidential-AI provider for the attest.fyi board: write providers/<id>.json (schema in llms.txt), run "python3 attest.py audit <id>" with my key, and open a PR titled "verify: <id>". CI re-verifies the seal before it can land.`;
+
 export function WorkList({ tasks }: { tasks: Task[] }) {
   const [open, setOpen] = useState<string | null>(null);
-  if (!tasks.length) return <p className="work-foot">No open tasks right now.</p>;
   return (
     <>
+      {tasks.length ? (
       <div className="work-list">
         {tasks.map((t) => {
           const isOpen = open === t.id;
@@ -75,10 +77,21 @@ export function WorkList({ tasks }: { tasks: Task[] }) {
           );
         })}
       </div>
-      <p className="work-foot">
-        Each is a verification we couldn&apos;t finish — no key, no compute, or a verifier that
-        doesn&apos;t exist yet. Paste one into your agent; it does the work and opens a PR with your name on it.
-      </p>
+      ) : null}
+      {tasks.length ? (
+        <p className="work-foot">
+          Each is a verification we couldn&apos;t finish — no key, no compute, or a verifier that
+          doesn&apos;t exist yet. Paste one into your agent; it does the work and opens a PR with your name on it.
+        </p>
+      ) : null}
+      <div className="work-newprov">
+        <h4>Verify a provider we don&apos;t list</h4>
+        <p>
+          Point the metric at any confidential-AI endpoint — a new one, or your own.
+          CI re-checks the seal from your evidence, so a published verdict can&apos;t be faked.
+        </p>
+        <CopyLine text={auditLine} />
+      </div>
     </>
   );
 }

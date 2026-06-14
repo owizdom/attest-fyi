@@ -39,6 +39,7 @@ python3 -m venv .venv && .venv/bin/pip install cryptography
 .venv/bin/python attest.py run                 # run a full cycle, writes results/
 .venv/bin/python attest.py build-ref --adapter ollama --model <m>   # build a reference
 .venv/bin/python attest.py verify              # re-verify published seals offline, no keys
+.venv/bin/python attest.py audit <id|path>     # audit ONE provider -> publishable bundle
 ```
 
 Layout (flat domain folders):
@@ -88,6 +89,29 @@ nvidia_payload), `chutes`/`nanogpt-tee` (base64 all_attestations fleet),
    evidence under `results/evidence/`. When it merges, your verdict is published.
 6. Sign it: open an issue titled `verify: <provider-id>` to put your GitHub
    avatar on that verdict's register (or it happens automatically on merge).
+
+## Audit and publish ANY provider (not just our backlog)
+
+Anyone can point the metric at a provider we don't list — a new one, or their own —
+and publish the verdict. This is the self-serve loop:
+
+1. Write a manifest `providers/<id>.json` (schema above) for the target, with the
+   served endpoint, the attestation block, and a `reference` block if a small
+   open model is involved. Put the key in `.env`.
+2. Run `attest.py audit <id>`. It runs the full metric on that one provider and
+   writes `submissions/<id>.json` (the bundle: verdict + manifest + row) plus
+   `results/evidence/<id>.json` (the raw quote).
+3. Open a PR titled `verify: <id>` with the manifest, the submission, and the
+   evidence. CI runs `attest.py verify`, which re-checks your seal from the bytes
+   — a passing seal cannot be faked (you cannot forge Intel's or NVIDIA's key).
+4. On merge it lands on the board and you are credited (your GitHub avatar).
+
+Trust boundary, state it honestly in your PR:
+- **Seal: trustless.** CI reproduces the chain to the pinned vendor roots.
+- **Behaviour:** trustless only when the provider *signs its responses* inside the
+  TEE (the transcript is then tamper-evident, bound to the attested key).
+  Otherwise the transcript is "as submitted" — reproducible against the public
+  reference, but captured by you. Label the verdict accordingly.
 
 ## The rules (non-negotiable)
 

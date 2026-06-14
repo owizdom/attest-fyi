@@ -42,87 +42,96 @@ def _next_cycle():
     return (max(nums) + 1) if nums else 1
 
 
+def audit_one(m, probes, seed=DEFAULT_SEED, workers=2):
+    """Audit one provider manifest with the full metric (liveness + probes + seal
+    verify + score). Returns (row, seal_evidence). Pure: writes nothing and never
+    touches the board, so `attest.py audit` and a cycle both call it."""
+    served = m["served"]
+    decoding = m.get("decoding") or {"temperature": 0.0, "max_tokens": 256, "seed": seed}
+    attested_label = m.get("claims", {}).get("label") or m.get("claims", {}).get("attested_model")
+    base_row = {"id": m["id"], "displayName": m["displayName"],
+                "tags": m.get("tags", []), "served_model": served.get("model"),
+                "attested_label": attested_label, "pitch": m.get("pitch"),
+                "findings": m.get("findings")}
+
+    if _needs_missing_key(served):
+        return dict(base_row, status="skipped", reason="no key",
+                    verdict="skipped", score=None), None
+
+    client = make_client(served)
+    # Liveness check before the full battery. If inference is down (no credit,
+    # endpoint error) we still seal-audit via the attestation.
+    live = client.generate("Reply with one word: ping", temperature=0.0, max_tokens=8, seed=42)
+    if live.startswith(("<ERR", "<EMPTY")):
+        outputs, run_rec = [], {"request_id": None, "merkle_root": None, "errors": 0}
+        reason = live.strip("<>").strip()
+        reason = reason[4:] if reason.startswith("ERR ") else reason
+        detail = ("served model returned an empty completion at the liveness check "
+                  "(reasoning model); seal audited, behaviour not probed this cycle"
+                  if reason.upper().startswith("EMPTY")
+                  else "behaviour pending: " + reason)
+        identity = {"no_reference": True, "probes_unavailable": True,
+                    "reason": reason, "detail": detail}
+    else:
+        outputs, run_rec = run_probes(client, probes, decoding, workers=workers)
+        refcfg = m.get("reference")
+        if refcfg:
+            # behavioural binding vs a TRUSTED reference (canonical open weights
+            # we ran ourselves) + a decoy for discrimination
+            trusted = load_reference(refcfg["model_id"])
+            decoy = load_reference(refcfg["decoy_id"]) if refcfg.get("decoy_id") else None
+            if trusted:
+                identity = behavioural_binding(
+                    outputs, trusted["outputs"], decoy["outputs"] if decoy else None)
+            else:
+                identity = {"no_reference": True, "detail": "trusted reference not built"}
+        else:
+            identity = score_identity(outputs, load_reference(m.get("claims", {}).get("attested_model")))
+
+    att = verify_attestation(m.get("attestation", {}),
+                             {"request_id": run_rec.get("request_id"), "model": served.get("model")})
+    ev = att.pop("evidence", None)  # raw seal bundle -> results/evidence/<id>.json
+
+    # keyed but unfunded and no verifiable seal -> a clean "awaiting credit" row.
+    seal = att.get("present") and att.get("signature_valid")
+    if identity.get("probes_unavailable") and not seal and _is_unfunded(identity.get("reason", "")):
+        return dict(base_row, status="skipped", reason="awaiting credit",
+                    verdict="skipped", score=None, attestation=att), ev
+
+    scored = score_provider(m, att, identity)
+    row = dict(base_row, status="scored",
+               verdict=scored["verdict"], score=scored["score"],
+               identity=identity, attestation=att,
+               evidence={"merkle_root": run_rec.get("merkle_root"),
+                         "request_id": run_rec.get("request_id"),
+                         "errors": run_rec.get("errors", 0)})
+    return row, ev
+
+
+def write_evidence(pid, ev):
+    """Persist a seal evidence bundle to results/evidence/<id>.json."""
+    if not ev:
+        return
+    evdir = os.path.join(RESULTS_DIR, "evidence")
+    os.makedirs(evdir, exist_ok=True)
+    json.dump(ev, open(os.path.join(evdir, "%s.json" % pid), "w"), indent=2)
+
+
 def run_cycle(seed=DEFAULT_SEED, workers=2, verbose=True):
     probes = generate(seed)
     manifests = _load_manifests()
     rows = []
     for m in manifests:
-        served = m["served"]
-        decoding = m.get("decoding") or {"temperature": 0.0, "max_tokens": 256, "seed": seed}
-        attested_label = m.get("claims", {}).get("label") or m.get("claims", {}).get("attested_model")
-        base_row = {"id": m["id"], "displayName": m["displayName"],
-                    "tags": m.get("tags", []), "served_model": served.get("model"),
-                    "attested_label": attested_label, "pitch": m.get("pitch"),
-                    "findings": m.get("findings")}
-
-        if _needs_missing_key(served):
-            rows.append(dict(base_row, status="skipped",
-                             reason="no key", verdict="skipped", score=None))
-            if verbose:
-                print("  %-18s skipped (no key)" % m["id"])
-            continue
-
-        client = make_client(served)
-        # Liveness check before the full battery. If inference is down (no
-        # credit, endpoint error) we still seal-audit via the attestation.
-        live = client.generate("Reply with one word: ping", temperature=0.0, max_tokens=8, seed=42)
-        if live.startswith(("<ERR", "<EMPTY")):
-            outputs, run_rec = [], {"request_id": None, "merkle_root": None, "errors": 0}
-            reason = live.strip("<>").strip()
-            reason = reason[4:] if reason.startswith("ERR ") else reason
-            detail = ("served model returned an empty completion at the liveness check "
-                      "(reasoning model); seal audited, behaviour not probed this cycle"
-                      if reason.upper().startswith("EMPTY")
-                      else "behaviour pending: " + reason)
-            identity = {"no_reference": True, "probes_unavailable": True,
-                        "reason": reason, "detail": detail}
-        else:
-            outputs, run_rec = run_probes(client, probes, decoding, workers=workers)
-            refcfg = m.get("reference")
-            if refcfg:
-                # behavioural binding vs a TRUSTED reference (canonical open
-                # weights we ran ourselves) + a decoy for discrimination
-                trusted = load_reference(refcfg["model_id"])
-                decoy = load_reference(refcfg["decoy_id"]) if refcfg.get("decoy_id") else None
-                if trusted:
-                    identity = behavioural_binding(
-                        outputs, trusted["outputs"], decoy["outputs"] if decoy else None)
-                else:
-                    identity = {"no_reference": True, "detail": "trusted reference not built"}
-            else:
-                identity = score_identity(outputs, load_reference(m.get("claims", {}).get("attested_model")))
-
-        att = verify_attestation(m.get("attestation", {}),
-                                 {"request_id": run_rec.get("request_id"), "model": served.get("model")})
-        # Split raw evidence into results/evidence/<id>.json so latest.json stays
-        # lean but anyone can re-verify the seal offline (attest.py verify).
-        ev = att.pop("evidence", None)
-        if ev:
-            evdir = os.path.join(RESULTS_DIR, "evidence")
-            os.makedirs(evdir, exist_ok=True)
-            json.dump(ev, open(os.path.join(evdir, "%s.json" % m["id"]), "w"), indent=2)
-
-        # keyed but unfunded and no verifiable seal -> a clean "awaiting credit"
-        # row, not an error. Providers with a verified seal still score below.
-        seal = att.get("present") and att.get("signature_valid")
-        if identity.get("probes_unavailable") and not seal and _is_unfunded(identity.get("reason", "")):
-            rows.append(dict(base_row, status="skipped", reason="awaiting credit",
-                             verdict="skipped", score=None, attestation=att))
-            if verbose:
-                print("  %-18s awaiting credit" % m["id"])
-            continue
-
-        scored = score_provider(m, att, identity)
-
-        rows.append(dict(base_row, status="scored",
-                         verdict=scored["verdict"], score=scored["score"],
-                         identity=identity, attestation=att,
-                         evidence={"merkle_root": run_rec.get("merkle_root"),
-                                   "request_id": run_rec.get("request_id"),
-                                   "errors": run_rec.get("errors", 0)}))
+        row, ev = audit_one(m, probes, seed=seed, workers=workers)
+        write_evidence(m["id"], ev)
+        rows.append(row)
         if verbose:
-            print("  %-18s %-8s score=%s  %s"
-                  % (m["id"], scored["verdict"], scored["score"], identity.get("detail", "")))
+            if row["status"] == "skipped":
+                print("  %-18s %s" % (m["id"], row.get("reason", "skipped")))
+            else:
+                print("  %-18s %-8s score=%s  %s"
+                      % (m["id"], row["verdict"], row["score"],
+                         (row.get("identity") or {}).get("detail", "")))
 
     scored_rows = [r for r in rows if r["status"] == "scored"]
     with_ref = [r for r in scored_rows if not r["identity"].get("no_reference")]

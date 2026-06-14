@@ -8,6 +8,7 @@ on:
     paths:
       - "results/**"
       - "providers/**"
+      - "submissions/**"
       - "attestation/**"
       - "attest.py"
   push:
@@ -15,6 +16,7 @@ on:
     paths:
       - "results/**"
       - "providers/**"
+      - "submissions/**"
       - "attestation/**"
       - "attest.py"
 

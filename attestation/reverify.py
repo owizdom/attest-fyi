@@ -4,10 +4,11 @@ NVIDIA cryptography on the bytes in results/evidence/ and asserts the result
 matches the verdict in results/latest.json. Anyone can reproduce the seal half of
 the board this way; the only network call is to Intel's public PCS for TCB.
 """
+import glob
 import json
 import os
 
-from config import RESULTS_DIR
+from config import RESULTS_DIR, ROOT
 from . import dcap
 from . import nvidia
 
@@ -45,40 +46,53 @@ def reverify_evidence(ev):
             "tcb_status": d.get("tcb_status", "unknown")}
 
 
+def _check(att, ev_path):
+    """Compare a re-verification of the evidence at ev_path against the claimed
+    attestation `att`. Returns (status, detail), status in ok|MISMATCH|skip.
+    Asserts only the deterministic crypto (attestation-key signature + chain to
+    the pinned vendor roots); TCB is time-varying, so it is reported, not gated."""
+    if not os.path.exists(ev_path):
+        return "skip", ("no seal to re-verify" if not att.get("present") else "no evidence file")
+    try:
+        r = reverify_evidence(json.load(open(ev_path)))
+    except Exception as e:
+        return "skip", "evidence unreadable: %s" % type(e).__name__
+    if not r:
+        return "skip", "no quote in evidence"
+    pub = (bool(att.get("signature_valid")), bool(att.get("root_trusted")))
+    got = (bool(r["signature_valid"]), bool(r["root_trusted"]))
+    detail = "root_trusted=%s sig=%s tcb=%s" % (r["root_trusted"], r["signature_valid"], r["tcb_status"])
+    if pub == got:
+        if att.get("tcb_status") and att["tcb_status"] != r["tcb_status"]:
+            detail += " (tcb was %s at capture)" % att["tcb_status"]
+        return "ok", detail
+    return "MISMATCH", detail + "  (published: root=%s sig=%s)" % pub
+
+
 def verify_published():
-    """Re-verify every published seal against its evidence.
-    Returns list of (id, status, detail): status in ok|MISMATCH|skip."""
-    latest = json.load(open(os.path.join(RESULTS_DIR, "latest.json")))
+    """Re-verify every published seal, plus any pending submission bundles, against
+    their evidence. Returns list of (id, status, detail). This is the integrity
+    gate: a submitted verdict only passes CI if its seal reproduces from the bytes."""
     evdir = os.path.join(RESULTS_DIR, "evidence")
-    out = []
+    out, seen = [], set()
+    latest = json.load(open(os.path.join(RESULTS_DIR, "latest.json")))
     for p in latest.get("providers", []):
         pid = p["id"]
-        att = p.get("attestation") or {}
-        ev_path = os.path.join(evdir, "%s.json" % pid)
-        if not os.path.exists(ev_path):
-            note = "no seal to re-verify" if not att.get("present") else "no evidence file"
-            out.append((pid, "skip", note))
-            continue
+        seen.add(pid)
+        status, detail = _check(p.get("attestation") or {}, os.path.join(evdir, "%s.json" % pid))
+        out.append((pid, status, detail))
+    # Pending submissions from `attest.py audit` (a PR adds submissions/<id>.json
+    # + results/evidence/<id>.json before the provider is on the board).
+    for f in sorted(glob.glob(os.path.join(ROOT, "submissions", "*.json"))):
         try:
-            ev = json.load(open(ev_path))
-            r = reverify_evidence(ev)
-        except Exception as e:
-            out.append((pid, "skip", "evidence unreadable: %s" % type(e).__name__))
+            b = json.load(open(f))
+        except Exception:
             continue
-        if not r:
-            out.append((pid, "skip", "no quote in evidence"))
+        pid = b.get("provider")
+        if not pid or pid in seen:
             continue
-        # Assert only the deterministic crypto: the attestation-key signature and
-        # the chain to the pinned vendor roots are a pure function of the bytes.
-        # TCB is time-varying (Intel updates collateral), so report it, don't gate.
-        pub = (bool(att.get("signature_valid")), bool(att.get("root_trusted")))
-        got = (bool(r["signature_valid"]), bool(r["root_trusted"]))
-        ok = pub == got
-        detail = "root_trusted=%s sig=%s tcb=%s" % (
-            r["root_trusted"], r["signature_valid"], r["tcb_status"])
-        if ok and att.get("tcb_status") and att["tcb_status"] != r["tcb_status"]:
-            detail += " (tcb was %s at capture)" % att["tcb_status"]
-        if not ok:
-            detail += "  (published: root=%s sig=%s)" % pub
-        out.append((pid, "ok" if ok else "MISMATCH", detail))
+        seen.add(pid)
+        att = (b.get("row") or {}).get("attestation") or {}
+        status, detail = _check(att, os.path.join(evdir, "%s.json" % pid))
+        out.append(("%s (submitted)" % pid, status, detail))
     return out
