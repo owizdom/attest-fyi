@@ -1,0 +1,31 @@
+name: tests
+
+# Known-answer tests for the crypto verifiers (keccak/ecrecover, Intel TDX DCAP,
+# NVIDIA GPU chain) against committed evidence — so a refactor or a library bump
+# can never silently break verification.
+on:
+  pull_request:
+    paths:
+      - "attestation/**"
+      - "tests/**"
+      - "results/evidence/**"
+  push:
+    branches: [main]
+    paths:
+      - "attestation/**"
+      - "tests/**"
+      - "results/evidence/**"
+
+permissions:
+  contents: read
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - run: pip install cryptography
+      - run: python3 -m unittest tests.test_verifiers -v
