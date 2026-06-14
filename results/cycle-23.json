@@ -34,7 +34,7 @@
       "findings": [
         "Tagged AMD SEV-SNP. It isn\u2019t. The hardware is Intel TDX plus NVIDIA Blackwell GPUs, verified straight off Chutes\u2019 own quotes via the reseller that exposes them. No SEV-SNP in sight.",
         "Chutes\u2019 own API hands a client nothing it can check: one opaque 32-character `chutes_verification` token plus prompt and template SHA-256. No hardware quote, and every attestation path 404s.",
-        "So the strongest hardware on the board is the least verifiable through its own front door. The real TDX+NVIDIA quotes exist and attest.fail checks them, but only because NanoGPT resells the infra and surfaces them. Chutes\u2019 promise that \u201canyone can query the full attestation report\u201d is still future tense in its own docs."
+        "So the strongest hardware on the board is the least verifiable through its own front door. The real TDX+NVIDIA quotes exist and attest.fyi checks them, but only because NanoGPT resells the infra and surfaces them. Chutes\u2019 promise that \u201canyone can query the full attestation report\u201d is still future tense in its own docs."
       ],
       "status": "scored",
       "verdict": "unknown",
@@ -53,7 +53,7 @@
         "vendor": "intel-tdx+nvidia",
         "notes": [
           "Chutes' own API exposes no retrievable attestation: a chat response carries only an opaque 32-char `chutes_verification` token plus prompt/template SHA-256 \u2014 not a hardware quote, and nothing a client can independently check.",
-          "The real, verifiable TDX + NVIDIA quotes for this exact hardware DO exist (NanoGPT resells Chutes and exposes them, and attest.fail verifies them), but Chutes does not surface them to its own callers \u2014 its 'radical verifiability' attestation endpoint is, per its docs, still aspirational."
+          "The real, verifiable TDX + NVIDIA quotes for this exact hardware DO exist (NanoGPT resells Chutes and exposes them, and attest.fyi verifies them), but Chutes does not surface them to its own callers \u2014 its 'radical verifiability' attestation endpoint is, per its docs, still aspirational."
         ],
         "score": 0
       },
@@ -77,7 +77,7 @@
       "pitch": "Confidential inference it sells as H100 with per-request ECDSA signatures.",
       "findings": [
         "NanoGPT sells this as \u201cH100 + per-request ECDSA.\u201d The attestation it actually serves is Chutes\u2019. The report carries `attestation_type: chutes` in plain sight, so NanoGPT is reselling Chutes\u2019 confidential stack under its own name.",
-        "The seal checks out in full. Across a 5-node fleet, every Intel TDX quote chains to Intel\u2019s SGX Root CA at TCB UpToDate, and every GPU certificate chains to NVIDIA\u2019s Device Identity CA. attest.fail verifies all five nodes, both chips.",
+        "The seal checks out in full. Across a 5-node fleet, every Intel TDX quote chains to Intel\u2019s SGX Root CA at TCB UpToDate, and every GPU certificate chains to NVIDIA\u2019s Device Identity CA. attest.fyi verifies all five nodes, both chips.",
         "The GPU is NVIDIA Blackwell (GB202), a generation past the advertised H100. And the quote arrives base64-encoded where dstack gateways hand over hex. That one detail is the whole reason it first read as unparseable.",
         "Partial, not Pass: a verified seal proves the node and its code, not which weights ran, and no TEE model here is small enough to reference locally. Model identity stays unbound."
       ],
@@ -314,7 +314,7 @@
       "findings": [
         "Venice\u2019s \u201cverifiable E2EE\u201d runs on Phala. The attestation says so itself: `tee_provider: phala`, `tee_hardware: intel-tdx`. It is the same dstack confidential cloud as RedPill and NEAR, rebranded. The `e2ee-qwen-2-5-7b-p` you call is plain `qwen/qwen-2.5-7b-instruct` upstream.",
         "The seal is real and it checks out. Intel TDX rooted in Intel\u2019s SGX Root CA at TCB UpToDate, plus an NVIDIA Hopper (GH100) GPU whose certificate chains to NVIDIA\u2019s Device Identity CA. This is the H100-class confidential computing Venice advertises, and here it actually verifies.",
-        "Two catches worth knowing. The freshness nonce is server-chosen (`nonce_source: server`), so the quote is not bound to your specific request the way a client challenge would bind it. And Venice ships its own verdict (`verified: true`, a `server_verification` block) that asks you to trust it already checked. attest.fail re-verified the quote independently, and it holds."
+        "Two catches worth knowing. The freshness nonce is server-chosen (`nonce_source: server`), so the quote is not bound to your specific request the way a client challenge would bind it. And Venice ships its own verdict (`verified: true`, a `server_verification` block) that asks you to trust it already checked. attest.fyi re-verified the quote independently, and it holds."
       ],
       "status": "scored",
       "verdict": "pass",

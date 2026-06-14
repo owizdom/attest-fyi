@@ -1,13 +1,13 @@
 # Test targets
 
-The real confidential / verifiable-inference providers attest.fail probes, and the open-weights hosts
+The real confidential / verifiable-inference providers attest.fyi probes, and the open-weights hosts
 it fidelity-checks. The confidential set is taken from the public
 [Confidential Inference Directory](https://confidentialinference.net/) and cross-checked against each
 provider. Every one of these is live and public today.
 
 Tags:
 - **attested** — TEE-attested confidential inference, OpenAI-compatible, ships a verifiable attestation.
-  These are the true attest.fail targets (both axes: model identity + the seal).
+  These are the true attest.fyi targets (both axes: model identity + the seal).
 - **fidelity** — OpenAI-compatible open-weights host, no attestation claim. Model-identity axis only
   ("do you serve the model you advertise, or a quantised one?").
 - **anchor** — our own access (Eigen ecosystem), friendly.

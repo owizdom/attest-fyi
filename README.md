@@ -1,10 +1,10 @@
-# attest.fail
+# attest.fyi
 
 *Is "verifiable AI" actually verifiable?*
 
 An independent benchmark that checks whether confidential-inference providers really serve the
 model they attest. Most of them swear the model that answered you is the model they promised.
-Almost no one checks. attest.fail checks.
+Almost no one checks. attest.fyi checks.
 
 ---
 
@@ -19,11 +19,11 @@ from outside the measured boundary, or the "attestation" is self-asserted and me
 the model at all. So a provider can hold a valid quote and still serve you a smaller, quantised, or
 distilled engine than the one it named. The seal is genuine. The engine behind it is not.
 
-Nobody sells you that gap. attest.fail measures it.
+Nobody sells you that gap. attest.fyi measures it.
 
 ## What it does
 
-attest.fail probes each confidential-inference endpoint, fingerprints the model actually answering,
+attest.fyi probes each confidential-inference endpoint, fingerprints the model actually answering,
 audits the attestation against that behaviour, and publishes a standing for every provider. EigenAI,
 Darkbloom, and the centralised "confidential AI" APIs all get the same treatment. Honest providers
 score high. Silent model swaps get caught and named.
@@ -84,7 +84,7 @@ with. That is the point of it.
 ## What this is not
 
 Behavioural fingerprinting is probabilistic. It cannot always separate two very close model variants,
-and a determined provider can make detection harder. So attest.fail reports **confidence, not
+and a determined provider can make detection harder. So attest.fyi reports **confidence, not
 certainty**, and it publishes its own blind spots and false-positive characteristics alongside the
 scores. A benchmark that pretends to perfect detection is lying, and lying is the thing this project
 exists to catch.
@@ -106,7 +106,7 @@ Prototype. The numbers and providers in the UI are illustrative while the probe 
 Flat domain folders, run from the root. Stdlib only, no pip install.
 
 ```
-attest-fail/
+attest-fyi/
   attest.py        CLI entrypoint
   config.py        paths, suite version, key loading
   models/          provider adapters (openai-compat, ollama, gemini)

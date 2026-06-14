@@ -1,7 +1,7 @@
 """exp02 — the hard case: same weights, different precision.
 
 exp01 showed different models are easy to tell apart. The real question for
-attest.fail is whether QUANTIZATION of the SAME model is detectable, because
+attest.fyi is whether QUANTIZATION of the SAME model is detectable, because
 "serve the model you attested, but at int4 to save memory" is the subtle
 fraud. We run one base model locally (Ollama) at several quant levels at
 temperature 0 with a fixed seed and ask the same two questions:

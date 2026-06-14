@@ -30,7 +30,7 @@
       "attested_label": "qwen3-32b \u00b7 sev-snp",
       "pitch": "Confidential inference in AMD SEV-SNP TEEs.",
       "findings": [
-        "Not verifiable on this hardware. All 13 Chutes models are 27B\u2013122B \u2014 none small enough to reference locally \u2014 and its AMD SEV-SNP seal is a format attest.fail does not yet parse. Inference ran, but neither the model nor the seal could be independently checked here."
+        "Not verifiable on this hardware. All 13 Chutes models are 27B\u2013122B \u2014 none small enough to reference locally \u2014 and its AMD SEV-SNP seal is a format attest.fyi does not yet parse. Inference ran, but neither the model nor the seal could be independently checked here."
       ],
       "status": "scored",
       "verdict": "unknown",
@@ -70,7 +70,7 @@
       "attested_label": "llama-3.1-8b \u00b7 h100 + ecdsa",
       "pitch": "Confidential inference on H100 with per-request ECDSA signatures.",
       "findings": [
-        "Behaviour-only verdict. NanoGPT's seal is per-request ECDSA signatures plus H100 confidential computing \u2014 a format attest.fail does not yet parse, and it exposes no Intel TDX quote. So model identity is checked here, but the TEE seal is not."
+        "Behaviour-only verdict. NanoGPT's seal is per-request ECDSA signatures plus H100 confidential computing \u2014 a format attest.fyi does not yet parse, and it exposes no Intel TDX quote. So model identity is checked here, but the TEE seal is not."
       ],
       "status": "scored",
       "verdict": "partial",

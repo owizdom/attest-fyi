@@ -1,8 +1,8 @@
 {
-  "name": "attest-fail-web",
+  "name": "attest-fyi-web",
   "version": "0.1.0",
   "private": true,
-  "description": "attest.fail — the public benchmark site (Next.js)",
+  "description": "attest.fyi — the public benchmark site (Next.js)",
   "scripts": {
     "dev": "next dev",
     "build": "next build",

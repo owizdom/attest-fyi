@@ -107,8 +107,8 @@ function Participate() {
       </p>
       <h4 className="part-h">Verify a verdict yourself</h4>
       <pre className="code">{`# clone the benchmark
-git clone https://github.com/owizdom/attest-fail
-cd attest-fail
+git clone https://github.com/owizdom/attest-fyi
+cd attest-fyi
 
 # build a reference from a model you trust as ground truth
 python3 attest.py build-ref --adapter ollama \\
@@ -154,12 +154,12 @@ function Thesis() {
         few houses and a few states are deciding which intelligence the rest of us are allowed to touch.
       </p>
       <p>
-        attest.fail does not break that gate. It takes back the one thing they cannot ration: the
+        attest.fyi does not break that gate. It takes back the one thing they cannot ration: the
         truth of what you were served. When you cannot choose the model, you can at least prove you
         got the one you were promised. And it gives the open, ungated, verifiable providers a way to
         prove they are honest, which is the only road that runs around the gatekeepers. That is how a
         little power comes back to the people using these systems instead of the few rationing them.
-        attest.fail does not trust the seal. It checks.
+        attest.fyi does not trust the seal. It checks.
       </p>
       <p className="sign"><span className="sign-seal">✦</span> Built by Wisdom. Inspired by Eigen Labs. Built for the future, as the future comes.</p>
     </div>

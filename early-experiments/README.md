@@ -1,6 +1,6 @@
 # early experiments
 
-Quick, real tests of the one assumption attest.fail lives or dies on: that a
+Quick, real tests of the one assumption attest.fyi lives or dies on: that a
 cheap behavioural statistic can tell whether the model answering you is the
 model claimed, with a null tight enough to threshold on.
 

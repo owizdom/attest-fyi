@@ -50,7 +50,7 @@ def verify(cfg, ctx):
             "prompt/template SHA-256 — not a hardware quote, and nothing a client "
             "can independently check." % n,
             "The real, verifiable TDX + NVIDIA quotes for this exact hardware DO "
-            "exist (NanoGPT resells Chutes and exposes them, and attest.fail "
+            "exist (NanoGPT resells Chutes and exposes them, and attest.fyi "
             "verifies them), but Chutes does not surface them to its own callers — "
             "its 'radical verifiability' attestation endpoint is, per its docs, "
             "still aspirational.",

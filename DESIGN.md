@@ -1,4 +1,4 @@
-# attest.fail — System Design
+# attest.fyi — System Design
 
 Engineering design and build plan. The [README](./README.md) is the pitch. This is how it actually
 works, what is rigorous, what is statistical, what is impossible, and the order to build it in.
@@ -11,7 +11,7 @@ Status: design. Nothing here is built yet. Numbers in the UI are illustrative.
 
 Read this first. It decides everything downstream.
 
-attest.fail makes one hard claim: that it can catch a confidential-inference provider serving a
+attest.fyi makes one hard claim: that it can catch a confidential-inference provider serving a
 different model than the one it attests. That claim is partly rigorous and partly statistical, and a
 design that pretends otherwise is a liability.
 
@@ -188,7 +188,7 @@ provider can still be probed, it just cannot earn a `bindsModel: yes`.
 ### 3.9 Scheduler / cycles
 Periodic runs. Each cycle: pre-commit the probe seed (publish its hash), generate fresh probes, run
 every provider, score, sign, publish, append to the trajectory, then **reveal** the seed and
-transcripts. The pre-commit is a plain published hash, the commit-reveal half of a scheme attest.fail
+transcripts. The pre-commit is a plain published hash, the commit-reveal half of a scheme attest.fyi
 runs on itself.
 
 ---
@@ -262,7 +262,7 @@ runs on itself.
 
 ## 5. Calibration & validation (the part that makes it a benchmark)
 
-Before attest.fail points at anyone real, it has to prove its own detector. We stand up a
+Before attest.fyi points at anyone real, it has to prove its own detector. We stand up a
 **ground-truth testbed**: our own OpenAI-compatible endpoints serving known models we control. Full
 precision, int8, int4, a smaller sibling, a different family, all labelled. Then we measure the
 detector's operating characteristics:
@@ -304,7 +304,7 @@ Naming a company as serving a fraudulent model is serious and we treat it that w
   disclosure trail.
 - **Reproducible accusations.** Every FAIL ships with the run id, the Merkle root, the revealed seed,
   and the method, so the accused can reproduce and dispute it exactly.
-- **Conflict of interest.** attest.fail audits the verifiable-AI market, which includes providers it
+- **Conflict of interest.** attest.fyi audits the verifiable-AI market, which includes providers it
   may otherwise be friendly with. The calibration data and thresholds are public precisely so the
   benchmark cannot quietly favour anyone.
 
@@ -324,7 +324,7 @@ Chosen to match existing muscle memory and the shape of the problem.
 
 Repo layout stays flat and domain-named:
 ```
-attest-fail/
+attest-fyi/
   probes/         parametric probe families + generators
   references/     reference registry + derivation jobs
   attestation/    per-vendor verifiers (tdx, nvidia, sev-snp, nitro, apple)
@@ -342,7 +342,7 @@ attest-fail/
 **Phase 0 — Calibration rig (build this first).**
 Ground-truth testbed of self-served known models. Logprob-divergence and knife-edge probes against
 open-weights references. Measure and publish ROC. Deliverable: "we can tell int4, a size swap, and a
-family swap apart at a known false-positive rate." Until this exists, attest.fail accuses no one.
+family swap apart at a known false-positive rate." Until this exists, attest.fyi accuses no one.
 
 **Phase 1 — One real surface, end to end.**
 Intel TDX attestation verifier with the `bindsModel` determination. OpenAI-compatible harness.

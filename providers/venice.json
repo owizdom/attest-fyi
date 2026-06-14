@@ -13,7 +13,7 @@
   "findings": [
     "Venice’s “verifiable E2EE” runs on Phala. The attestation says so itself: `tee_provider: phala`, `tee_hardware: intel-tdx`. It is the same dstack confidential cloud as RedPill and NEAR, rebranded. The `e2ee-qwen-2-5-7b-p` you call is plain `qwen/qwen-2.5-7b-instruct` upstream.",
     "The seal is real and it checks out. Intel TDX rooted in Intel’s SGX Root CA at TCB UpToDate, plus an NVIDIA Hopper (GH100) GPU whose certificate chains to NVIDIA’s Device Identity CA. This is the H100-class confidential computing Venice advertises, and here it actually verifies.",
-    "Two catches worth knowing. The freshness nonce is server-chosen (`nonce_source: server`), so the quote is not bound to your specific request the way a client challenge would bind it. And Venice ships its own verdict (`verified: true`, a `server_verification` block) that asks you to trust it already checked. attest.fail re-verified the quote independently, and it holds."
+    "Two catches worth knowing. The freshness nonce is server-chosen (`nonce_source: server`), so the quote is not bound to your specific request the way a client challenge would bind it. And Venice ships its own verdict (`verified: true`, a `server_verification` block) that asks you to trust it already checked. attest.fyi re-verified the quote independently, and it holds."
   ],
   "attestation": {
     "type": "dstack-tdx",

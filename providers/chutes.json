@@ -13,7 +13,7 @@
   "findings": [
     "Tagged AMD SEV-SNP. It isn’t. The hardware is Intel TDX plus NVIDIA Blackwell GPUs, verified straight off Chutes’ own quotes via the reseller that exposes them. No SEV-SNP in sight.",
     "Chutes’ own API hands a client nothing it can check: one opaque 32-character `chutes_verification` token plus prompt and template SHA-256. No hardware quote, and every attestation path 404s.",
-    "So the strongest hardware on the board is the least verifiable through its own front door. The real TDX+NVIDIA quotes exist and attest.fail checks them, but only because NanoGPT resells the infra and surfaces them. Chutes’ promise that “anyone can query the full attestation report” is still future tense in its own docs."
+    "So the strongest hardware on the board is the least verifiable through its own front door. The real TDX+NVIDIA quotes exist and attest.fyi checks them, but only because NanoGPT resells the infra and surfaces them. Chutes’ promise that “anyone can query the full attestation report” is still future tense in its own docs."
   ],
   "attestation": { "type": "chutes", "opaque": true, "token_len": 32 },
   "decoding": { "temperature": 0.0, "max_tokens": 256, "seed": 42 }

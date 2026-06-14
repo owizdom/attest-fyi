@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""attest.fail engine CLI. Run from the repo root.
+"""attest.fyi engine CLI. Run from the repo root.
 
   python3 attest.py build-ref --adapter ollama --model llama3.2:1b-instruct-q8_0
   python3 attest.py run

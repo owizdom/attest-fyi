@@ -1,4 +1,4 @@
-"""Shared configuration and paths for the attest.fail engine.
+"""Shared configuration and paths for the attest.fyi engine.
 
 Run everything from the repo root so the flat domain packages (models, probes,
 harness, references, attestation, scoring, cycle, web) import each other.

@@ -1,4 +1,4 @@
-"""Shared helpers for the attest.fail early experiments.
+"""Shared helpers for the attest.fyi early experiments.
 
 No third-party deps. Two model clients (Gemini REST, local Ollama) and the
 metrics used to compare model outputs: exact-match rate and mean string

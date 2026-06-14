@@ -18,7 +18,7 @@ export default function Page() {
       <footer className="footer">
         <span>
           <span className="seal-mark">✦</span>
-          attest.fail — a benchmark for verifiable inference.
+          attest.fyi — a benchmark for verifiable inference.
           {latest ? ` Live cycle ${latest.cycle}.` : ""}
         </span>
         <span className="muted">{latest?.seed_commit ? latest.seed_commit.slice(0, 24) + "…" : ""}</span>
