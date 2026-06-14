@@ -1,0 +1,40 @@
+{
+  "model_id": "llama3.2:1b-instruct-q8_0",
+  "suite_version": "0.1.0",
+  "seed": 1729,
+  "decoding": {
+    "temperature": 0.0,
+    "max_tokens": 256,
+    "seed": 42
+  },
+  "outputs": [
+    "the wind whispered secrets to the trees.",
+    "The platform stands, a hollow frame.",
+    "Trust is the anchor that holds you.",
+    "Purple.",
+    "\"Veritas\"",
+    "'The document was invalid.'",
+    "\"lier\"",
+    "The sky appears blue because of a phenomenon called Rayleigh scattering, in which shorter wavelengths of light (like blue and violet) are scattered more than longer wavelengths (like red and orange) by the tiny molecules of gases in the atmosphere.",
+    "Unlock.",
+    "Mutual reliance.",
+    "Her words shattered his trust like glass.",
+    "Brown.",
+    "Time is the invisible thread that separates us.",
+    "Its hands, once steady and true, now hang still and cold.",
+    "Memory is a tapestry woven with moments.",
+    "Its metal heart, once warm and bright, now lies frozen in the night.",
+    "A machine is a finely tuned orchestra.",
+    "In its glassy depths, a stranger's face is reflected.",
+    "A hidden truth is locked within.",
+    "In darkness, it waits, sealed tight and still.",
+    "\"Roots of trust, deep and strong.\"",
+    "Its hands, once steady and true, now hang still and cold.",
+    "Trust is the anchor that holds you.",
+    "Its metal heart, once warm and bright, now lies frozen in the night."
+  ],
+  "null_exact": 1.0,
+  "null_sim": 1.0,
+  "errors": 0,
+  "merkle_root": "sha256:4d5025686bb452b35a7a019aa4814aec408739ab61d0ef03df1a47e18189d664"
+}
