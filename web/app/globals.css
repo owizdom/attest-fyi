@@ -85,19 +85,6 @@ a{color:inherit;}
 /* seal glyph */
 .seal-glyph{width:22px;height:22px;display:block;}
 
-/* ---------- sparkline ---------- */
-.spark{padding:48px 0 0;}
-.spark-top{display:flex;align-items:baseline;justify-content:space-between;margin-bottom:14px;}
-.spark-now{font-family:var(--display);font-size:18px;font-weight:700;color:var(--seal);}
-.spark svg{width:100%;height:90px;display:block;overflow:visible;}
-.spark .base{stroke:var(--hair-strong);stroke-width:1;}
-.spark .line{fill:none;stroke:var(--ink);stroke-width:1.6;}
-.spark .dot{fill:var(--paper);stroke:var(--ink);stroke-width:1.4;}
-.spark .dot-now{fill:var(--seal);stroke:var(--seal);}
-.spark .lbl{font-family:var(--mono);font-size:10px;fill:var(--ink-faint);}
-.spark-tip{position:fixed;transform:translate(-50%,-150%);background:var(--ink);color:var(--cream);
-  font-family:var(--mono);font-size:10.5px;padding:4px 8px;border-radius:5px;pointer-events:none;white-space:nowrap;z-index:40;}
-
 /* ---------- footer ---------- */
 .footer{margin-top:58px;padding-top:18px;border-top:1px solid var(--hair);
   display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:10px;

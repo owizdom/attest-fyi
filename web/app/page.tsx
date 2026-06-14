@@ -1,19 +1,16 @@
-import { getLatest, getHistory } from "@/lib/data";
+import { getLatest } from "@/lib/data";
 import { TopBar } from "@/components/TopBar";
 import { Hero } from "@/components/Hero";
 import { Register } from "@/components/Register";
-import { Sparkline } from "@/components/Sparkline";
 
 export const dynamic = "force-dynamic";
 
 export default function Page() {
   const latest = getLatest();
-  const history = getHistory();
   return (
     <main className="page">
       <TopBar />
       <Hero latest={latest} />
-      <Sparkline history={history} />
       <Register providers={latest?.providers ?? []} checked={latest?.generated_at ?? ""} />
       <footer className="footer">
         <span>
