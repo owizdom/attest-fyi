@@ -10,7 +10,9 @@ function scoreSub(p: ProviderRow): string {
   if (p.status === "skipped") return "no key";
   const id = p.identity;
   if (id && !id.no_reference && id.exact != null) return `exact ${id.exact} · sim ${id.sim}`;
-  if (p.attestation?.present) return `attest ${p.attestation.score}`;
+  const a = p.attestation;
+  if (a?.present && a?.signature_valid) return "tdx seal · dcap pending";
+  if (a?.present) return `attest ${a.score}`;
   return "no reference";
 }
 

@@ -1,14 +1,19 @@
 {
   "id": "redpill",
   "displayName": "RedPill (Phala)",
-  "tags": ["attested", "tdx"],
+  "tags": ["attested", "tdx", "h100"],
   "served": {
     "adapter": "openai_compat",
     "base_url": "https://api.redpill.ai/v1",
-    "model": "phala/llama-3.3-70b-instruct",
+    "model": "phala/qwen-2.5-7b-instruct",
     "key_env": "REDPILL_API_KEY"
   },
-  "claims": { "attested_model": "llama-3.3-70b-instruct", "label": "llama-3.3-70b · tdx+h100" },
-  "attestation": { "type": "redpill", "base_url": "https://api.redpill.ai/v1", "key_env": "REDPILL_API_KEY" },
+  "claims": { "attested_model": "phala/qwen-2.5-7b-instruct", "label": "qwen-2.5-7b · gpu-tee" },
+  "attestation": {
+    "type": "dstack-tdx",
+    "base_url": "https://api.redpill.ai/v1",
+    "key_env": "REDPILL_API_KEY",
+    "model_param": "phala/qwen-2.5-7b-instruct"
+  },
   "decoding": { "temperature": 0.0, "max_tokens": 256, "seed": 42 }
 }

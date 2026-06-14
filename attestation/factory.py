@@ -1,5 +1,5 @@
 from . import none as _none
-from . import redpill as _redpill
+from . import dstack as _dstack
 
 
 def verify(att_cfg, ctx):
@@ -7,9 +7,8 @@ def verify(att_cfg, ctx):
     t = (att_cfg or {}).get("type", "none")
     if t in ("none", None):
         return _none.verify(att_cfg, ctx)
-    if t in ("redpill", "intel-tdx-redpill"):
-        return _redpill.verify(att_cfg, ctx)
-    # unknown attestation type -> treat as absent, with a note
+    if t in ("dstack-tdx", "redpill", "intel-tdx"):
+        return _dstack.verify(att_cfg, ctx)
     r = _none.verify(att_cfg, ctx)
     r["notes"] = ["unsupported attestation type: %s" % t]
     return r

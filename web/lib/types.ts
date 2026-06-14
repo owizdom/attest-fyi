@@ -30,6 +30,8 @@ export interface Attestation {
   score?: number;
   vendor?: string;
   notes?: string[];
+  measurements?: Record<string, string>;
+  signing_address?: string;
 }
 
 export interface ProviderRow {
@@ -55,8 +57,10 @@ export interface Summary {
   fail: number;
   unknown: number;
   skipped: number;
+  error?: number;
   with_reference: number;
   deviating: number;
+  seals_verified?: number;
   trust_gap_pct: number;
 }
 

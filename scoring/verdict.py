@@ -43,11 +43,14 @@ def score_identity(provider_outs, reference):
 
 def decide_verdict(att, identity):
     """att: attestation report dict. identity: score_identity output."""
+    seal = att["present"] and att["signature_valid"]
+    # Inference unavailable (no credit / endpoint down): the behavioural axis is
+    # blank, but a verified seal still earns a partial. No seal -> error.
+    if identity.get("probes_unavailable"):
+        return "partial" if seal else "error"
     if identity.get("no_reference"):
-        # can't speak to identity; lean on attestation alone
-        if att["present"] and att["signature_valid"] and att["root_trusted"]:
-            return "partial"
-        return "unknown"
+        # can't speak to model identity; lean on the seal alone
+        return "partial" if seal else "unknown"
     if identity["diverges"]:
         return "fail"                       # wrong engine, regardless of any seal
     # identity matches or borderline-ok
@@ -58,8 +61,8 @@ def decide_verdict(att, identity):
 
 def overall_score(att, identity):
     a = att.get("score", 0)
-    if identity.get("no_reference"):
-        return round(a * 0.7)
+    if identity.get("probes_unavailable") or identity.get("no_reference"):
+        return round(a * 0.8)              # attestation-driven
     i = identity["identity_score"]
     if att["present"]:
         return round(0.5 * i + 0.5 * a)

@@ -46,7 +46,7 @@ def run_cycle(seed=DEFAULT_SEED, workers=2, verbose=True):
                     "tags": m.get("tags", []), "served_model": served.get("model"),
                     "attested_label": attested_label}
 
-        if _needs_missing_key(served) or _needs_missing_key(m.get("attestation", {})):
+        if _needs_missing_key(served):
             rows.append(dict(base_row, status="skipped",
                              reason="missing api key", verdict="skipped", score=None))
             if verbose:
@@ -54,27 +54,38 @@ def run_cycle(seed=DEFAULT_SEED, workers=2, verbose=True):
             continue
 
         client = make_client(served)
-        outputs, run_rec = run_probes(client, probes, decoding, workers=workers)
-        reference = load_reference(m.get("claims", {}).get("attested_model"))
-        identity = score_identity(outputs, reference)
+        # Liveness check before the full battery. If inference is down (no
+        # credit, endpoint error) we still seal-audit via the attestation.
+        live = client.generate("Reply with one word: ping", temperature=0.0, max_tokens=8, seed=42)
+        if live.startswith(("<ERR", "<EMPTY")):
+            outputs, run_rec = [], {"request_id": None, "merkle_root": None, "errors": 0}
+            reason = live.strip("<>").strip()
+            reason = reason[4:] if reason.startswith("ERR ") else reason
+            identity = {"no_reference": True, "probes_unavailable": True,
+                        "reason": reason, "detail": "behaviour pending: " + reason}
+        else:
+            outputs, run_rec = run_probes(client, probes, decoding, workers=workers)
+            identity = score_identity(outputs, load_reference(m.get("claims", {}).get("attested_model")))
+
         att = verify_attestation(m.get("attestation", {}),
-                                 {"request_id": run_rec["request_id"]})
+                                 {"request_id": run_rec.get("request_id"), "model": served.get("model")})
         scored = score_provider(m, att, identity)
 
         rows.append(dict(base_row, status="scored",
                          verdict=scored["verdict"], score=scored["score"],
                          identity=identity, attestation=att,
-                         evidence={"merkle_root": run_rec["merkle_root"],
-                                   "request_id": run_rec["request_id"],
-                                   "errors": run_rec["errors"]}))
+                         evidence={"merkle_root": run_rec.get("merkle_root"),
+                                   "request_id": run_rec.get("request_id"),
+                                   "errors": run_rec.get("errors", 0)}))
         if verbose:
-            d = identity.get("detail", "")
-            print("  %-18s %-7s score=%s  %s"
-                  % (m["id"], scored["verdict"], scored["score"], d))
+            print("  %-18s %-8s score=%s  %s"
+                  % (m["id"], scored["verdict"], scored["score"], identity.get("detail", "")))
 
     scored_rows = [r for r in rows if r["status"] == "scored"]
     with_ref = [r for r in scored_rows if not r["identity"].get("no_reference")]
     deviating = [r for r in with_ref if r["identity"].get("diverges")]
+    seals = [r for r in scored_rows
+             if r.get("attestation", {}).get("present") and r["attestation"].get("signature_valid")]
 
     def count(v):
         return sum(1 for r in scored_rows if r["verdict"] == v)
@@ -82,9 +93,10 @@ def run_cycle(seed=DEFAULT_SEED, workers=2, verbose=True):
     summary = {
         "providers": len(rows), "scored": len(scored_rows),
         "pass": count("pass"), "partial": count("partial"),
-        "fail": count("fail"), "unknown": count("unknown"),
+        "fail": count("fail"), "unknown": count("unknown"), "error": count("error"),
         "skipped": sum(1 for r in rows if r["status"] == "skipped"),
         "with_reference": len(with_ref), "deviating": len(deviating),
+        "seals_verified": len(seals),
         "trust_gap_pct": round(100 * len(deviating) / len(with_ref)) if with_ref else 0,
     }
 

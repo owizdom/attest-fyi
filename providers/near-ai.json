@@ -1,14 +1,19 @@
 {
   "id": "near-ai",
   "displayName": "NEAR AI",
-  "tags": ["attested", "tdx"],
+  "tags": ["attested", "tdx", "h100"],
   "served": {
     "adapter": "openai_compat",
     "base_url": "https://cloud-api.near.ai/v1",
-    "model": "deepseek-v3",
+    "model": "deepseek-ai/DeepSeek-V4-Flash",
     "key_env": "NEAR_AI_API_KEY"
   },
-  "claims": { "attested_model": "deepseek-v3", "label": "deepseek-v3 · tdx+h100" },
-  "attestation": { "type": "intel-tdx" },
+  "claims": { "attested_model": "deepseek-ai/DeepSeek-V4-Flash", "label": "deepseek-v4-flash · gpu-tee" },
+  "attestation": {
+    "type": "dstack-tdx",
+    "base_url": "https://cloud-api.near.ai/v1",
+    "key_env": "NEAR_AI_API_KEY",
+    "wrapped": "gateway_attestation"
+  },
   "decoding": { "temperature": 0.0, "max_tokens": 256, "seed": 42 }
 }
