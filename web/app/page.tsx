@@ -3,7 +3,10 @@ import { TopBar } from "@/components/TopBar";
 import { Hero } from "@/components/Hero";
 import { Register } from "@/components/Register";
 
-export const dynamic = "force-dynamic";
+// Static: the board is read from committed results at BUILD time (where the repo
+// root is present) and baked, so there's no runtime filesystem read on the
+// serverless host. A new cycle / signer is a git commit, which redeploys.
+export const dynamic = "force-static";
 
 export default function Page() {
   const latest = getLatest();

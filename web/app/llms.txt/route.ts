@@ -1,9 +1,10 @@
 import fs from "node:fs";
 import path from "node:path";
 
-export const dynamic = "force-dynamic";
+export const dynamic = "force-static";
 
-// Serves the repo-root llms.txt — the base brief an agent reads first.
+// Serves the repo-root llms.txt — the base brief an agent reads first. Read at
+// build time and baked, so no runtime filesystem read on the serverless host.
 export async function GET() {
   try {
     const txt = fs.readFileSync(path.join(process.cwd(), "..", "llms.txt"), "utf8");
