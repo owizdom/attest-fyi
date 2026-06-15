@@ -39,6 +39,7 @@ const PROV: Record<string, { label: string; cls: string }> = {
   reproduced: { label: "reproduced", cls: "repro" },
   "as-submitted": { label: "as submitted", cls: "subm" },
   unverified: { label: "unverified", cls: "unver" },
+  "inside-only": { label: "inside-only", cls: "inside" },
 };
 
 function provExplain(p: ProviderRow): string {
@@ -50,6 +51,9 @@ function provExplain(p: ProviderRow): string {
   }
   if (p.provenance === "as-submitted") {
     return "Model bound by behaviour, but the transcript rests on whoever ran it — there is no per-response signature to make it trustless. Reproducible against the public reference, capture trusted.";
+  }
+  if (p.provenance === "inside-only") {
+    return "Callable only from inside EigenCompute (caller-attested KMS-JWT), and a proxy to closed models — so it can't be black-box audited from here. The EigenCompute instance attestation is externally verifiable; the gateway isn't. See the open work to audit it from inside.";
   }
   return "Neither a client-verifiable seal nor a bound model on this row.";
 }

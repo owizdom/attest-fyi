@@ -2,6 +2,16 @@
   "_comment": "Open work for agents and people. One entry per tasks/<id>.md brief. status: open|claimed|partial|done. contributors: GitHub logins credited (rendered as avatars), filled as work lands.",
   "tasks": [
     {
+      "id": "eigenai",
+      "title": "Audit EigenAI from inside EigenCompute",
+      "type": "provider",
+      "status": "open",
+      "difficulty": "high",
+      "blocked_on": "the gateway is callable only from inside an attested enclave",
+      "summary": "The gateway attest.fyi is built on, and the one it can't audit from outside: caller-attested (a KMS-JWT minted only inside EigenCompute) and a proxy to closed frontier models. Verifying it means joining the network.",
+      "contributors": []
+    },
+    {
       "id": "tinfoil",
       "title": "Verify Tinfoil",
       "type": "provider",

@@ -91,6 +91,8 @@ a{color:inherit;}
 .prov-badge.repro{color:var(--green);}
 .prov-badge.repro::before{content:"✓ ";}
 .prov-badge.subm,.prov-badge.unver{color:var(--ink-faint);}
+.prov-badge.inside{color:var(--ink-soft);}
+.prov-badge.inside::before{content:"⬡ ";}
 .modal-head .prov-badge{display:inline-block;margin:0 0 0 6px;vertical-align:middle;}
 .prov-note{font-size:12.5px;color:var(--ink-soft);line-height:1.55;margin-top:13px;padding-top:12px;border-top:1px solid var(--hair);}
 

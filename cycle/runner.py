@@ -74,6 +74,17 @@ def audit_one(m, probes, idx=None, seed=DEFAULT_SEED, workers=2):
                 "attested_label": attested_label, "pitch": m.get("pitch"),
                 "findings": m.get("findings")}
 
+    # Inside-only providers (EigenAI): the gateway is caller-attested — only an
+    # attested EigenCompute enclave can call it — so attest.fyi can't audit it
+    # from outside. A clean, honest row: "unknown" by design, not by our failure.
+    # The eigenai task covers auditing it from inside the network.
+    if m.get("external_auditable") is False:
+        note = m.get("scope_note") or "not externally auditable from outside the network"
+        return dict(base_row, status="scored", verdict="unknown", score=None,
+                    provenance="inside-only",
+                    identity={"no_reference": True, "detail": note},
+                    attestation={"present": False, "vendor": "intel-tdx", "notes": [note]}), None
+
     if _needs_missing_key(served):
         return dict(base_row, status="skipped", reason="no key",
                     verdict="skipped", score=None), None

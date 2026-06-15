@@ -1,0 +1,22 @@
+{
+  "id": "eigenai",
+  "displayName": "EigenAI (EigenCloud)",
+  "tags": ["attested", "intel-tdx", "eigen", "inside-only", "proxy"],
+  "served": {
+    "adapter": "openai_compat",
+    "base_url": "https://ai-gateway.eigencloud.xyz/v1",
+    "model": "anthropic/claude-sonnet-4-6",
+    "key_env": null
+  },
+  "claims": { "attested_model": "frontier models, proxied", "label": "frontier proxy · eigencompute tdx" },
+  "pitch": "Confidential inference for attested agents: an EigenCompute TEE that proxies closed frontier models, callable only from inside the network.",
+  "external_auditable": false,
+  "scope_note": "callable only by an attested EigenCompute enclave (KMS-JWT); not auditable from outside the network",
+  "findings": [
+    "This is the gateway attest.fyi is built on — and the one it cannot audit from outside. The gateway accepts only a Bearer KMS-JWT minted via TEE attestation, and the KMS keys are injected only inside an EigenCompute enclave. A laptop or CI gets a flat 401 (confirmed live). Only attested code may call it — a stronger privacy posture than the others, where any anonymous client can hit the endpoint. That is why this row sits in its own category.",
+    "It is a confidential proxy, not an open model in a TEE. The enclave routes to closed frontier models (Claude Sonnet 4.6, GPT-5, Gemini 2.5 Pro); the TEE attests the routing enclave, while the model itself runs upstream at Anthropic / OpenAI / Google. So there are no open weights to fingerprint, and “the model executed inside the TEE” is not the claim being made.",
+    "To verify it, attest.fyi has to join the network: run as an EigenCompute app, mint the KMS-JWT, and audit the gateway from inside. The EigenCompute instance attestation IS externally verifiable (Intel TDX, an externally-verified KMS JWT at boot); the inference gateway is not. That audit is an open task on the board."
+  ],
+  "attestation": { "type": "inside-only" },
+  "decoding": { "temperature": 0.0, "max_tokens": 256, "seed": 42 }
+}
