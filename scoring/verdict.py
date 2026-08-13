@@ -21,6 +21,42 @@ SIM_MARGIN = 0.20      # absolute gap over the decoy that counts as discriminati
 SIM_RATIO = 1.4        # or this relative gap (stable when sims run low at temp 0)
 SIM_DIVERGE = 0.45     # at/below this and not clearly closer to the ref = a swap
 
+# Which detector produced the verdicts in this cycle.
+#
+# These thresholds are not a law of nature. They are the current best-known
+# answer to "did this endpoint swap the model", and they are measured: on the
+# attest-challenge corpus this rule catches family and size swaps, is blind to
+# requantisation, and spends its whole false-positive budget doing it. That is
+# published as a number rather than kept as a footnote, because a verdict should
+# say what produced it.
+#
+# When a submission beats the baseline, vendor it and update this block. Every
+# cycle then records which detector decided, and an old verdict stays traceable
+# to the code that made it.
+DETECTOR = {
+    "name": "baseline-sim-threshold",
+    "source": "scoring/verdict.py::behavioural_binding",
+    "benchmark": "attest-challenge",
+    "submission": None,              # Yukon submission id, once one is promoted
+    "promoted_at": None,
+    # Measured on attest-challenge, 24 probes, temperature 0.7, independent
+    # sessions. The headline is not the detection rate — it is that on that
+    # corpus the null and the swap distributions OVERLAP (honest pairs 0.420 to
+    # 0.551, swaps 0.330 to 0.490), so no threshold on a mean similarity
+    # separates them. Not 0.45, not any number.
+    "null_range": [0.420, 0.551],
+    "swap_range": [0.330, 0.490],
+    "separable_by_threshold": False,
+    "caveat": ("Separates model families and sizes. Cannot separate a "
+               "requantised engine, or an endpoint that answers audit-shaped "
+               "traffic honestly, from ordinary session noise. Scope: measured "
+               "on a corpus whose hard tiers are llama-3.2-1b variants, which "
+               "are noisier session-to-session than the 7B-70B models real "
+               "providers serve — this is NOT a claim that the rule misbehaves "
+               "against the providers in the register, where similarity to "
+               "true weights measured 0.59-0.69."),
+}
+
 
 def behavioural_binding(served, trusted_outputs, decoy_outputs=None):
     """Verify the served model IS the claimed model by behaviour: it matches a

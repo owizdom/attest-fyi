@@ -14,7 +14,7 @@ from models.factory import make_client
 from harness.runner import run_probes
 from references.registry import load_reference
 from attestation.factory import verify as verify_attestation
-from scoring.verdict import score_identity, behavioural_binding, score_provider
+from scoring.verdict import score_identity, behavioural_binding, score_provider, DETECTOR
 
 
 def _needs_missing_key(spec):
@@ -226,6 +226,10 @@ def run_cycle(seed=DEFAULT_SEED, workers=2, verbose=True, k=24):
         # pool by `nonce`. sample(pool, k, nonce) reproduces `indices` exactly.
         "sample": {"nonce": nonce, "pool_size": len(pool), "pool_commit": suite_commit(seed),
                    "k": len(idx), "indices": idx},
+        # Which detector decided these verdicts, and how well it scores on a
+        # labelled corpus. A verdict that cannot name the code behind it is an
+        # opinion; this makes an old cycle traceable to the rule of its day.
+        "detector": dict(DETECTOR),
         "summary": summary, "providers": rows,
     }
     os.makedirs(RESULTS_DIR, exist_ok=True)
