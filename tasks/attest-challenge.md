@@ -13,7 +13,7 @@ an endpoint and from the weights it *claims* to be, decide whether they are the
 same engine. Today that function is a mean similarity and a threshold of 0.45
 (`scoring/verdict.py`).
 
-On a labelled corpus of substitutions it finds 11 of 14 — and falsely accuses 4
+On a labelled corpus of substitutions it catches 12 of 14, and falsely accuses 4
 of 8 honest pairs, so the run is **rejected** and it scores **zero**. It is a
 decent swap detector and not an auditor.
 
@@ -37,8 +37,8 @@ labels are known and nobody is accused of anything while you work.
 |---|---|---|
 | 1 | different family — llama vs qwen | caught |
 | 2 | different size in one family — 1B vs 8B | caught |
-| 3 | requantised, two steps — q4 vs fp16 | 2/3 held-out |
-| 4 | one precision step, identical weights — fp16 vs q8 | 2/3 |
+| 3 | requantised, two steps, q4 vs fp16 | 3/3 held-out |
+| 4 | one precision step, identical weights, fp16 vs q8 | 2/3 |
 | 5 | endpoint recognises audit-shaped traffic and answers honestly for it | 1/2 |
 
 It "catches" much of tiers 3-5 only by sitting at a threshold that also condemns

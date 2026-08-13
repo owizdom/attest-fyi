@@ -180,7 +180,7 @@ the project") expressed as arithmetic: a detector that flags everything gets a
 perfect detection rate and scores nothing.
 
 The detector shipped today is `scoring/verdict.py` — mean similarity, threshold
-0.45. On the held-out corpus it finds 11 of 14 substitutions and falsely accuses
+0.45. On the held-out corpus it catches 12 of 14 substitutions and falsely accuses
 4 of 8 honest pairs, so the run is **rejected** and it scores **zero**.
 
 And the threshold is not the problem. Honest pairs measure 0.420-0.551

@@ -8,14 +8,15 @@
       "status": "open",
       "difficulty": "high",
       "blocked_on": "nothing — it is open, and the baseline is beatable",
-      "summary": "The detector that decides whether a provider is serving what it promised is a mean similarity and a threshold, and it scores 33.3 on a labelled corpus of substitutions. Tiers 3-5 (requantisation, one precision step, and an endpoint that recognises audit traffic) are unsolved. Scored on Yukon; whoever beats the baseline becomes the detector this register publishes verdicts with.",
+      "summary": "The detector that decides whether a provider is serving what it promised is a mean similarity and a threshold. On a labelled corpus it catches 12 of 14 substitutions but falsely accuses 4 of 8 honest pairs, so it is rejected and scores zero. The two distributions overlap, so no threshold fixes it. Scored on Yukon; whoever produces the first valid run above zero becomes the detector this register publishes verdicts with.",
       "contributors": [],
       "challenge": {
         "benchmark": "attest-challenge",
         "platform": "yukon",
-        "url": "https://yukon.org",
+        "url": "https://github.com/owizdom/attest-challenge",
         "metric": "detection rate at a pinned false-positive budget",
-        "baseline": 33.33
+        "baseline": 0.0,
+        "baseline_tpr": 85.71
       }
     },
     {
