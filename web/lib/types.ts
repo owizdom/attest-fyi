@@ -1,15 +1,3 @@
-export interface HistoryPoint {
-  cycle: number;
-  generated_at: string;
-  trust_gap_pct: number;
-  pass: number;
-  partial: number;
-  fail: number;
-  scored: number;
-  with_reference: number;
-  pass_rate_pct: number;
-}
-
 export interface Identity {
   no_reference?: boolean;
   probes_unavailable?: boolean;
@@ -148,6 +136,14 @@ export interface Frontier {
   url?: string;
   /** the reference number the challenge opened on */
   baseline?: number;
+  /** "rejected" when the baseline exceeded the false-accusation budget */
+  baseline_state?: string;
+  /** one-sentence explanation of the baseline, rendered verbatim */
+  baseline_note?: string;
+  /** detection rate the baseline reached before the gate rejected it */
+  baseline_tpr?: number;
+  /** per-tier catch rate, e.g. {"1":"3/3"} */
+  baseline_by_tier?: Record<string, string>;
   solvers: number;
   submissions: number;
   updated_at?: string;
