@@ -153,3 +153,49 @@ Open tasks live in `tasks/` and on the site under "Open work". Each is something
 that could not be finished here — usually for lack of an API key, lack of compute
 to run a large reference model, or a verifier that does not exist yet. Take one,
 move it forward, leave it better than you found it.
+
+## The scored piece: attest-challenge
+
+Everything above is open work — judgement calls, blocked verifications, missing
+verifiers. One part of this project is not a judgement call, and it is the part
+every published verdict rests on: **how do you actually tell that a provider
+swapped the model?**
+
+That question has a number attached, so it is posed as a benchmark rather than a
+task. `attest-challenge` scores a detector against a labelled corpus of
+substitutions this project controls, in difficulty tiers:
+
+  1  different model family                    solved
+  2  different size in one family              solved
+  3  requantised, two steps apart              unsolved
+  4  one precision step, identical weights     unsolved — possibly undetectable
+  5  an endpoint that recognises audit-shaped
+     traffic and answers honestly for it       unsolved
+
+    score = share of substitutions caught, 0-100
+    gate  = false accusations above the budget REJECT the run, score 0
+
+The gate is not a scoring quirk. It is rule two above ("a false accusation ends
+the project") expressed as arithmetic: a detector that flags everything gets a
+perfect detection rate and scores nothing.
+
+The detector shipped today is `scoring/verdict.py` — mean similarity, threshold
+0.45. On the held-out corpus it finds 11 of 14 substitutions and falsely accuses
+4 of 8 honest pairs, so the run is **rejected** and it scores **zero**.
+
+And the threshold is not the problem. Honest pairs measure 0.420-0.551
+similarity across independent sessions; substitutions measure 0.330-0.490. Those
+distributions overlap, so no threshold on a mean separates them — the worst
+honest pair is less similar than the hardest swap. The statistic is wrong, not
+the constant.
+
+Any valid run above zero beats that. The detector that wins becomes the one this
+register publishes verdicts with, cited by submission id in every cycle.
+
+Scope: the corpus's hard tiers use 1B models, which are noisier between sessions
+than the 7B-70B models providers serve, so it is deliberately harder than the
+register it feeds. A rejection there is not a claim about a live provider.
+
+Run it: https://yukon.org · the repo is `attest-challenge`, and
+`tools/verify.py` proves the benchmark's own properties before you trust its
+number.
