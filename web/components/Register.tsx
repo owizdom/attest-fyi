@@ -275,7 +275,7 @@ export function Register({ providers, checked, tasks = [] }:
   );
 
   return (
-    <section className="register">
+    <section id="register" className="register">
       <div className="reg-top">
         <div className="board-tabs">
           <button className={`board-tab ${tab === "register" ? "on" : ""}`} onClick={() => setTab("register")}>The register</button>

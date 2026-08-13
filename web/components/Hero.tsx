@@ -1,5 +1,15 @@
 import type { Latest } from "@/lib/types";
 
+// Yukon's dual-CTA shape: read the board, or go move it.
+function Cta() {
+  return (
+    <div className="hero-cta">
+      <a className="cta-primary" href="#frontier">Participate</a>
+      <a className="cta-ghost" href="#register">Read the register</a>
+    </div>
+  );
+}
+
 export function Hero({ latest }: { latest: Latest | null }) {
   const s = latest?.summary;
   if (!s) {
@@ -7,6 +17,7 @@ export function Hero({ latest }: { latest: Latest | null }) {
       <section className="hero">
         <div className="kicker">Independent benchmark · verifiable inference</div>
         <h1 className="headline"><span className="hl-num">—</span> No cycle has run yet.</h1>
+        <Cta />
       </section>
     );
   }
@@ -38,6 +49,7 @@ export function Hero({ latest }: { latest: Latest | null }) {
         <div className="substat">
           {`${s.scored} audited · ${verified} let you verify the model · ${unverified} you can't · ${s.deviating} caught serving a wrong model · cycle ${latest!.cycle} · ${date}`}
         </div>
+        <Cta />
       </section>
     );
   }
@@ -55,6 +67,7 @@ export function Hero({ latest }: { latest: Latest | null }) {
         <div className="substat">
           {`${seals} Intel TDX ${seals === 1 ? "quote" : "quotes"} fetched + structurally verified · ${s.skipped} awaiting an API key · cycle ${latest!.cycle}`}
         </div>
+        <Cta />
       </section>
     );
   }
@@ -70,6 +83,7 @@ export function Hero({ latest }: { latest: Latest | null }) {
       <div className="substat">
         {`${s.providers} real providers wired · ${s.skipped} awaiting an API key · cycle ${latest!.cycle}`}
       </div>
+      <Cta />
     </section>
   );
 }
