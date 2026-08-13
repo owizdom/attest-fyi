@@ -14,25 +14,28 @@ export default function Page() {
   const tasks = getTasks();
   const frontier = getFrontier();
   return (
-    <main className="page">
+    <>
+      {/* outside .page: the platform bar is full-bleed */}
       <TopBar />
-      <Hero latest={latest} />
-      <Register providers={latest?.providers ?? []} checked={latest?.generated_at ?? ""} tasks={tasks} />
-      <Frontier data={frontier} />
-      <footer className="footer">
-        <span>
-          <span className="seal-mark">✦</span>
-          attest.fyi — a benchmark for verifiable inference.
-          {latest ? ` Live cycle ${latest.cycle}.` : ""}
-          {latest?.detector ? (
-            <>
-              {" "}Verdicts decided by <a href="#frontier">{latest.detector.name}</a>
-              {latest.detector.score != null ? ` (${latest.detector.score} on attest-challenge)` : ""}.
-            </>
-          ) : null}
-        </span>
-        <span className="muted">{latest?.seed_commit ? latest.seed_commit.slice(0, 24) + "…" : ""}</span>
-      </footer>
-    </main>
+      <main className="page">
+        <Hero latest={latest} />
+        <Register providers={latest?.providers ?? []} checked={latest?.generated_at ?? ""} tasks={tasks} />
+        <Frontier data={frontier} />
+        <footer className="footer">
+          <span>
+            <span className="seal-mark">◉</span>
+            attest.fyi, a benchmark for verifiable inference.
+            {latest ? ` Live cycle ${latest.cycle}.` : ""}
+            {latest?.detector ? (
+              <>
+                {" "}Verdicts decided by <a href="/challenge">{latest.detector.name}</a>
+                {latest.detector.score != null ? ` (${latest.detector.score} on attest-challenge)` : ""}.
+              </>
+            ) : null}
+          </span>
+          <span className="muted">{latest?.seed_commit ? latest.seed_commit.slice(0, 24) + "…" : ""}</span>
+        </footer>
+      </main>
+    </>
   );
 }
