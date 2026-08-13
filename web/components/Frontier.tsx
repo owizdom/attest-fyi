@@ -78,20 +78,14 @@ export function Frontier({ data }: { data: F | null }) {
       ) : (
         <div className="fr-empty">
           <p>
-            Catching a provider that swaps the model it promised you is an unsolved problem, so it
-            is posed as one. The rule producing the verdicts in the register above scores{" "}
-            <b>{rejected ? "zero" : (data?.baseline?.toFixed(2) ?? "zero")}</b>.
-          </p>
-          {data?.baseline_note ? <p>{data.baseline_note}</p> : null}
-          <p>
-            Any valid run above zero is already past the state of the art, and whoever gets there
-            becomes the detector this site audits with.
+            The rule deciding the verdicts above scores{" "}
+            <b>{rejected ? "zero" : (data?.baseline?.toFixed(2) ?? "zero")}</b> on its own
+            benchmark. Beat it and it becomes yours.
           </p>
         </div>
       )}
 
       <p className="fr-foot">
-        Scored on a held-out corpus solvers never see, in a sandbox with no network.{" "}
         <a href="/challenge">See the challenge →</a>
       </p>
     </section>

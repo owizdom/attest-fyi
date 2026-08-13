@@ -34,8 +34,7 @@ export default function ChallengePage() {
         <footer className="footer">
           <span>
             <span className="seal-mark">◉</span>
-            A challenge from <a href="/">attest.fyi</a>. The winner becomes the detector this
-            register publishes verdicts with.
+            A challenge from <a href="/">attest.fyi</a>.
           </span>
           <span className="muted">{frontier?.benchmark ?? "attest-challenge"}</span>
         </footer>

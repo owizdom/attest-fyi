@@ -44,23 +44,22 @@ export function Leaderboard({ data }: { data: Frontier | null }) {
         entries.map((e) => <Row key={`${e.solver}-${e.submission ?? e.rank}`} e={e} />)
       ) : (
         <div className="lb-none">
-          <p>
-            No submissions yet. The board opens with the shipped rule already on it, and that rule
-            scores <b>zero</b>.
-          </p>
-          {data?.baseline_note ? <p className="lb-baseline">{data.baseline_note}</p> : null}
+          <p>No submissions yet. The shipped rule is on the board and it scores <b>zero</b>.</p>
           {data?.baseline_by_tier ? (
             <p className="lb-tiers">
               {Object.entries(data.baseline_by_tier).map(([tier, caught]) => (
                 <span key={tier}>
-                  <em>tier {tier}</em> {caught}
+                  <em>t{tier}</em> {caught}
                 </span>
               ))}
               {data.baseline_tpr != null ? (
                 <span>
-                  <em>detection rate</em> {data.baseline_tpr}%
+                  <em>caught</em> {data.baseline_tpr}%
                 </span>
               ) : null}
+              <span>
+                <em>false accusations</em> 4/8
+              </span>
             </p>
           ) : null}
         </div>

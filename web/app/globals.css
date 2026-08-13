@@ -347,8 +347,7 @@ a{color:inherit;}
 .ch-crumb a:hover{color:var(--accent);}
 .ch-crumb-here{color:var(--ink);}
 .ch-crumb-nav{margin-left:auto;display:flex;gap:18px;}
-.ch-title{font-size:38px;font-weight:600;line-height:1.14;letter-spacing:-.022em;max-width:20ch;}
-.ch-premise{margin-top:16px;font-size:16px;line-height:1.6;color:var(--ink-dim);max-width:66ch;}
+.ch-title{font-size:38px;font-weight:600;line-height:1.14;letter-spacing:-.022em;max-width:20ch;margin-bottom:20px;}
 .ch-rule{margin-top:22px;font-family:var(--font-mono);font-size:11.5px;line-height:1.7;color:var(--ink-faint);max-width:78ch;}
 .ch-stats{display:flex;gap:44px;margin-top:30px;flex-wrap:wrap;}
 .ch-stats > div{display:flex;flex-direction:column;gap:5px;}
