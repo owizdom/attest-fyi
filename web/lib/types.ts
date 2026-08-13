@@ -108,6 +108,17 @@ export interface Summary {
   model_unverified_pct?: number;
 }
 
+export interface DetectorRef {
+  name: string;
+  source?: string;
+  benchmark?: string;
+  score?: number;
+  false_accusations?: number;
+  submission?: string | null;
+  promoted_at?: string | null;
+  caveat?: string;
+}
+
 export interface Latest {
   cycle: number;
   generated_at: string;
@@ -115,4 +126,30 @@ export interface Latest {
   seed_commit: string;
   summary: Summary;
   providers: ProviderRow[];
+  detector?: DetectorRef;
+}
+
+/* ---------- Yukon frontier ---------- */
+
+export interface FrontierEntry {
+  rank: number;
+  solver: string;
+  model: string;
+  score: number;
+  delta?: number | null;
+  submission?: string;
+  promoted_at?: string;
+  /** true once this detector is the one driving published verdicts */
+  live?: boolean;
+}
+
+export interface Frontier {
+  benchmark: string;
+  url?: string;
+  /** the reference number the challenge opened on */
+  baseline?: number;
+  solvers: number;
+  submissions: number;
+  updated_at?: string;
+  entries: FrontierEntry[];
 }

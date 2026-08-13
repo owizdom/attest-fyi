@@ -1,0 +1,12 @@
+{
+  "_comment": "Promoted submissions to the attest-challenge benchmark. Written by the Yukon sync workflow. `baseline` is the reference number the challenge opened on, measured on the held-out split by the detector currently driving published verdicts.",
+  "benchmark": "attest-challenge",
+  "url": "https://yukon.org",
+  "baseline": 0.0,
+  "solvers": 0,
+  "submissions": 0,
+  "updated_at": null,
+  "entries": [],
+  "baseline_state": "rejected",
+  "baseline_note": "attest-fyi's shipped rule, unchanged: finds 11 of 14 substitutions and falsely accuses 4 of 8 honest pairs, so the run is rejected and it scores zero. Honest pairs measure 0.420-0.551 similarity across sessions and swaps 0.330-0.490 \u2014 overlapping, so no threshold on a mean separates them."
+}
