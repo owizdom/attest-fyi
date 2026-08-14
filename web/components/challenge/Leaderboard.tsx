@@ -11,7 +11,7 @@ function Gain({ d }: { d?: number | null }) {
   return (
     <span className={`lb-gain ${d > 0 ? "up" : "down"}`}>
       {d > 0 ? "+" : ""}
-      {d.toFixed(2)} pts
+      {d.toFixed(2)}
     </span>
   );
 }
@@ -48,27 +48,30 @@ export function Leaderboard({ data }: { data: Frontier | null }) {
         <div>
           <h2>Leaderboard</h2>
           <p className="lb-count">
-            {subs} promoted {subs === 1 ? "submission" : "submissions"}, {solvers}{" "}
-            {solvers === 1 ? "solver" : "solvers"}
+            {none
+              ? "No one has solved it yet"
+              : `${subs} accepted ${subs === 1 ? "entry" : "entries"} from ${solvers} ${
+                  solvers === 1 ? "person" : "people"
+                }`}
           </p>
         </div>
         <div className="lb-best">
           <span className="lb-best-k">best score</span>
-          <span className="lb-best-v">{best.toFixed(2)}</span>
-          <span className="lb-best-u">{none ? "nothing has cleared the gate" : "detection rate"}</span>
+          <span className="lb-best-v">{best.toFixed(0)}</span>
+          <span className="lb-best-u">out of 100</span>
         </div>
       </div>
 
       <p className="lb-note">
-        Highest detection rate first · a run that exceeds the false-accusation budget is rejected,
-        not ranked
+        Your score is the share of the 14 swaps you catch. Wrongly accusing more than one honest
+        provider disqualifies the whole run.
       </p>
 
       <div className="lb-head">
-        <span>Solver</span>
+        <span>Who</span>
         <span>Score</span>
-        <span>Gain</span>
-        <span>Model</span>
+        <span>Change</span>
+        <span>Model they used</span>
       </div>
 
       {entries.length > 0 ? (
@@ -79,15 +82,13 @@ export function Leaderboard({ data }: { data: Frontier | null }) {
         <div className="lb-row empty">
           <span className="lb-who">
             <span className="lb-rank">—</span>
-            <span className="lb-base">baseline</span>
+            <span className="lb-base">the code running today</span>
           </span>
-          <span className="lb-figure">0.00</span>
-          <span className="lb-cell"><span className="lb-gain flat">rejected</span></span>
-          <span className="lb-meta">
-            {data?.baseline_by_tier
-              ? Object.entries(data.baseline_by_tier).map(([t, c]) => `t${t} ${c}`).join(" · ")
-              : "—"}
+          <span className="lb-figure">0</span>
+          <span className="lb-cell">
+            <span className="lb-gain flat">disqualified</span>
           </span>
+          <span className="lb-meta">accused 4 of 8 honest providers</span>
         </div>
       )}
     </section>

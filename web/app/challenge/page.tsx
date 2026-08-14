@@ -10,9 +10,9 @@ import { Scoring } from "@/components/challenge/Scoring";
 // so there is no runtime filesystem access on the serverless host.
 export const dynamic = "force-static";
 
-const TITLE = "attest-challenge — detect model substitution";
+const TITLE = "attest-challenge — catch an AI provider serving the wrong model";
 const DESC =
-  "Catch an inference endpoint serving a different, distilled or requantised engine than the model it attests. Scored on a held-out corpus; false accusations reject the run.";
+  "A provider promises you one model and can quietly run a cheaper one instead. The security seal still passes. Write code that spots the swap.";
 
 export const metadata: Metadata = {
   title: TITLE,

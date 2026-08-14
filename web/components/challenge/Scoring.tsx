@@ -1,13 +1,12 @@
-// Everything that is not the board. Yukon puts this behind a "How it works"
-// button rather than down the page as documentation; here it is one collapsed
-// block at the bottom, so the page above it stays a hero and a board.
+// Collapsed by default, like Yukon's "How it works" button. Plain words only:
+// no "gate", no "negatives", no "held-out corpus".
 
 const TIERS = [
-  ["1", "Different family", "separable"],
-  ["2", "Different size, 1B vs 8B", "separable"],
-  ["3", "Requantised, q4 vs fp16", "partly"],
-  ["4", "One precision step, identical weights", "open"],
-  ["5", "Endpoint answers audit-shaped traffic honestly", "open"],
+  ["A different model family", "solved"],
+  ["A smaller model, 1B instead of 8B", "solved"],
+  ["The same model, squeezed to save memory", "partly"],
+  ["The same model, squeezed one notch", "unsolved"],
+  ["A provider that answers honestly only when it senses a test", "unsolved"],
 ];
 
 export function Scoring() {
@@ -18,39 +17,52 @@ export function Scoring() {
       <div className="how-body">
         <div className="how-grid">
           <div>
-            <span className="how-k">Metric</span>
-            <span className="how-v">share of substitutions caught, 0&ndash;100</span>
+            <span className="how-k">What you write</span>
+            <span className="how-v">
+              Code that picks the questions to ask, and decides from the answers whether the model
+              was swapped.
+            </span>
           </div>
           <div>
-            <span className="how-k">Gate</span>
-            <span className="how-v">false accusations above 12.5% of negatives reject the run</span>
+            <span className="how-k">What you get</span>
+            <span className="how-v">
+              24 questions per provider, in two rounds. The second round sees the first round&apos;s
+              answers.
+            </span>
           </div>
           <div>
-            <span className="how-k">Corpus</span>
-            <span className="how-v">14 substitutions, 8 honest pairs, held out</span>
+            <span className="how-k">How you score</span>
+            <span className="how-v">
+              22 providers to judge: 14 have been swapped, 8 are honest. Your score is the share of
+              the 14 you catch.
+            </span>
           </div>
           <div>
-            <span className="how-k">Budget</span>
-            <span className="how-v">24 probes per pair, two adaptive rounds</span>
+            <span className="how-k">How you lose</span>
+            <span className="how-v">
+              Accuse more than one honest provider and the run is thrown out. Flagging everyone
+              scores zero.
+            </span>
           </div>
         </div>
 
+        <p className="how-h">The five kinds of swap</p>
         <div className="how-tiers">
-          {TIERS.map(([n, what, status]) => (
-            <div className="ch-tier" key={n}>
-              <span className="ch-tier-n">{n}</span>
+          {TIERS.map(([what, status], i) => (
+            <div className="ch-tier" key={i}>
+              <span className="ch-tier-n">{i + 1}</span>
               <span className="ch-tier-w">{what}</span>
-              <span className={`ch-tier-s ${status === "open" ? "open" : ""}`}>{status}</span>
+              <span className={`ch-tier-s ${status === "unsolved" ? "open" : ""}`}>{status}</span>
             </div>
           ))}
         </div>
 
+        <p className="how-h">Try it</p>
         <pre className="code">{`yukon clone <setter>/attest-challenge
 cd attest-challenge && yukon setup && yukon run`}</pre>
-
         <p className="how-foot">
-          You edit <span className="ch-code">detector/</span> only. No network, no labels, probe
-          seed derived from your own submission.{" "}
+          The answers are kept off your machine, so you cannot look them up, and the questions you
+          are given depend on the code you submit, so you cannot prepare for them.{" "}
           <a href="https://github.com/owizdom/attest-challenge" target="_blank" rel="noopener noreferrer">
             Full brief →
           </a>

@@ -16,7 +16,6 @@ const TOP_N = 3;
 
 export function Frontier({ data }: { data: F | null }) {
   const entries = (data?.entries ?? []).slice(0, TOP_N);
-  const rejected = data?.baseline_state === "rejected";
 
   return (
     <section id="frontier" className="register frontier">
@@ -78,9 +77,9 @@ export function Frontier({ data }: { data: F | null }) {
       ) : (
         <div className="fr-empty">
           <p>
-            The rule deciding the verdicts above scores{" "}
-            <b>{rejected ? "zero" : (data?.baseline?.toFixed(2) ?? "zero")}</b> on its own
-            benchmark. Beat it and it becomes yours.
+            The code deciding those verdicts is not good enough yet: on its own test it catches 12
+            of 14 swapped providers, but wrongly accuses 4 of 8 honest ones. Beat it and yours
+            takes over.
           </p>
         </div>
       )}
