@@ -57,8 +57,8 @@ export function Leaderboard({ data }: { data: Frontier | null }) {
         </div>
         <div className="lb-best">
           <span className="lb-best-k">best score</span>
-          <span className="lb-best-v">{best.toFixed(0)}</span>
-          <span className="lb-best-u">out of 100</span>
+          <span className="lb-best-v">{best.toFixed(2)}</span>
+          <span className="lb-best-u">out of 100 · nobody yet</span>
         </div>
       </div>
 
@@ -68,10 +68,11 @@ export function Leaderboard({ data }: { data: Frontier | null }) {
       </p>
 
       <div className="lb-head">
-        <span>Who</span>
-        <span>Score</span>
-        <span>Change</span>
-        <span>Model they used</span>
+        <span>№</span>
+        <span>Solver</span>
+        <span>Model</span>
+        <span className="lb-figure">Score</span>
+        <span className="lb-cell">Diff</span>
       </div>
 
       {entries.length > 0 ? (
@@ -80,15 +81,11 @@ export function Leaderboard({ data }: { data: Frontier | null }) {
         ))
       ) : (
         <div className="lb-row empty">
-          <span className="lb-who">
-            <span className="lb-rank">—</span>
-            <span className="lb-base">the code running today</span>
-          </span>
-          <span className="lb-figure">0</span>
-          <span className="lb-cell">
-            <span className="lb-gain flat">disqualified</span>
-          </span>
+          <span className="lb-rank">—</span>
+          <span className="lb-who"><span className="lb-base">the code running today</span></span>
           <span className="lb-meta">accused 4 of 8 honest providers</span>
+          <span className="lb-figure">0.00</span>
+          <span className="lb-cell"><span className="lb-gain flat">disqualified</span></span>
         </div>
       )}
     </section>

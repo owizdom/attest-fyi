@@ -1,69 +1,100 @@
 import type { Frontier } from "@/lib/types";
 
-// Yukon's hero card shape. Their headline number explains itself ("255.1% more
-// post-quantum TPS"), ours does not: a bare 0.00 tells a first-time visitor
-// nothing. So the plain-language problem leads, and the score is stated in a
-// sentence that says why it is zero.
+// yukon.org/mlxfast, rebuilt. Their hero is: mark + a sentence with the headline
+// number set in an inverted plate + an info dot, action pills top-right, then a
+// framed chart panel with control chips, right-hand axis labels, a dotted
+// baseline and a "now" endpoint.
+//
+// Theirs reads "Laguna XS 2.1 now runs [162.0%] faster on Mac."
+// Ours reads   "Swapped models get caught [0.0%] of the time."
 
 const REPO = "https://github.com/owizdom/attest-challenge";
 
-// The chart is the finding: answers from the same model differ about as much as
-// answers from two different models, so the bars overlap.
-const AXIS = { min: 0.30, max: 0.58 };
-const BANDS = [
-  { k: "diff", label: "Different model", lo: 0.330, hi: 0.490, tone: "swap" },
-  { k: "same", label: "Same model, twice", lo: 0.420, hi: 0.551, tone: "null" },
-];
-const pct = (v: number) => ((v - AXIS.min) / (AXIS.max - AXIS.min)) * 100;
+// No submissions yet, so the record line sits flat on the baseline. It becomes a
+// real series the moment one lands.
+const PLOT = { w: 1000, h: 262, pad: { t: 14, r: 62, b: 26, l: 4 } };
+const GRID = [100, 50];
 
 export function ChallengeHero({ data }: { data: Frontier | null }) {
-  const solved = (data?.entries?.length ?? 0) > 0;
+  const best = data?.entries?.[0]?.score ?? data?.baseline ?? 0;
+  const { w, h, pad } = PLOT;
+  const y0 = h - pad.b;
+  const yFor = (v: number) => pad.t + (1 - v / 100) * (y0 - pad.t);
+  const xEnd = w - pad.r;
+  const yNow = yFor(best);
 
   return (
     <section className="hero-card">
-      <p className="hero-eyebrow">Open challenge</p>
+      <div className="hero-top">
+        <div className="hero-said">
+          <svg className="hero-mark" viewBox="0 0 64 64" aria-hidden="true">
+            <circle cx="32" cy="32" r="27" fill="none" stroke="currentColor" strokeWidth="2.4" />
+            <circle cx="32" cy="32" r="7" fill="currentColor" />
+            {[0, 60, 120, 180, 240, 300].map((a) => (
+              <line
+                key={a}
+                x1="32" y1="32"
+                x2={32 + 27 * Math.cos((a * Math.PI) / 180)}
+                y2={32 + 27 * Math.sin((a * Math.PI) / 180)}
+                stroke="currentColor" strokeWidth="1.6" opacity="0.55"
+              />
+            ))}
+          </svg>
 
-      <h1 className="hero-h">Catch an AI provider serving you the wrong model.</h1>
+          <h1 className="hero-h">
+            Swapped models get caught{" "}
+            <span className="hero-plate">{best.toFixed(1)}%</span> of the time.
+            <span
+              className="hero-i"
+              title="An AI provider promises you one model and can quietly run a cheaper one. The security seal still passes. This is the share of swaps the best submitted detector catches without falsely accusing honest providers."
+            >
+              i
+            </span>
+          </h1>
+        </div>
 
-      <p className="hero-line">
-        A provider promises you one model and can quietly run a cheaper one instead. The security
-        seal still passes, so nobody notices. Write code that spots the swap.
-      </p>
-
-      <div className="hero-actions">
-        <a className="hero-btn" href={REPO} target="_blank" rel="noopener noreferrer">Start</a>
-        <a className="hero-btn ghost" href="#how">How it works</a>
+        <div className="hero-btns">
+          <a className="hero-btn" href="#how">How it works</a>
+          <a className="hero-btn solid" href={REPO} target="_blank" rel="noopener noreferrer">
+            Participate
+          </a>
+        </div>
       </div>
 
-      {!solved ? (
-        <p className="hero-state">
-          <b>Nobody has solved it yet.</b> The best attempt catches 12 of 14 swaps, but it also
-          accuses 4 of 8 honest providers of cheating, so it does not count.
-        </p>
-      ) : null}
-
       <div className="hero-chart">
-        <div className="hc-top">
-          <span>Why it is hard</span>
-          <span className="hc-verdict">the two overlap, so no simple cutoff works</span>
-        </div>
-        {BANDS.map((b) => (
-          <div className="hc-row" key={b.k}>
-            <span className="hc-label">{b.label}</span>
-            <div className="hc-track">
-              <div
-                className={`hc-band ${b.tone}`}
-                style={{ left: `${pct(b.lo)}%`, width: `${pct(b.hi) - pct(b.lo)}%` }}
-              >
-                <span className="hc-lo">{b.lo.toFixed(2)}</span>
-                <span className="hc-hi">{b.hi.toFixed(2)}</span>
-              </div>
-            </div>
+        <div className="hc-bar">
+          <div className="hc-seg">
+            <span className="hc-chip on">Record</span>
+            <span className="hc-chip">By model</span>
           </div>
-        ))}
-        <p className="hc-read">
-          How alike two sets of answers are, 0 to 1. Ask the same model twice and it already
-          disagrees with itself about as much as two different models do.
+          <div className="hc-seg">
+            <span className="hc-chip on">Lin</span>
+            <span className="hc-chip">Log</span>
+            <span className="hc-chip">All</span>
+          </div>
+        </div>
+
+        <div className="hc-plot">
+          <svg viewBox={`0 0 ${w} ${h}`} preserveAspectRatio="none" role="img"
+               aria-label={`Best score over time, currently ${best.toFixed(1)} percent`}>
+            {GRID.map((g) => (
+              <g key={g}>
+                <line className="hc-grid" x1={pad.l} y1={yFor(g)} x2={xEnd} y2={yFor(g)} />
+                <text className="hc-ylab" x={xEnd + 10} y={yFor(g) + 4}>{g}.0%</text>
+              </g>
+            ))}
+            <line className="hc-base" x1={pad.l} y1={y0} x2={xEnd} y2={y0} />
+            <text className="hc-tag" x={pad.l} y={y0 + 17}>baseline</text>
+            <text className="hc-ylab" x={xEnd + 10} y={y0 + 4}>0.0%</text>
+
+            <line className="hc-line" x1={pad.l} y1={yNow} x2={xEnd} y2={yNow} />
+            <circle className="hc-dot" cx={xEnd} cy={yNow} r="4.5" />
+            <text className="hc-tag" x={xEnd + 10} y={yNow - 10}>now</text>
+          </svg>
+        </div>
+
+        <p className="hc-foot">
+          no submissions yet · the line moves the first time someone beats the code running today
         </p>
       </div>
     </section>
