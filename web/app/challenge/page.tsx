@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { getFrontier } from "@/lib/data";
 import { TopBar } from "@/components/TopBar";
 import { ChallengeHeader } from "@/components/challenge/ChallengeHeader";
+import { ChallengeHero } from "@/components/challenge/Hero";
 import { Leaderboard } from "@/components/challenge/Leaderboard";
 import { Scoring } from "@/components/challenge/Scoring";
 
@@ -27,8 +28,9 @@ export default function ChallengePage() {
       <TopBar />
       {/* .challenge-attest re-declares the semantic tokens, which is how Yukon
           themes an individual challenge. Today it inherits the platform indigo. */}
-      <main className="page challenge-attest">
-        <ChallengeHeader data={frontier} />
+      <main className="page challenge-attest ch-page">
+        <ChallengeHeader />
+        <ChallengeHero data={frontier} />
         <Leaderboard data={frontier} />
         <Scoring />
         <footer className="footer">

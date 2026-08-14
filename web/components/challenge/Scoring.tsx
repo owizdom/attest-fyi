@@ -1,63 +1,61 @@
-// Below the board. Data carries the argument: the tier table and the measured
-// distributions say what three paragraphs of prose used to say worse.
+// Everything that is not the board. Yukon puts this behind a "How it works"
+// button rather than down the page as documentation; here it is one collapsed
+// block at the bottom, so the page above it stays a hero and a board.
 
-const REPO = "https://github.com/owizdom/attest-challenge";
-
-const TIERS: { n: string; what: string; status: string }[] = [
-  { n: "1", what: "Different family", status: "separable" },
-  { n: "2", what: "Different size, 1B vs 8B", status: "separable" },
-  { n: "3", what: "Requantised, q4 vs fp16", status: "partly" },
-  { n: "4", what: "One precision step, identical weights", status: "open" },
-  { n: "5", what: "Endpoint answers audit-shaped traffic honestly", status: "open" },
+const TIERS = [
+  ["1", "Different family", "separable"],
+  ["2", "Different size, 1B vs 8B", "separable"],
+  ["3", "Requantised, q4 vs fp16", "partly"],
+  ["4", "One precision step, identical weights", "open"],
+  ["5", "Endpoint answers audit-shaped traffic honestly", "open"],
 ];
 
 export function Scoring() {
   return (
-    <>
-      <section className="ch-sec">
-        <h2>Corpus</h2>
-        <div className="ch-tiers">
-          {TIERS.map((t) => (
-            <div className="ch-tier" key={t.n}>
-              <span className="ch-tier-n">{t.n}</span>
-              <span className="ch-tier-w">{t.what}</span>
-              <span className={`ch-tier-s ${t.status === "open" ? "open" : ""}`}>{t.status}</span>
+    <details id="how" className="how">
+      <summary>How it works</summary>
+
+      <div className="how-body">
+        <div className="how-grid">
+          <div>
+            <span className="how-k">Metric</span>
+            <span className="how-v">share of substitutions caught, 0&ndash;100</span>
+          </div>
+          <div>
+            <span className="how-k">Gate</span>
+            <span className="how-v">false accusations above 12.5% of negatives reject the run</span>
+          </div>
+          <div>
+            <span className="how-k">Corpus</span>
+            <span className="how-v">14 substitutions, 8 honest pairs, held out</span>
+          </div>
+          <div>
+            <span className="how-k">Budget</span>
+            <span className="how-v">24 probes per pair, two adaptive rounds</span>
+          </div>
+        </div>
+
+        <div className="how-tiers">
+          {TIERS.map(([n, what, status]) => (
+            <div className="ch-tier" key={n}>
+              <span className="ch-tier-n">{n}</span>
+              <span className="ch-tier-w">{what}</span>
+              <span className={`ch-tier-s ${status === "open" ? "open" : ""}`}>{status}</span>
             </div>
           ))}
         </div>
-      </section>
 
-      <section className="ch-sec">
-        <h2>Why the shipped rule scores zero</h2>
-        <pre className="code">{`                              n     mean      min      max
-negatives (same weights)      6    0.472    0.420    0.551
-tier 1 swaps                  3    0.357    0.330    0.390
-tier 2 swaps                  3    0.390    0.358    0.407
-tier 3 swaps                  2    0.432    0.423    0.441
-tier 4 swaps                  2    0.455    0.420    0.490
-tier 5 swaps                  1    0.431    0.431    0.431
-
-null floor (worst honest pair):   0.420
-swap ceiling (easiest to miss):   0.490
-separable by a single threshold:  NO (gap -0.070)`}</pre>
-        <p className="ch-note">
-          The worst honest pair is less similar than the hardest swap. Every threshold either
-          misses that swap or accuses that provider.
-        </p>
-      </section>
-
-      <section className="ch-sec">
-        <h2>Run it</h2>
         <pre className="code">{`yukon clone <setter>/attest-challenge
-cd attest-challenge
-yukon setup
-yukon run`}</pre>
-        <p className="ch-note">
-          You edit <span className="ch-code">detector/</span>: a probe generator and a decision
-          function. No network, no labels, seed derived from your own submission.{" "}
-          <a href={REPO} target="_blank" rel="noopener noreferrer">Full brief →</a>
+cd attest-challenge && yukon setup && yukon run`}</pre>
+
+        <p className="how-foot">
+          You edit <span className="ch-code">detector/</span> only. No network, no labels, probe
+          seed derived from your own submission.{" "}
+          <a href="https://github.com/owizdom/attest-challenge" target="_blank" rel="noopener noreferrer">
+            Full brief →
+          </a>
         </p>
-      </section>
-    </>
+      </div>
+    </details>
   );
 }
