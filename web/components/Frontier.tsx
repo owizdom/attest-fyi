@@ -77,9 +77,8 @@ export function Frontier({ data }: { data: F | null }) {
       ) : (
         <div className="fr-empty">
           <p>
-            The code deciding those verdicts is not good enough yet: on its own test it catches 12
-            of 14 swapped providers, but wrongly accuses 4 of 8 honest ones. Beat it and yours
-            takes over.
+            The best detector so far catches 8 of 14 swapped providers without falsely accusing
+            more than one honest one. Beat it and yours takes over.
           </p>
         </div>
       )}
