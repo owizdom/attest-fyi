@@ -138,6 +138,18 @@ export interface FrontierPoint {
   who: string;
   model: string;
   note?: string;
+  /** swaps caught, and how many there were */
+  caught?: number;
+  swaps?: number;
+  /** honest providers wrongly accused, and how many there were */
+  false_accusations?: number;
+  negatives?: number;
+  /** per-tier catch rate, e.g. {"1":"3/3"}. Detail modal only. */
+  by_tier?: Record<string, string>;
+  /** points this run added over the previous frontier */
+  added?: number;
+  /** the pull request or commit this run came from */
+  pr?: string;
   /** false when the run exceeded the false-accusation budget */
   valid?: boolean;
 }
@@ -157,6 +169,9 @@ export interface Frontier {
   baseline_by_tier?: Record<string, string>;
   /** every scored detector so far, oldest first. Drives the hero chart. */
   history?: FrontierPoint[];
+  /** commit of the harness the scores were produced by */
+  harness_sha?: string;
+  harness_repo?: string;
   solvers: number;
   submissions: number;
   updated_at?: string;

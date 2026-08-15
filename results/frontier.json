@@ -23,16 +23,44 @@
       "score": 0.0,
       "who": "baseline",
       "model": "attest-fyi scoring/verdict.py",
-      "note": "mean similarity, swap below 0.45. Caught 12 of 14 but accused 4 of 8 honest providers, so the run was disqualified.",
-      "valid": false
+      "caught": 12,
+      "swaps": 14,
+      "false_accusations": 4,
+      "negatives": 8,
+      "by_tier": {
+        "1": "3/3",
+        "2": "3/3",
+        "3": "3/3",
+        "4": "2/3",
+        "5": "1/2"
+      },
+      "added": null,
+      "valid": false,
+      "pr": "https://github.com/owizdom/attest-challenge/blob/main/detector",
+      "note": "Mean difflib similarity across the probes, swap called below 0.45. It catches most substitutions and accuses half the honest providers doing it, so the run is disqualified. The two similarity distributions overlap, so no threshold separates them: the worst honest pair is less similar than the hardest swap."
     },
     {
       "at": "2026-08-15",
       "score": 57.14,
       "who": "owizdom",
       "model": "Claude Opus 5",
-      "note": "Asks each question three ways, scores how much each endpoint agrees with itself, and subtracts that before comparing them.",
-      "valid": true
+      "caught": 8,
+      "swaps": 14,
+      "false_accusations": 1,
+      "negatives": 8,
+      "by_tier": {
+        "1": "3/3",
+        "2": "2/3",
+        "3": "2/3",
+        "4": "0/3",
+        "5": "1/2"
+      },
+      "added": 57.14,
+      "valid": true,
+      "pr": "https://github.com/owizdom/attest-challenge/commit/77c72c2",
+      "note": "Asks each question three ways, scores how much each endpoint agrees with itself, and subtracts that before comparing them. A 1B model at temperature 0.7 is not confident about 47 * 89, so it samples a different wrong answer each time; measuring that uncertainty and cancelling it stops a small model looking like fraud. A second channel reads self-consistency as a capability fingerprint, which catches family and size swaps the first channel misses."
     }
-  ]
+  ],
+  "harness_repo": "owizdom/attest-challenge",
+  "harness_sha": "77c72c2"
 }
