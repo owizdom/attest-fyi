@@ -2,7 +2,8 @@ import type { Metadata } from "next";
 import { getFrontier } from "@/lib/data";
 import { ChallengeHeader } from "@/components/challenge/ChallengeHeader";
 import { ChallengeHero } from "@/components/challenge/Hero";
-import { Leaderboard } from "@/components/challenge/Leaderboard";
+import { ResultsCard } from "@/components/challenge/ResultsCard";
+import { ChallengeFooter } from "@/components/challenge/ChallengeFooter";
 
 // Same build-time read as the homepage: the board comes from committed results,
 // so there is no runtime filesystem access on the serverless host.
@@ -29,14 +30,8 @@ export default function ChallengePage() {
       <main className="page challenge-attest ch-page">
         <ChallengeHeader />
         <ChallengeHero data={frontier} />
-        <Leaderboard data={frontier} />
-        <footer className="footer">
-          <span>
-            <span className="seal-mark">◉</span>
-            A challenge from <a href="/">attest.fyi</a>.
-          </span>
-          <span className="muted">{frontier?.benchmark ?? "attest-challenge"}</span>
-        </footer>
+        <ResultsCard data={frontier} />
+        <ChallengeFooter data={frontier} />
       </main>
     </>
   );
