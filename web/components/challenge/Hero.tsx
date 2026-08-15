@@ -1,14 +1,14 @@
 import type { Frontier } from "@/lib/types";
 
 // yukon.org/mlxfast, rebuilt. Their hero is: mark + a sentence with the headline
-// number set in an inverted plate + an info dot, action pills top-right, then a
-// framed chart panel with control chips, right-hand axis labels, a dotted
-// baseline and a "now" endpoint.
+// number set in an inverted plate + an info dot, then a framed chart panel with
+// control chips, right-hand axis labels, a dotted baseline and a "now" endpoint.
+//
+// Yukon puts How it works / Participate pills in this card. Here they live in
+// the one nav strip instead, so the labels are not on screen twice.
 //
 // Theirs reads "Laguna XS 2.1 now runs [162.0%] faster on Mac."
 // Ours reads   "Swapped models get caught [0.0%] of the time."
-
-const REPO = "https://github.com/owizdom/attest-challenge";
 
 // No submissions yet, so the record line sits flat on the baseline. It becomes a
 // real series the moment one lands.
@@ -25,40 +25,31 @@ export function ChallengeHero({ data }: { data: Frontier | null }) {
 
   return (
     <section className="hero-card">
-      <div className="hero-top">
-        <div className="hero-said">
-          <svg className="hero-mark" viewBox="0 0 64 64" aria-hidden="true">
-            <circle cx="32" cy="32" r="27" fill="none" stroke="currentColor" strokeWidth="2.4" />
-            <circle cx="32" cy="32" r="7" fill="currentColor" />
-            {[0, 60, 120, 180, 240, 300].map((a) => (
-              <line
-                key={a}
-                x1="32" y1="32"
-                x2={32 + 27 * Math.cos((a * Math.PI) / 180)}
-                y2={32 + 27 * Math.sin((a * Math.PI) / 180)}
-                stroke="currentColor" strokeWidth="1.6" opacity="0.55"
-              />
-            ))}
-          </svg>
+      <div className="hero-said">
+        <svg className="hero-mark" viewBox="0 0 64 64" aria-hidden="true">
+          <circle cx="32" cy="32" r="27" fill="none" stroke="currentColor" strokeWidth="2.4" />
+          <circle cx="32" cy="32" r="7" fill="currentColor" />
+          {[0, 60, 120, 180, 240, 300].map((a) => (
+            <line
+              key={a}
+              x1="32" y1="32"
+              x2={32 + 27 * Math.cos((a * Math.PI) / 180)}
+              y2={32 + 27 * Math.sin((a * Math.PI) / 180)}
+              stroke="currentColor" strokeWidth="1.6" opacity="0.55"
+            />
+          ))}
+        </svg>
 
-          <h1 className="hero-h">
-            Swapped models get caught{" "}
-            <span className="hero-plate">{best.toFixed(1)}%</span> of the time.
-            <span
-              className="hero-i"
-              title="An AI provider promises you one model and can quietly run a cheaper one. The security seal still passes. This is the share of swaps the best submitted detector catches without falsely accusing honest providers."
-            >
-              i
-            </span>
-          </h1>
-        </div>
-
-        <div className="hero-btns">
-          <a className="hero-btn" href="#how">How it works</a>
-          <a className="hero-btn solid" href={REPO} target="_blank" rel="noopener noreferrer">
-            Participate
-          </a>
-        </div>
+        <h1 className="hero-h">
+          Swapped models get caught{" "}
+          <span className="hero-plate">{best.toFixed(1)}%</span> of the time.
+          <span
+            className="hero-i"
+            title="An AI provider promises you one model and can quietly run a cheaper one. The security seal still passes. This is the share of swaps the best submitted detector catches without falsely accusing honest providers."
+          >
+            i
+          </span>
+        </h1>
       </div>
 
       <div className="hero-chart">

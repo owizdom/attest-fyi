@@ -1,10 +1,8 @@
 import type { Metadata } from "next";
 import { getFrontier } from "@/lib/data";
-import { TopBar } from "@/components/TopBar";
 import { ChallengeHeader } from "@/components/challenge/ChallengeHeader";
 import { ChallengeHero } from "@/components/challenge/Hero";
 import { Leaderboard } from "@/components/challenge/Leaderboard";
-import { Scoring } from "@/components/challenge/Scoring";
 
 // Same build-time read as the homepage: the board comes from committed results,
 // so there is no runtime filesystem access on the serverless host.
@@ -25,14 +23,13 @@ export default function ChallengePage() {
   const frontier = getFrontier();
   return (
     <>
-      <TopBar />
-      {/* .challenge-attest re-declares the semantic tokens, which is how Yukon
-          themes an individual challenge. Today it inherits the platform indigo. */}
+      {/* One bar only, like yukon.org/mlxfast. .challenge-attest re-declares the
+          semantic tokens, which is how Yukon themes an individual challenge, and
+          it also themes the modals that ChallengeHeader opens. */}
       <main className="page challenge-attest ch-page">
         <ChallengeHeader />
         <ChallengeHero data={frontier} />
         <Leaderboard data={frontier} />
-        <Scoring />
         <footer className="footer">
           <span>
             <span className="seal-mark">◉</span>

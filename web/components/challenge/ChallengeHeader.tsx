@@ -1,5 +1,9 @@
-// yukon.org/mlxfast header: "Yukon │ MLX.fast with ◉poolside" on the left, then
-// pill buttons on the right. Same shape, our names.
+import { ChallengeActions } from "./ChallengeActions";
+
+// The only bar on this page, matching yukon.org/mlxfast, which has one strip
+// rather than a platform bar stacked on a challenge bar. Everything the page
+// needs lives here, and the two action pills open the benchmark's own modals
+// rather than the register's.
 export function ChallengeHeader() {
   return (
     <nav className="ch-strip">
@@ -11,6 +15,9 @@ export function ChallengeHeader() {
       <span className="ch-strip-nav">
         <a className="ch-pill" href="/#register">All challenges</a>
         <a className="ch-pill" href="#leaderboard">Leaderboard</a>
+        <ChallengeActions />
+        <a className="ch-pill" href="https://github.com/owizdom/attest-challenge"
+           target="_blank" rel="noopener noreferrer">GitHub</a>
       </span>
     </nav>
   );
