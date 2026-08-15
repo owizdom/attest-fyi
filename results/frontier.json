@@ -2,19 +2,37 @@
   "_comment": "Promoted submissions to the attest-challenge benchmark. Written by the Yukon sync workflow. `baseline` is the reference number the challenge opened on, measured on the held-out split by the detector currently driving published verdicts.",
   "benchmark": "attest-challenge",
   "url": "https://github.com/owizdom/attest-challenge",
-  "baseline": 0.0,
+  "baseline": 50.0,
   "solvers": 0,
   "submissions": 0,
   "updated_at": null,
   "entries": [],
-  "baseline_state": "rejected",
-  "baseline_note": "attest-fyi's shipped rule, unchanged: it catches 12 of 14 substitutions and falsely accuses 4 of 8 honest pairs, so the run is rejected and it scores zero. Honest pairs measure 0.420-0.551 similarity across independent sampling sessions and swaps 0.330-0.490, so the distributions overlap and no threshold on a mean separates them.",
-  "baseline_tpr": 85.71,
+  "baseline_state": "valid",
+  "baseline_note": "The detector shipping in the repo today. It asks each question three ways, scores how much each endpoint agrees with itself, and subtracts that before comparing them, so a model being bad at arithmetic stops looking like fraud. Catches 7 of 14 swaps with 1 false accusation of 8, inside the budget.",
+  "baseline_tpr": 50.0,
   "baseline_by_tier": {
-    "1": "3/3",
+    "1": "2/3",
     "2": "3/3",
-    "3": "3/3",
-    "4": "2/3",
+    "3": "1/3",
+    "4": "0/3",
     "5": "1/2"
-  }
+  },
+  "history": [
+    {
+      "at": "2026-08-13",
+      "score": 0.0,
+      "who": "baseline",
+      "model": "attest-fyi scoring/verdict.py",
+      "note": "mean similarity, swap below 0.45. Caught 12 of 14 but accused 4 of 8 honest providers, so the run was disqualified.",
+      "valid": false
+    },
+    {
+      "at": "2026-08-15",
+      "score": 50.0,
+      "who": "owizdom",
+      "model": "Claude Opus 5",
+      "note": "Asks each question three ways, scores how much each endpoint agrees with itself, and subtracts that before comparing them.",
+      "valid": true
+    }
+  ]
 }

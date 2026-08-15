@@ -131,6 +131,17 @@ export interface FrontierEntry {
   live?: boolean;
 }
 
+export interface FrontierPoint {
+  /** ISO date */
+  at: string;
+  score: number;
+  who: string;
+  model: string;
+  note?: string;
+  /** false when the run exceeded the false-accusation budget */
+  valid?: boolean;
+}
+
 export interface Frontier {
   benchmark: string;
   url?: string;
@@ -144,6 +155,8 @@ export interface Frontier {
   baseline_tpr?: number;
   /** per-tier catch rate, e.g. {"1":"3/3"} */
   baseline_by_tier?: Record<string, string>;
+  /** every scored detector so far, oldest first. Drives the hero chart. */
+  history?: FrontierPoint[];
   solvers: number;
   submissions: number;
   updated_at?: string;

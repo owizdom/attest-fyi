@@ -49,7 +49,7 @@ export function Leaderboard({ data }: { data: Frontier | null }) {
           <h2>Leaderboard</h2>
           <p className="lb-count">
             {none
-              ? "No one has solved it yet"
+              ? "No outside submissions yet. The baseline is the one to beat."
               : `${subs} accepted ${subs === 1 ? "entry" : "entries"} from ${solvers} ${
                   solvers === 1 ? "person" : "people"
                 }`}
@@ -58,7 +58,7 @@ export function Leaderboard({ data }: { data: Frontier | null }) {
         <div className="lb-best">
           <span className="lb-best-k">best score</span>
           <span className="lb-best-v">{best.toFixed(2)}</span>
-          <span className="lb-best-u">out of 100 · nobody yet</span>
+          <span className="lb-best-u">out of 100</span>
         </div>
       </div>
 
@@ -80,13 +80,33 @@ export function Leaderboard({ data }: { data: Frontier | null }) {
           <Row key={`${e.solver}-${e.submission ?? e.rank}`} e={e} lead={i === 0} />
         ))
       ) : (
-        <div className="lb-row empty">
-          <span className="lb-rank">—</span>
-          <span className="lb-who"><span className="lb-base">the code running today</span></span>
-          <span className="lb-meta">accused 4 of 8 honest providers</span>
-          <span className="lb-figure">0.00</span>
-          <span className="lb-cell"><span className="lb-gain flat">disqualified</span></span>
-        </div>
+        <>
+          {(data?.history ?? [])
+            .slice()
+            .reverse()
+            .map((p, i) => (
+              <div className={`lb-row base${p.valid === false ? " void" : ""}`} key={p.at}>
+                <span className="lb-rank">{i === 0 ? "now" : "was"}</span>
+                <span className="lb-who">
+                  <a href="https://github.com/owizdom" target="_blank" rel="noopener noreferrer">
+                    {p.who}
+                  </a>
+                  <em className="lb-tag">baseline</em>
+                </span>
+                <span className="lb-meta">{p.model}</span>
+                <span className="lb-figure">{p.score.toFixed(2)}</span>
+                <span className="lb-cell">
+                  <span className={`lb-gain ${p.valid === false ? "down" : "flat"}`}>
+                    {p.valid === false ? "disqualified" : p.at}
+                  </span>
+                </span>
+              </div>
+            ))}
+          <p className="lb-baseline-note">
+            The baseline is written by whoever sets the benchmark, who can see the answers, so it
+            is shown for reference and never ranked. Only outside submissions take a number.
+          </p>
+        </>
       )}
     </section>
   );

@@ -397,8 +397,27 @@ body:has(.challenge-attest){background:#f7f6ef;}
 .hc-bar{display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;margin-bottom:16px;}
 .hc-seg{display:flex;gap:7px;}
 .hc-chip{font-size:12px;font-weight:500;border-radius:7px;padding:5px 11px;
-  border:1px solid rgba(255,255,255,.3);color:var(--hero-dim);background:transparent;}
+  border:1px solid rgba(255,255,255,.3);color:var(--hero-dim);background:transparent;
+  cursor:pointer;transition:background .15s var(--chrome-motion-ease),color .15s var(--chrome-motion-ease);}
+.hc-chip:hover{background:rgba(255,255,255,.12);color:var(--hero-ink);}
 .hc-chip.on{background:var(--hero-ink);color:var(--hero);border-color:var(--hero-ink);}
+.hc-chip.on:hover{background:var(--hero-ink);color:var(--hero);}
+.hc-div{width:1px;align-self:stretch;background:rgba(255,255,255,.24);margin:0 4px;}
+
+/* a disqualified run is on the record, but hollow */
+.hc-dot.void{fill:var(--hero);stroke:var(--hero-ink);stroke-width:1.6;}
+
+/* the "By model" view */
+.hc-models{display:flex;flex-direction:column;}
+.hc-model{display:grid;grid-template-columns:82px 1fr 130px 132px;gap:14px;align-items:baseline;
+  padding:11px 2px;border-bottom:1px solid rgba(255,255,255,.14);}
+.hc-model:last-child{border-bottom:0;}
+.hc-model-score{font-family:var(--font-mono);font-size:16px;font-variant-numeric:tabular-nums;color:var(--hero-ink);}
+.hc-model-name{font-size:14px;color:var(--hero-ink);}
+.hc-model-who{font-family:var(--font-mono);font-size:12px;color:var(--hero-dim);}
+.hc-model-at{font-family:var(--font-mono);font-size:11.5px;color:var(--hero-faint);text-align:right;}
+.hc-model-at em{font-style:normal;color:var(--bad);}
+.hc-empty{font-family:var(--font-mono);font-size:12px;color:var(--hero-faint);padding:18px 2px;}
 .hc-plot{position:relative;height:262px;}
 .hc-plot svg{display:block;width:100%;height:100%;overflow:visible;}
 .hc-ylab{font-family:var(--font-mono);font-size:10.5px;fill:var(--hero-faint);}
@@ -470,4 +489,6 @@ body:has(.challenge-attest){background:#f7f6ef;}
   .lb-row .lb-meta,.lb-row .lb-cell{display:none;}
   .how-grid{grid-template-columns:1fr;}
   .hc-plot{height:196px;}
+  .hc-model{grid-template-columns:70px 1fr;gap:8px;}
+  .hc-model-who,.hc-model-at{display:none;}
 }
